@@ -19,7 +19,6 @@ import io.ktor.server.response.respond
 import io.ktor.server.routing.routing
 import no.nav.syfo.Environment
 import no.nav.syfo.application.api.registerNaisApi
-import no.nav.syfo.application.metrics.monitorHttpRequests
 import no.nav.syfo.log
 import no.nav.syfo.tss.api.getTssId
 import java.util.UUID
@@ -58,5 +57,5 @@ fun createApplicationEngine(
             registerNaisApi(applicationState)
             getTssId(tssProducer, session)
         }
-        intercept(ApplicationCallPipeline.Monitoring, monitorHttpRequests())
+
     }
