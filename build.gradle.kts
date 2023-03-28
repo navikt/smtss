@@ -14,13 +14,16 @@ val smCommonVersion = "1.9df1108"
 val kotlinVersion = "1.8.10"
 val junitJupiterVersion = "5.9.2"
 val commonsCodecVersion = "1.13"
+val syfoXmlCodegen = "1.35193f7"
+val ibmMqVersion = "9.2.5.0"
+val jaxbApiVersion = "2.4.0-b180830.0359"
 
 tasks.withType<Jar> {
     manifest.attributes["Main-Class"] = "no.nav.syfo.BootstrapKt"
 }
 
 plugins {
-    id("org.jmailen.kotlinter") version "3.10.0"
+    id("org.jmailen.kotlinter") version "3.14.0"
     kotlin("jvm") version "1.8.10"
     id("com.github.johnrengelman.shadow") version "8.1.1"
 }
@@ -60,8 +63,18 @@ dependencies {
     implementation("ch.qos.logback:logback-classic:$logbackVersion")
     implementation("net.logstash.logback:logstash-logback-encoder:$logstashEncoderVersion")
 
+    implementation("com.fasterxml.jackson.module:jackson-module-jaxb-annotations:$jacksonVersion")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion")
+
+    implementation("com.ibm.mq:com.ibm.mq.allclient:$ibmMqVersion")
+
+    implementation("no.nav.helse.xml:tssSamhandlerData:$syfoXmlCodegen")
+
+    implementation("no.nav.helse:syfosm-common-mq:$smCommonVersion")
+    implementation("no.nav.helse:syfosm-common-networking:$smCommonVersion")
+
+    implementation("javax.xml.bind:jaxb-api:$jaxbApiVersion")
 
     testImplementation("io.ktor:ktor-server-test-host:$ktorVersion") {
         exclude(group = "org.eclipse.jetty") 

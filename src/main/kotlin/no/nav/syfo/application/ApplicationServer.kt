@@ -14,6 +14,8 @@ class ApplicationServer(private val applicationServer: ApplicationEngine, privat
     }
 
     fun start() {
+        applicationState.alive = true
+        applicationState.ready = true
         applicationServer.start(true)
     }
 }

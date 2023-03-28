@@ -33,3 +33,26 @@ spec:
     requests:
       cpu: 200m
       memory: 768Mi
+  accessPolicy:
+    inbound:
+      rules:
+        - application: syfosmmottak
+  envFrom:
+    - secret: smtss-secrets
+    - secret: smtss-keystore-pwd
+  filesFrom:
+    - mountPath: /var/run/keystore
+      secret: smtss-keystore
+  env:
+    - name: MQ_HOST_NAME
+      value: mpls03.adeo.no
+    - name: MQ_PORT
+      value: '1414'
+    - name: MQ_GATEWAY_NAME
+      value: MPLS03
+    - name: MQ_CHANNEL_NAME
+      value: P_SMTSS
+    - name: MQ_TSS_SAMHANDLER_SERVICE_QUEUE
+      value: QA.P415.AS10_SAMHANDLER_SERVICE
+    - name: MQ_KEYSTORE_PATH
+      value: /var/run/keystore/smtss-keystore.jks

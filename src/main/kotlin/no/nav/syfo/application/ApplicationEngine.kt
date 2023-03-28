@@ -21,11 +21,16 @@ import no.nav.syfo.Environment
 import no.nav.syfo.application.api.registerNaisApi
 import no.nav.syfo.application.metrics.monitorHttpRequests
 import no.nav.syfo.log
+import no.nav.syfo.tss.api.getTssId
 import java.util.UUID
+import javax.jms.MessageProducer
+import javax.jms.Session
 
 fun createApplicationEngine(
     env: Environment,
-    applicationState: ApplicationState
+    applicationState: ApplicationState,
+    tssProducer: MessageProducer,
+    session: Session
 ): ApplicationEngine =
     embeddedServer(Netty, env.applicationPort) {
         install(ContentNegotiation) {
@@ -51,6 +56,7 @@ fun createApplicationEngine(
 
         routing {
             registerNaisApi(applicationState)
+            getTssId(tssProducer, session)
         }
         intercept(ApplicationCallPipeline.Monitoring, monitorHttpRequests())
     }
