@@ -14,6 +14,7 @@ import io.ktor.server.netty.Netty
 import io.ktor.server.plugins.callid.CallId
 import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.server.plugins.statuspages.StatusPages
+import io.ktor.server.plugins.swagger.swaggerUI
 import io.ktor.server.response.respond
 import io.ktor.server.routing.routing
 import no.nav.syfo.Environment
@@ -53,5 +54,6 @@ fun createApplicationEngine(
         routing {
             registerNaisApi(applicationState)
             getTssId(connection, env.tssQueue)
+            swaggerUI(path = "swagger", swaggerFile = "openapi/documentation.yaml")
         }
     }
