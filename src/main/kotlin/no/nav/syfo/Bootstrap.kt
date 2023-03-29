@@ -1,8 +1,6 @@
 package no.nav.syfo
 
-import com.ibm.mq.MQEnvironment
 import io.prometheus.client.hotspot.DefaultExports
-
 import no.nav.syfo.application.ApplicationServer
 import no.nav.syfo.application.ApplicationState
 import no.nav.syfo.application.createApplicationEngine
@@ -32,13 +30,11 @@ fun main() {
                 env,
                 applicationState,
                 tssProducer,
-                session
+                session,
             )
 
             val applicationServer = ApplicationServer(applicationEngine, applicationState)
             log.info("ApplicationServer ready to start")
             applicationServer.start()
         }
-
-
 }

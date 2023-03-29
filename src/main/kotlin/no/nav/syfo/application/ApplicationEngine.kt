@@ -7,7 +7,6 @@ import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
 import io.ktor.serialization.jackson.jackson
-import io.ktor.server.application.ApplicationCallPipeline
 import io.ktor.server.application.install
 import io.ktor.server.engine.ApplicationEngine
 import io.ktor.server.engine.embeddedServer
@@ -29,7 +28,7 @@ fun createApplicationEngine(
     env: Environment,
     applicationState: ApplicationState,
     tssProducer: MessageProducer,
-    session: Session
+    session: Session,
 ): ApplicationEngine =
     embeddedServer(Netty, env.applicationPort) {
         install(ContentNegotiation) {
@@ -57,5 +56,4 @@ fun createApplicationEngine(
             registerNaisApi(applicationState)
             getTssId(tssProducer, session)
         }
-
     }

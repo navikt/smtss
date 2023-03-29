@@ -7,7 +7,7 @@ import javax.jms.Session
 suspend fun findBestTssIdEmottak(
     samhandlerfnr: String,
     tssProducer: MessageProducer,
-    session: Session
+    session: Session,
 ): String? {
     return try {
         val enkeltSamhandler = fetchTssSamhandlerData(samhandlerfnr, tssProducer, session)
@@ -24,7 +24,7 @@ suspend fun findBestTssIdEmottak(
 suspend fun findBestTssInfotrygdId(
     samhandlerfnr: String,
     tssProducer: MessageProducer,
-    session: Session
+    session: Session,
 ): String? {
     return try {
         val enkeltSamhandler = fetchTssSamhandlerData(samhandlerfnr, tssProducer, session)

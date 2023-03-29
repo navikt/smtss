@@ -15,7 +15,7 @@ val kotlinVersion = "1.8.10"
 val junitJupiterVersion = "5.9.2"
 val commonsCodecVersion = "1.13"
 val syfoXmlCodegen = "1.35193f7"
-val ibmMqVersion = "9.2.5.0"
+val ibmMqVersion = "9.3.2.0"
 val jaxbApiVersion = "2.4.0-b180830.0359"
 
 tasks.withType<Jar> {

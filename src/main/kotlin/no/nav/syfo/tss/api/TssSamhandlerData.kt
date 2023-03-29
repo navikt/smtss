@@ -13,7 +13,7 @@ import javax.jms.Session
 
 fun Route.getTssId(
     tssProducer: MessageProducer,
-    session: Session
+    session: Session,
 ) {
     route("/api/v1") {
         get("samhandler/emottak/{samhandlerFnr}") {
