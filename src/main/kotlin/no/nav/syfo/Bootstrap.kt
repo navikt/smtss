@@ -4,6 +4,7 @@ import io.prometheus.client.hotspot.DefaultExports
 import no.nav.syfo.application.ApplicationServer
 import no.nav.syfo.application.ApplicationState
 import no.nav.syfo.application.createApplicationEngine
+import no.nav.syfo.mq.MqTlsUtils
 import no.nav.syfo.mq.connectionFactory
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -16,16 +17,8 @@ fun main() {
     val applicationState = ApplicationState()
     val serviceUser = ServiceUser()
 
-    /*
-    *
-    * MqTlsUtils.getMqTlsConfig().forEach { key, value -> System.setProperty(key as String, value as String) }
-    * val connection = connectionFactory(env).createConnection(serviceUser.serviceuserUsername, serviceUser.serviceuserPassword)
-    * */
-
-    val connection = connectionFactory(env).apply {
-        sslSocketFactory = null
-        sslCipherSuite = null
-    }.createConnection(serviceUser.serviceuserUsername, serviceUser.serviceuserPassword)
+    MqTlsUtils.getMqTlsConfig().forEach { key, value -> System.setProperty(key as String, value as String) }
+    val connection = connectionFactory(env).createConnection(serviceUser.serviceuserUsername, serviceUser.serviceuserPassword)
 
     connection.start()
 
