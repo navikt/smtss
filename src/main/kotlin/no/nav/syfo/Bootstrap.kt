@@ -19,7 +19,6 @@ fun main() {
     DefaultExports.initialize()
     val applicationState = ApplicationState()
     val serviceUser = ServiceUser()
-    MqTlsUtils.getMqTlsConfig().forEach { key, value -> System.setProperty(key as String, value as String) }
 
     connectionFactory(env).createConnection(serviceUser.serviceuserUsername, serviceUser.serviceuserPassword)
         .use { connection ->
