@@ -8,12 +8,11 @@ import io.ktor.server.routing.get
 import io.ktor.server.routing.route
 import no.nav.syfo.tss.service.findBestTssIdEmottak
 import no.nav.syfo.tss.service.findBestTssInfotrygdId
-import javax.jms.MessageProducer
-import javax.jms.Session
+import javax.jms.Connection
 
 fun Route.getTssId(
-    tssProducer: MessageProducer,
-    session: Session,
+    connection: Connection,
+    tssQueue: String,
 ) {
     route("/api/v1") {
         get("samhandler/emottak/{samhandlerFnr}") {
@@ -22,7 +21,7 @@ fun Route.getTssId(
             if (samhandlerfnr == null) {
                 call.respond(HttpStatusCode.BadRequest, "Missing samhandlerFnr")
             } else {
-                findBestTssIdEmottak(samhandlerfnr, tssProducer, session)
+                findBestTssIdEmottak(samhandlerfnr, connection, tssQueue)
                 call.respond("tssid")
             }
         }
@@ -32,7 +31,7 @@ fun Route.getTssId(
             if (samhandlerfnr == null) {
                 call.respond(HttpStatusCode.BadRequest, "Missing samhandlerFnr")
             } else {
-                findBestTssInfotrygdId(samhandlerfnr, tssProducer, session)
+                findBestTssInfotrygdId(samhandlerfnr, connection, tssQueue)
                 call.respond("tssid")
             }
         }
