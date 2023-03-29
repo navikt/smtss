@@ -1,5 +1,6 @@
 package no.nav.syfo
 
+import com.ibm.mq.MQEnvironment
 import io.prometheus.client.hotspot.DefaultExports
 import no.nav.syfo.application.ApplicationServer
 import no.nav.syfo.application.ApplicationState
@@ -19,6 +20,12 @@ fun main() {
     val applicationState = ApplicationState()
     val serviceUser = ServiceUser()
     MqTlsUtils.getMqTlsConfig().forEach { key, value -> System.setProperty(key as String, value as String) }
+
+    MQEnvironment.channel = env.mqChannelName
+    MQEnvironment.port = env.mqPort
+    MQEnvironment.hostname = env.mqHostname
+    MQEnvironment.userID = serviceUser.serviceuserUsername
+    MQEnvironment.password = serviceUser.serviceuserPassword
 
     connectionFactory(env).createConnection(serviceUser.serviceuserUsername, serviceUser.serviceuserPassword)
         .use { connection ->
