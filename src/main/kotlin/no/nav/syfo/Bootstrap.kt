@@ -21,12 +21,6 @@ fun main() {
     val serviceUser = ServiceUser()
     MqTlsUtils.getMqTlsConfig().forEach { key, value -> System.setProperty(key as String, value as String) }
 
-    MQEnvironment.channel = env.mqChannelName
-    MQEnvironment.port = env.mqPort
-    MQEnvironment.hostname = env.mqHostname
-    MQEnvironment.userID = serviceUser.serviceuserUsername
-    MQEnvironment.password = serviceUser.serviceuserPassword
-
     connectionFactory(env).createConnection(serviceUser.serviceuserUsername, serviceUser.serviceuserPassword)
         .use { connection ->
             connection.start()
