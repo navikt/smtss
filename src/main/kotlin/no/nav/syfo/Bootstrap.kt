@@ -16,6 +16,12 @@ fun main() {
     val applicationState = ApplicationState()
     val serviceUser = ServiceUser()
 
+    /*
+    *
+    * MqTlsUtils.getMqTlsConfig().forEach { key, value -> System.setProperty(key as String, value as String) }
+    * val connection = connectionFactory(env).createConnection(serviceUser.serviceuserUsername, serviceUser.serviceuserPassword)
+    * */
+
     val connection = connectionFactory(env).apply {
         sslSocketFactory = null
         sslCipherSuite = null

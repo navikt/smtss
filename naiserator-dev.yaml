@@ -37,6 +37,13 @@ spec:
     inbound:
       rules:
         - application: syfosmmottak
+    outbound:
+      external:
+        - host: b27apvl221.preprod.local
+          ports:
+            - name: mq
+              port: 1413
+              protocol: TCP
   envFrom:
     - secret: smtss-secrets
     - secret: smtss-keystore-pwd

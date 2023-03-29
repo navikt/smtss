@@ -37,6 +37,13 @@ spec:
     inbound:
       rules:
         - application: syfosmmottak
+    outbound:
+      external:
+        - host: mpls03.adeo.no
+          ports:
+            - name: mq
+              port: 1414
+              protocol: TCP
   envFrom:
     - secret: smtss-secrets
     - secret: smtss-keystore-pwd
