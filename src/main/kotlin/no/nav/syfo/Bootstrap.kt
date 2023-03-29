@@ -20,7 +20,10 @@ fun main() {
     val applicationState = ApplicationState()
     val serviceUser = ServiceUser()
 
-    connectionFactory(env).createConnection(serviceUser.serviceuserUsername, serviceUser.serviceuserPassword)
+    connectionFactory(env).apply {
+        sslSocketFactory = null
+        sslCipherSuite = null
+    }.createConnection(serviceUser.serviceuserUsername, serviceUser.serviceuserPassword)
         .use { connection ->
             connection.start()
             val session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE)
