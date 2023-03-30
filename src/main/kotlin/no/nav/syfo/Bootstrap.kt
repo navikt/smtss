@@ -1,5 +1,6 @@
 package no.nav.syfo
 
+import com.auth0.jwk.JwkProviderBuilder
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
@@ -13,6 +14,8 @@ import no.nav.syfo.mq.MqTlsUtils
 import no.nav.syfo.mq.connectionFactory
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import java.net.URL
+import java.util.concurrent.TimeUnit
 
 val log: Logger = LoggerFactory.getLogger("no.nav.syfo.smtss")
 val securelog: Logger = LoggerFactory.getLogger("securelog")
@@ -35,10 +38,16 @@ fun main() {
 
     connection.start()
 
+    val jwkProviderAad = JwkProviderBuilder(URL(env.jwkKeysUrl))
+        .cached(10, 24, TimeUnit.HOURS)
+        .rateLimited(10, 1, TimeUnit.MINUTES)
+        .build()
+
     val applicationEngine = createApplicationEngine(
         env,
         applicationState,
         connection,
+        jwkProviderAad,
     )
 
     val applicationServer = ApplicationServer(applicationEngine, applicationState)

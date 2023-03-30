@@ -2,10 +2,10 @@ package no.nav.syfo.tss.service
 
 import no.nav.syfo.log
 import no.nav.syfo.mq.producerForQueue
-import javax.jms.Connection
-import javax.jms.Session
 import no.nav.syfo.objectMapper
 import no.nav.syfo.securelog
+import javax.jms.Connection
+import javax.jms.Session
 
 suspend fun findBestTssIdEmottak(
     samhandlerfnr: String,
