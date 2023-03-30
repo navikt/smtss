@@ -44,6 +44,8 @@ spec:
             - name: mq
               port: 1413
               protocol: TCP
+  secureLogs:
+    enabled: true
   envFrom:
     - secret: smtss-secrets
     - secret: smtss-keystore-pwd
