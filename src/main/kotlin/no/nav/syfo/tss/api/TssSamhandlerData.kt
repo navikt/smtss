@@ -6,9 +6,9 @@ import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.get
 import io.ktor.server.routing.route
-import no.nav.syfo.tss.service.findBestTssIdEmottak
 import no.nav.syfo.tss.service.findBestTssInfotrygdId
 import javax.jms.Connection
+import no.nav.syfo.tss.service.TSSident
 
 fun Route.getTssId(
     connection: Connection,
@@ -21,8 +21,14 @@ fun Route.getTssId(
             if (samhandlerfnr == null) {
                 call.respond(HttpStatusCode.BadRequest, "Missing samhandlerFnr")
             } else {
-                findBestTssIdEmottak(samhandlerfnr, connection, tssQueue)
-                call.respond("tssid")
+                val tssIdent: TSSident? = findBestTssInfotrygdId(samhandlerfnr, connection, tssQueue)
+                if (tssIdent != null)
+                {
+                    call.respond(HttpStatusCode.OK, tssIdent)
+                }
+                else {
+                    call.respond(HttpStatusCode.NotFound)
+                }
             }
         }
         get("samhandler/infotrygd/{samhandlerFnr}") {
@@ -31,8 +37,14 @@ fun Route.getTssId(
             if (samhandlerfnr == null) {
                 call.respond(HttpStatusCode.BadRequest, "Missing samhandlerFnr")
             } else {
-                findBestTssInfotrygdId(samhandlerfnr, connection, tssQueue)
-                call.respond("tssid")
+                val tssIdent: TSSident? = findBestTssInfotrygdId(samhandlerfnr, connection, tssQueue)
+                if (tssIdent != null)
+                {
+                    call.respond(HttpStatusCode.OK, tssIdent)
+                }
+                else {
+                    call.respond(HttpStatusCode.NotFound)
+                }
             }
         }
     }
