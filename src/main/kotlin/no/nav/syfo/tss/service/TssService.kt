@@ -57,7 +57,7 @@ suspend fun findBestTssInfotrygdId(
         null
 
     } catch (e: Exception) {
-        log.error("Call to tss throws error", e)
+        log.warn("Call to tss throws error", e)
         null
     }
 }
