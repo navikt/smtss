@@ -39,13 +39,12 @@ fun createApplicationEngine(
             jackson {
                 registerKotlinModule()
                 registerModule(JavaTimeModule())
-                configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
                 configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
             }
         }
         install(StatusPages) {
             exception<Throwable> { call, cause ->
-                log.error("Caught exception", cause)
+                log.warn("Caught exception", cause)
                 call.respond(HttpStatusCode.InternalServerError, cause.message ?: "Unknown error")
                 throw cause
             }
