@@ -24,6 +24,9 @@
     </logger>
 
     <logger name="no.nav" level="INFO"/>
+    <logger name="io.ktor.server.routing" level="WARN"/>
+    <logger name="io.ktor.server.netty" level="WARN"/>
+    <logger name="io.netty.channel" level="WARN"/>
 
     <root level="INFO">
         <appender-ref ref="stdout_json"/>
