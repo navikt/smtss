@@ -19,8 +19,18 @@ suspend fun findBestTssIdEmottak(
         val enkeltSamhandler = fetchTssSamhandlerData(samhandlerfnr, tssProducer, session)
         securelog.info("enkeltSamhandler: ${objectMapper.writeValueAsString(enkeltSamhandler)}")
 
+        /*
+        val idOffSamhRelasjon =  enkeltSamhandler?.firstOrNull()?.relasjoner180?.samhRelasjon?.find {
+            it.kodeIdentTypeU == "ORG" && it.gyldigRelasjon == "J" && it.idOff.drop(2) == samhandlerOrgNumber
+        }?.idOff
+
+        val avtaler = enkeltSamhandler?.firstOrNull()?.avtaler190?.avtaler?.find {
+            it.idOff == idOffSamhRelasjon
+        }
+        */
+
         val tssid = enkeltSamhandler?.firstOrNull()?.samhandlerAvd125?.samhAvd?.find {
-            it.avdNr == "01"
+            it.gyldigAvd == "J" && it.kilde == "FKR" && (it.typeAvd == "FALE" || it.typeAvd == "FALO")
         }?.idOffTSS
 
         if (tssid != null) {
@@ -55,7 +65,6 @@ suspend fun findBestTssInfotrygdId(
         }
 
         null
-
     } catch (e: Exception) {
         log.error("Call to tss throws error", e)
         null
