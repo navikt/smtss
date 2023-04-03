@@ -17,13 +17,17 @@ fun Route.getTssId(
     tssQueue: String,
 ) {
     route("/api/v1") {
-        get("samhandler/emottak/{samhandlerFnr}") {
+        get("samhandler/emottak/{samhandlerFnr}/{samhandlerOrgName}") {
             val samhandlerfnr = call.parameters["samhandlerFnr"]
-
+            val samhandlerOrgName = call.parameters["samhandlerOrgName"]
             if (samhandlerfnr == null) {
                 call.respond(HttpStatusCode.BadRequest, "Missing samhandlerFnr")
-            } else {
-                val tssIdent: TSSident? = findBestTssIdEmottak(samhandlerfnr, connection, tssQueue)
+            }
+            else if (samhandlerOrgName == null) {
+                call.respond(HttpStatusCode.BadRequest, "Missing samhandlerOrgName")
+            }
+            else {
+                val tssIdent: TSSident? = findBestTssIdEmottak(samhandlerfnr, samhandlerOrgName, connection, tssQueue)
                 if (tssIdent != null) {
                     log.info("tssIdent is: $tssIdent")
                     call.respond(HttpStatusCode.OK, tssIdent)
