@@ -20,7 +20,7 @@ fun Route.getTssId(
     route("/api/v1") {
         get("samhandler/emottak") {
 
-            val tssidentRequest = call.receive<TSSidentRequest>()
+            val tssidentRequest: TSSidentRequest = call.receive()
             val samhandlerfnr = tssidentRequest.samhandlerFnr
             val samhandlerOrgName = tssidentRequest.samhandlerOrgName
 
@@ -35,7 +35,7 @@ fun Route.getTssId(
 
         }
         get("samhandler/infotrygd") {
-            val tssidentRequest = call.receive<TSSidentRequest>()
+            val tssidentRequest: TSSidentRequest = call.receive()
 
             val tssIdent: TSSident? = findBestTssInfotrygdId(tssidentRequest.samhandlerFnr, connection, tssQueue)
             if (tssIdent != null) {
