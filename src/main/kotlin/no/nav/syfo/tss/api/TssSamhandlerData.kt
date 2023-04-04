@@ -29,7 +29,6 @@ fun Route.getTssId(
 
                 val tssIdent: TSSident? = findBestTssIdEmottak(samhandlerfnr, samhandlerOrgName, connection, tssQueue)
                 if (tssIdent != null) {
-                    log.info("tssIdent is: $tssIdent")
                     call.respond(HttpStatusCode.OK, tssIdent)
                 } else {
                     call.respond(HttpStatusCode.NotFound)
