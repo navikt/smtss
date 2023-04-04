@@ -8,6 +8,7 @@ import javax.jms.Connection
 import javax.jms.Session
 import kotlin.math.max
 import no.nav.helse.tssSamhandlerData.XMLSamhAvdPraType
+import no.nav.helse.tssSamhandlerData.XMLTypeKomplett
 import org.apache.commons.text.similarity.LevenshteinDistance
 
 suspend fun findBestTssIdEmottak(
@@ -23,28 +24,36 @@ suspend fun findBestTssIdEmottak(
         val enkeltSamhandler = fetchTssSamhandlerData(samhandlerfnr, tssProducer, session)
         securelog.info("enkeltSamhandler: ${objectMapper.writeValueAsString(enkeltSamhandler)}")
 
-        if (enkeltSamhandler?.firstOrNull()?.samhandlerAvd125 != null)
-        {
-            val samhandlerAvdelding = samhandlerMatchingPaaOrganisjonsNavn(enkeltSamhandler.first().samhandlerAvd125.samhAvd, samhandlerOrgName)?.samhandlerAvdeling
+        return filterOutTssIdForEmottak(enkeltSamhandler, samhandlerOrgName)
 
-            if (samhandlerAvdelding?.idOffTSS != null && (
-                        !samhandlerAvdelingIsLegevakt(samhandlerAvdelding)
-                                && !samhandlerAvdelingIsFastlegeOrFastlønnet(samhandlerAvdelding))) {
-                TSSident(samhandlerAvdelding.idOffTSS)
-            }
-        }
-        null
     } catch (exception: Exception) {
         log.warn("Call to tss throws error", exception)
         null
     }
 }
 
+fun filterOutTssIdForEmottak(enkeltSamhandler: List<XMLTypeKomplett>?, samhandlerOrgName: String): TSSident? {
+    if (enkeltSamhandler?.firstOrNull()?.samhandlerAvd125 != null)
+    {
+        log.info("Found samhandlerAvd125")
+        val samhandlerAvdelding = samhandlerMatchingPaaOrganisjonsNavn(enkeltSamhandler.first().samhandlerAvd125.samhAvd, samhandlerOrgName)?.samhandlerAvdeling
+
+        if (samhandlerAvdelding?.idOffTSS != null && (
+                    !samhandlerAvdelingIsLegevakt(samhandlerAvdelding)
+                            && !samhandlerAvdelingIsFastlegeOrFastlonnet(samhandlerAvdelding))) {
+           return TSSident(samhandlerAvdelding.idOffTSS)
+        }
+    }
+   return null
+}
+
+
+
 fun samhandlerMatchingPaaOrganisjonsNavn(samhandlereAvdelinger: List<XMLSamhAvdPraType>, samhandlerOrgName: String): SamhandlerAvdelingMatch? {
 
     val aktiveSamhandlereMedNavn = samhandlereAvdelinger
-        .filter { samhandlerAvdeling -> samhandlerAvdeling.gyldigAvd != "J" }
-        .filter { samhandlerAvdeling -> samhandlerAvdeling.kilde != "FKR" }
+        .filter { samhandlerAvdeling -> samhandlerAvdeling.gyldigAvd == "J" }
+        .filter { samhandlerAvdeling -> samhandlerAvdeling.kilde == "FKR" }
         .filter { samhandlerAvdeling -> !samhandlerAvdeling.avdNavn.isNullOrEmpty() }
 
     return if (aktiveSamhandlereMedNavn.isNotEmpty()) {
@@ -65,7 +74,7 @@ fun samhandlerAvdelingIsLegevakt(samhandlereAvdeling: XMLSamhAvdPraType): Boolea
                     samhandlereAvdeling.typeAvd == "LEKO"
             )
 
-fun samhandlerAvdelingIsFastlegeOrFastlønnet(samhandlereAvdeling: XMLSamhAvdPraType): Boolean =
+fun samhandlerAvdelingIsFastlegeOrFastlonnet(samhandlereAvdeling: XMLSamhAvdPraType): Boolean =
     !samhandlereAvdeling.typeAvd.isNullOrEmpty() && (
             samhandlereAvdeling.typeAvd == "FALO" ||
                     samhandlereAvdeling.typeAvd == "FALE"
