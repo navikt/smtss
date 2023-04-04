@@ -35,7 +35,6 @@ suspend fun findBestTssIdEmottak(
 fun filterOutTssIdForEmottak(enkeltSamhandler: List<XMLTypeKomplett>?, samhandlerOrgName: String): TSSident? {
     if (enkeltSamhandler?.firstOrNull()?.samhandlerAvd125 != null)
     {
-        log.info("Found samhandlerAvd125")
         val samhandlerAvdelding = samhandlerMatchingPaaOrganisjonsNavn(enkeltSamhandler.first().samhandlerAvd125.samhAvd, samhandlerOrgName)?.samhandlerAvdeling
 
         if (samhandlerAvdelding?.idOffTSS != null && (
