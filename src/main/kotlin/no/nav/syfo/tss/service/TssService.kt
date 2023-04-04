@@ -39,8 +39,7 @@ fun filterOutTssIdForEmottak(enkeltSamhandler: List<XMLSamhandler>?, samhandlerO
         val samhandlerAvdelding = samhandlerMatchingPaaOrganisjonsNavn(enkeltSamhandler.first().samhandlerAvd125.samhAvd, samhandlerOrgName)?.samhandlerAvdeling
 
         if (samhandlerAvdelding?.idOffTSS != null && (
-                    !samhandlerAvdelingIsLegevakt(samhandlerAvdelding)
-                            && !samhandlerAvdelingIsFastlegeOrFastlonnet(samhandlerAvdelding))) {
+                    !samhandlerAvdelingIsLegevakt(samhandlerAvdelding))) {
            return TSSident(samhandlerAvdelding.idOffTSS)
         }
     }
@@ -53,7 +52,6 @@ fun samhandlerMatchingPaaOrganisjonsNavn(samhandlereAvdelinger: List<XMLSamhAvdP
 
     val aktiveSamhandlereMedNavn = samhandlereAvdelinger
         .filter { samhandlerAvdeling -> samhandlerAvdeling.gyldigAvd == "J" }
-        .filter { samhandlerAvdeling -> samhandlerAvdeling.kilde == "FKR" }
         .filter { samhandlerAvdeling -> !samhandlerAvdeling.avdNavn.isNullOrEmpty() }
 
     return if (aktiveSamhandlereMedNavn.isNotEmpty()) {
