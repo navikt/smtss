@@ -35,6 +35,13 @@ fun createApplicationEngine(
             environment = env,
             jwkProviderAadV2 = jwkProviderAad,
         )
+        routing {
+            registerNaisApi(applicationState)
+            authenticate("servicebrukerAAD") {
+                getTssId(connection, env.tssQueue)
+            }
+            swaggerUI(path = "swagger", swaggerFile = "openapi/documentation.yaml")
+        }
         install(ContentNegotiation) {
             jackson {
                 registerKotlinModule()
@@ -48,13 +55,5 @@ fun createApplicationEngine(
                 call.respond(HttpStatusCode.InternalServerError, cause.message ?: "Unknown error")
                 throw cause
             }
-        }
-
-        routing {
-            registerNaisApi(applicationState)
-            authenticate("servicebrukerAAD") {
-                getTssId(connection, env.tssQueue)
-            }
-            swaggerUI(path = "swagger", swaggerFile = "openapi/documentation.yaml")
         }
     }
