@@ -4,7 +4,6 @@ import no.nav.helse.tssSamhandlerData.XMLSamhandlerIDataB910Type
 import no.nav.helse.tssSamhandlerData.XMLTServicerutiner
 import no.nav.helse.tssSamhandlerData.XMLTidOFF1
 import no.nav.helse.tssSamhandlerData.XMLTssSamhandlerData
-import no.nav.helse.tssSamhandlerData.XMLTypeKomplett
 import no.nav.syfo.helpers.retry
 import no.nav.syfo.util.toString
 import no.nav.syfo.util.tssSamhandlerdataInputMarshaller
@@ -16,12 +15,13 @@ import javax.jms.MessageProducer
 import javax.jms.Session
 import javax.jms.TemporaryQueue
 import javax.jms.TextMessage
+import no.nav.helse.tssSamhandlerData.XMLSamhandler
 
 suspend fun fetchTssSamhandlerData(
     samhandlerfnr: String,
     tssSamhnadlerInfoProducer: MessageProducer,
     session: Session,
-): List<XMLTypeKomplett>? =
+): List<XMLSamhandler>? =
     retry(
         callName = "tss_fetch_samhandler_data",
         retryIntervals = arrayOf(500L, 1000L, 3000L, 5000L),
@@ -30,7 +30,7 @@ suspend fun fetchTssSamhandlerData(
         val tssSamhandlerDatainput = XMLTssSamhandlerData().apply {
             tssInputData = XMLTssSamhandlerData.TssInputData().apply {
                 tssServiceRutine = XMLTServicerutiner().apply {
-                    samhandlerIDataB960 = XMLSamhandlerIDataB910Type().apply {
+                    samhandlerIDataB910 = XMLSamhandlerIDataB910Type().apply {
                         ofFid = XMLTidOFF1().apply {
                             idOff = samhandlerfnr
                             kodeIdType = setFnrOrDnr(samhandlerfnr)
@@ -65,8 +65,8 @@ fun sendTssSporring(
     },
 )
 
-fun findEnkeltSamhandlerFromTSSRespons(tssSamhandlerInfoResponse: XMLTssSamhandlerData): List<XMLTypeKomplett>? {
-    return tssSamhandlerInfoResponse.tssOutputData.samhandlerODataB960?.enkeltSamhandler
+fun findEnkeltSamhandlerFromTSSRespons(tssSamhandlerInfoResponse: XMLTssSamhandlerData): List<XMLSamhandler>? {
+    return tssSamhandlerInfoResponse.tssOutputData?.samhandlerODataB910?.enkeltSamhandler
 }
 
 fun setFnrOrDnr(personNumber: String): String {
