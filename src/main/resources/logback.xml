@@ -23,13 +23,9 @@
         <appender-ref ref="secure_log" />
     </logger>
 
-    <logger name="no.nav" level="INFO"/>
-    <logger name="io.ktor.server.routing" level="WARN"/>
-    <logger name="io.ktor.server.netty" level="WARN"/>
-    <logger name="io.netty" level="WARN"/>
-    <logger name="com.ibm.mq.jmqi" level="WARN"/>
+    <logger name="no.nav" level="info"/>
 
-    <root level="INFO">
+    <root level="info">
         <appender-ref ref="stdout_json"/>
     </root>
 </configuration>
