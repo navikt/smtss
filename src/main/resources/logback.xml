@@ -24,10 +24,10 @@
     </logger>
 
     <logger name="no.nav" level="INFO"/>
-    <logger name="io.ktor.server.routing" level="ERROR"/>
-    <logger name="io.ktor.server.netty" level="ERROR"/>
-    <logger name="io.netty.channel" level="ERROR"/>
-    <logger name="com.ibm.mq.jmqi" level="ERROR"/>
+    <logger name="io.ktor.server.routing" level="WARN"/>
+    <logger name="io.ktor.server.netty" level="WARN"/>
+    <logger name="io.netty" level="WARN"/>
+    <logger name="com.ibm.mq.jmqi" level="WARN"/>
 
     <root level="INFO">
         <appender-ref ref="stdout_json"/>

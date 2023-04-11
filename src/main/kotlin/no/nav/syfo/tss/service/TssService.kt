@@ -8,7 +8,6 @@ import javax.jms.Connection
 import javax.jms.Session
 import kotlin.math.max
 import no.nav.helse.tssSamhandlerData.XMLSamhAvdPraType
-import no.nav.helse.tssSamhandlerData.XMLSamhandler
 import no.nav.helse.tssSamhandlerData.XMLTypeKomplett
 import org.apache.commons.text.similarity.LevenshteinDistance
 
@@ -33,7 +32,7 @@ suspend fun findBestTssIdEmottak(
     }
 }
 
-fun filterOutTssIdForEmottak(enkeltSamhandler: List<XMLSamhandler>?, samhandlerOrgName: String): TSSident? {
+fun filterOutTssIdForEmottak(enkeltSamhandler: List<XMLTypeKomplett>?, samhandlerOrgName: String): TSSident? {
     if (enkeltSamhandler?.firstOrNull()?.samhandlerAvd125 != null)
     {
         val samhandlerAvdelding = samhandlerMatchingPaaOrganisjonsNavn(enkeltSamhandler.first().samhandlerAvd125.samhAvd, samhandlerOrgName)?.samhandlerAvdeling
