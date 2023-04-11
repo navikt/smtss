@@ -54,11 +54,12 @@ dependencies {
     implementation("io.ktor:ktor-server-status-pages:$ktorVersion")
     implementation("io.ktor:ktor-server-auth:$ktorVersion")
     implementation("io.ktor:ktor-server-auth-jwt:$ktorVersion")
+    implementation("io.ktor:ktor-server-swagger:$ktorVersion")
+
     implementation("io.ktor:ktor-client-apache:$ktorVersion")
     // override transient version 1.11 from io.ktor:ktor-client-apache due to security vulnerability
     // https://devhub.checkmarx.com/cve-details/Cxeb68d52e-5509/
     implementation("commons-codec:commons-codec:$commonsCodecVersion")
-    implementation("io.ktor:ktor-server-swagger:$ktorVersion")
 
     implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
     implementation("io.ktor:ktor-serialization-jackson:$ktorVersion")

@@ -2,7 +2,6 @@ package no.nav.syfo.application
 
 import com.auth0.jwk.JwkProvider
 import com.fasterxml.jackson.databind.DeserializationFeature
-import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import io.ktor.http.HttpStatusCode
@@ -22,12 +21,12 @@ import no.nav.syfo.application.api.registerNaisApi
 import no.nav.syfo.application.authentication.setupAuth
 import no.nav.syfo.log
 import no.nav.syfo.tss.api.getTssId
-import javax.jms.Connection
+import javax.jms.Session
 
 fun createApplicationEngine(
     env: Environment,
     applicationState: ApplicationState,
-    connection: Connection,
+    session: Session,
     jwkProviderAad: JwkProvider,
 ): ApplicationEngine =
     embeddedServer(Netty, env.applicationPort) {
@@ -38,7 +37,7 @@ fun createApplicationEngine(
         routing {
             registerNaisApi(applicationState)
             authenticate("servicebrukerAAD") {
-                getTssId(connection, env.tssQueue)
+                getTssId(session, env.tssQueue)
             }
             swaggerUI(path = "swagger", swaggerFile = "openapi/documentation.yaml")
         }

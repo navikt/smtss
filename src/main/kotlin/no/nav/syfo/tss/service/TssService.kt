@@ -11,14 +11,13 @@ import no.nav.helse.tssSamhandlerData.XMLSamhAvdPraType
 import no.nav.helse.tssSamhandlerData.XMLTypeKomplett
 import org.apache.commons.text.similarity.LevenshteinDistance
 
-suspend fun findBestTssIdEmottak(
+fun findBestTssIdEmottak(
     samhandlerfnr: String,
     samhandlerOrgName: String,
-    connection: Connection,
+    session: Session,
     tssQueue: String,
 ): TSSident? {
     return try {
-        val session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE)
         val tssProducer = session.producerForQueue("queue:///$tssQueue?targetClient=1")
 
         val enkeltSamhandler = fetchTssSamhandlerData(samhandlerfnr, tssProducer, session)
@@ -84,13 +83,12 @@ fun calculatePercentageStringMatch(str1: String?, str2: String): Double {
     return (maxDistance - distance) / maxDistance
 }
 
-suspend fun findBestTssInfotrygdId(
+fun findBestTssInfotrygdId(
     samhandlerfnr: String,
-    connection: Connection,
+    session: Session,
     tssQueue: String,
 ): TSSident? {
     return try {
-        val session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE)
         val tssProducer = session.producerForQueue("queue:///$tssQueue?targetClient=1")
 
         val enkeltSamhandler = fetchTssSamhandlerData(samhandlerfnr, tssProducer, session)

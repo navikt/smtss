@@ -17,16 +17,12 @@ import javax.jms.TextMessage
 import no.nav.helse.tssSamhandlerData.XMLSamhandlerIDataB910Type
 import no.nav.helse.tssSamhandlerData.XMLTypeKomplett
 
-suspend fun fetchTssSamhandlerData(
+fun fetchTssSamhandlerData(
     samhandlerfnr: String,
     tssSamhnadlerInfoProducer: MessageProducer,
     session: Session,
-): List<XMLTypeKomplett>? =
-    retry(
-        callName = "tss_fetch_samhandler_data",
-        retryIntervals = arrayOf(500L, 1000L, 3000L, 5000L),
-        legalExceptions = arrayOf(IOException::class, IllegalStateException::class),
-    ) {
+): List<XMLTypeKomplett>?
+    {
         val tssSamhandlerDatainput = XMLTssSamhandlerData().apply {
             tssInputData = XMLTssSamhandlerData.TssInputData().apply {
                 tssServiceRutine = XMLTServicerutiner().apply {
@@ -46,7 +42,7 @@ suspend fun fetchTssSamhandlerData(
             sendTssSporring(tssSamhnadlerInfoProducer, session, tssSamhandlerDatainput, temporaryQueue)
             session.createConsumer(temporaryQueue).use { tmpConsumer ->
                 val consumedMessage = tmpConsumer.receive(20000) as TextMessage
-                findEnkeltSamhandlerFromTSSRespons(tssSamhandlerdataUnmarshaller.unmarshal(StringReader(consumedMessage.text)) as XMLTssSamhandlerData)
+               return findEnkeltSamhandlerFromTSSRespons(tssSamhandlerdataUnmarshaller.unmarshal(StringReader(consumedMessage.text)) as XMLTssSamhandlerData)
             }
         } finally {
             temporaryQueue.delete()

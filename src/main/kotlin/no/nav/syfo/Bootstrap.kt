@@ -7,6 +7,9 @@ import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import io.prometheus.client.hotspot.DefaultExports
+import java.net.URL
+import java.util.concurrent.TimeUnit
+import javax.jms.Session
 import no.nav.syfo.application.ApplicationServer
 import no.nav.syfo.application.ApplicationState
 import no.nav.syfo.application.createApplicationEngine
@@ -14,8 +17,7 @@ import no.nav.syfo.mq.MqTlsUtils
 import no.nav.syfo.mq.connectionFactory
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import java.net.URL
-import java.util.concurrent.TimeUnit
+
 
 val log: Logger = LoggerFactory.getLogger("no.nav.syfo.smtss")
 val securelog: Logger = LoggerFactory.getLogger("securelog")
@@ -34,22 +36,24 @@ fun main() {
     val serviceUser = ServiceUser()
 
     MqTlsUtils.getMqTlsConfig().forEach { key, value -> System.setProperty(key as String, value as String) }
-    val connection = connectionFactory(env).createConnection(serviceUser.serviceuserUsername, serviceUser.serviceuserPassword)
+    connectionFactory(env).createConnection(serviceUser.serviceuserUsername, serviceUser.serviceuserPassword).use { connection ->
+        connection.start()
 
-    connection.start()
+        val session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE)
 
-    val jwkProviderAad = JwkProviderBuilder(URL(env.jwkKeysUrl))
-        .cached(10, 24, TimeUnit.HOURS)
-        .rateLimited(10, 1, TimeUnit.MINUTES)
-        .build()
+        val jwkProviderAad = JwkProviderBuilder(URL(env.jwkKeysUrl))
+            .cached(10, 24, TimeUnit.HOURS)
+            .rateLimited(10, 1, TimeUnit.MINUTES)
+            .build()
 
-    val applicationEngine = createApplicationEngine(
-        env,
-        applicationState,
-        connection,
-        jwkProviderAad,
-    )
+        val applicationEngine = createApplicationEngine(
+            env,
+            applicationState,
+            session,
+            jwkProviderAad,
+        )
 
-    val applicationServer = ApplicationServer(applicationEngine, applicationState)
-    applicationServer.start()
+        val applicationServer = ApplicationServer(applicationEngine, applicationState)
+        applicationServer.start()
+    }
 }
