@@ -98,6 +98,10 @@ tasks {
         kotlinOptions.jvmTarget = "17"
     }
 
+    named<KotlinCompile>("compileTestKotlin") {
+        kotlinOptions.jvmTarget = "17"
+    }
+
     withType<ShadowJar> {
         transform(ServiceFileTransformer::class.java) {
             setPath("META-INF/cxf")
