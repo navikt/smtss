@@ -6,13 +6,11 @@ import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.get
 import io.ktor.server.routing.route
-import javax.jms.Connection
 import no.nav.syfo.tss.service.TSSident
-import no.nav.syfo.tss.service.findBestTssIdEmottak
-import no.nav.syfo.tss.service.findBestTssInfotrygdId
+import no.nav.syfo.tss.service.TssService
 
 fun Route.getTssId(
-    connection: Connection,
+    tssService: TssService,
     tssQueue: String,
 ) {
     route("/api/v1") {
@@ -26,7 +24,7 @@ fun Route.getTssId(
                 call.respond(HttpStatusCode.BadRequest, "Missing samhandlerOrgName")
             } else {
 
-                val tssIdent: TSSident? = findBestTssIdEmottak(samhandlerfnr, samhandlerOrgName, connection, tssQueue)
+                val tssIdent: TSSident? = tssService.findBestTssIdEmottak(samhandlerfnr, samhandlerOrgName, tssQueue)
                 if (tssIdent != null) {
                     call.respond(HttpStatusCode.OK, tssIdent)
                 } else {
@@ -45,7 +43,7 @@ fun Route.getTssId(
             } else if (samhandlerOrgName == null) {
                 call.respond(HttpStatusCode.BadRequest, "Missing samhandlerOrgName")
             } else {
-                val tssIdent: TSSident? = findBestTssInfotrygdId(samhandlerfnr, connection, tssQueue)
+                val tssIdent: TSSident? =  tssService.findBestTssInfotrygdId(samhandlerfnr, tssQueue)
                 if (tssIdent != null) {
                     call.respond(HttpStatusCode.OK, tssIdent)
                 } else {

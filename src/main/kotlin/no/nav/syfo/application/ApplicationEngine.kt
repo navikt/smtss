@@ -16,17 +16,17 @@ import io.ktor.server.plugins.statuspages.StatusPages
 import io.ktor.server.plugins.swagger.swaggerUI
 import io.ktor.server.response.respond
 import io.ktor.server.routing.routing
-import javax.jms.Connection
 import no.nav.syfo.Environment
 import no.nav.syfo.application.api.registerNaisApi
 import no.nav.syfo.application.authentication.setupAuth
 import no.nav.syfo.log
 import no.nav.syfo.tss.api.getTssId
+import no.nav.syfo.tss.service.TssService
 
 fun createApplicationEngine(
     env: Environment,
     applicationState: ApplicationState,
-    connection: Connection,
+    tssService: TssService,
     jwkProviderAad: JwkProvider,
 ): ApplicationEngine =
     embeddedServer(Netty, env.applicationPort) {
@@ -37,7 +37,7 @@ fun createApplicationEngine(
         routing {
             registerNaisApi(applicationState)
             authenticate("servicebrukerAAD") {
-                getTssId(connection, env.tssQueue)
+                getTssId(tssService, env.tssQueue)
             }
             swaggerUI(path = "swagger", swaggerFile = "openapi/documentation.yaml")
         }

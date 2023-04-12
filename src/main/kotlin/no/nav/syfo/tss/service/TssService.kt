@@ -11,24 +11,49 @@ import no.nav.helse.tssSamhandlerData.XMLSamhAvdPraType
 import no.nav.helse.tssSamhandlerData.XMLTypeKomplett
 import org.apache.commons.text.similarity.LevenshteinDistance
 
-fun findBestTssIdEmottak(
-    samhandlerfnr: String,
-    samhandlerOrgName: String,
-    connection: Connection,
-    tssQueue: String,
-): TSSident? {
-    return try {
-        val session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE)
-        val tssProducer = session.producerForQueue("queue:///$tssQueue?targetClient=1")
+class TssService(private val session: Session) {
+    fun findBestTssIdEmottak(
+        samhandlerfnr: String,
+        samhandlerOrgName: String,
+        tssQueue: String,
+    ): TSSident? {
+        return try {
+            val tssProducer = session.producerForQueue("queue:///$tssQueue?targetClient=1")
 
-        val enkeltSamhandler = fetchTssSamhandlerData(samhandlerfnr, tssProducer, session)
-        securelog.info("enkeltSamhandler: ${objectMapper.writeValueAsString(enkeltSamhandler)}")
+            val enkeltSamhandler = fetchTssSamhandlerData(samhandlerfnr, tssProducer, session)
+            securelog.info("enkeltSamhandler: ${objectMapper.writeValueAsString(enkeltSamhandler)}")
 
-        return filterOutTssIdForEmottak(enkeltSamhandler, samhandlerOrgName)
+            return filterOutTssIdForEmottak(enkeltSamhandler, samhandlerOrgName)
 
-    } catch (exception: Exception) {
-        log.warn("Call to tss throws error", exception)
-        null
+        } catch (exception: Exception) {
+            log.warn("Call to tss throws error", exception)
+            null
+        }
+    }
+
+    fun findBestTssInfotrygdId(
+        samhandlerfnr: String,
+        tssQueue: String,
+    ): TSSident? {
+        return try {
+            val tssProducer = session.producerForQueue("queue:///$tssQueue?targetClient=1")
+
+            val enkeltSamhandler = fetchTssSamhandlerData(samhandlerfnr, tssProducer, session)
+            securelog.info("enkeltSamhandler: ${objectMapper.writeValueAsString(enkeltSamhandler)}")
+
+            val tssid = enkeltSamhandler?.firstOrNull()?.samhandlerAvd125?.samhAvd?.find {
+                it.avdNr == "01"
+            }?.idOffTSS
+
+            if (tssid != null) {
+                TSSident(tssid)
+            }
+
+            null
+        } catch (e: Exception) {
+            log.warn("Call to tss throws error", e)
+            null
+        }
     }
 }
 
@@ -83,33 +108,6 @@ fun calculatePercentageStringMatch(str1: String?, str2: String): Double {
     val maxDistance = max(str1?.length!!, str2.length).toDouble()
     val distance = LevenshteinDistance().apply(str2, str1).toDouble()
     return (maxDistance - distance) / maxDistance
-}
-
-fun findBestTssInfotrygdId(
-    samhandlerfnr: String,
-    connection: Connection,
-    tssQueue: String,
-): TSSident? {
-    return try {
-        val session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE)
-        val tssProducer = session.producerForQueue("queue:///$tssQueue?targetClient=1")
-
-        val enkeltSamhandler = fetchTssSamhandlerData(samhandlerfnr, tssProducer, session)
-        securelog.info("enkeltSamhandler: ${objectMapper.writeValueAsString(enkeltSamhandler)}")
-
-        val tssid = enkeltSamhandler?.firstOrNull()?.samhandlerAvd125?.samhAvd?.find {
-            it.avdNr == "01"
-        }?.idOffTSS
-
-        if (tssid != null) {
-            TSSident(tssid)
-        }
-
-        null
-    } catch (e: Exception) {
-        log.warn("Call to tss throws error", e)
-        null
-    }
 }
 
 data class TSSident(
