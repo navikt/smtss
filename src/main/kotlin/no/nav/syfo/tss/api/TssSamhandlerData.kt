@@ -10,7 +10,6 @@ import javax.jms.Connection
 import no.nav.syfo.tss.service.TSSident
 import no.nav.syfo.tss.service.findBestTssIdEmottak
 import no.nav.syfo.tss.service.findBestTssInfotrygdId
-import javax.jms.Session
 
 fun Route.getTssId(
     connection: Connection,
