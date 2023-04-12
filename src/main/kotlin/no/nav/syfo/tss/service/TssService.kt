@@ -37,7 +37,8 @@ fun filterOutTssIdForEmottak(enkeltSamhandler: List<XMLTypeKomplett>?, samhandle
         val samhandlerAvdelding = samhandlerMatchingPaaOrganisjonsNavn(enkeltSamhandler.first().samhandlerAvd125.samhAvd, samhandlerOrgName)?.samhandlerAvdeling
 
         if (samhandlerAvdelding?.idOffTSS != null && (
-                    !samhandlerAvdelingIsLegevakt(samhandlerAvdelding))) {
+                    !samhandlerAvdelingIsLegevakt(samhandlerAvdelding) &&
+                            !samhandlerAvdelingIsSykehusOrRegionalHelseforetak(samhandlerAvdelding))) {
            return TSSident(samhandlerAvdelding.idOffTSS)
         }
     }
@@ -70,10 +71,10 @@ fun samhandlerAvdelingIsLegevakt(samhandlereAvdeling: XMLSamhAvdPraType): Boolea
                     samhandlereAvdeling.typeAvd == "LEKO"
             )
 
-fun samhandlerAvdelingIsFastlegeOrFastlonnet(samhandlereAvdeling: XMLSamhAvdPraType): Boolean =
+fun samhandlerAvdelingIsSykehusOrRegionalHelseforetak(samhandlereAvdeling: XMLSamhAvdPraType): Boolean =
     !samhandlereAvdeling.typeAvd.isNullOrEmpty() && (
-            samhandlereAvdeling.typeAvd == "FALO" ||
-                    samhandlereAvdeling.typeAvd == "FALE"
+            samhandlereAvdeling.typeAvd == "SYKE" ||
+                    samhandlereAvdeling.typeAvd == "RHFO"
             )
 
 
