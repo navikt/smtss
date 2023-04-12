@@ -14,10 +14,11 @@ import org.apache.commons.text.similarity.LevenshteinDistance
 fun findBestTssIdEmottak(
     samhandlerfnr: String,
     samhandlerOrgName: String,
-    session: Session,
+    connection: Connection,
     tssQueue: String,
 ): TSSident? {
     return try {
+        val session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE)
         val tssProducer = session.producerForQueue("queue:///$tssQueue?targetClient=1")
 
         val enkeltSamhandler = fetchTssSamhandlerData(samhandlerfnr, tssProducer, session)
@@ -86,10 +87,11 @@ fun calculatePercentageStringMatch(str1: String?, str2: String): Double {
 
 fun findBestTssInfotrygdId(
     samhandlerfnr: String,
-    session: Session,
+    connection: Connection,
     tssQueue: String,
 ): TSSident? {
     return try {
+        val session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE)
         val tssProducer = session.producerForQueue("queue:///$tssQueue?targetClient=1")
 
         val enkeltSamhandler = fetchTssSamhandlerData(samhandlerfnr, tssProducer, session)

@@ -9,7 +9,6 @@ import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import io.prometheus.client.hotspot.DefaultExports
 import java.net.URL
 import java.util.concurrent.TimeUnit
-import javax.jms.Session
 import no.nav.syfo.application.ApplicationServer
 import no.nav.syfo.application.ApplicationState
 import no.nav.syfo.application.createApplicationEngine
@@ -41,8 +40,6 @@ fun main() {
 
     connection.start()
 
-    val session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE)
-
     val jwkProviderAad = JwkProviderBuilder(URL(env.jwkKeysUrl))
         .cached(10, 24, TimeUnit.HOURS)
         .rateLimited(10, 1, TimeUnit.MINUTES)
@@ -51,7 +48,7 @@ fun main() {
     val applicationEngine = createApplicationEngine(
         env,
         applicationState,
-        session,
+        connection,
         jwkProviderAad,
     )
 
