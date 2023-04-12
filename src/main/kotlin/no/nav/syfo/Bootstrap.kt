@@ -43,11 +43,8 @@ fun main() {
     val serviceUser = ServiceUser()
 
     MqTlsUtils.getMqTlsConfig().forEach { key, value -> System.setProperty(key as String, value as String) }
-
-    GlobalScope.launch {
-        try {
-            connectionFactory(env).createConnection(serviceUser.serviceuserUsername, serviceUser.serviceuserPassword)
-                .use { connection ->
+    
+    val connection = connectionFactory(env).createConnection(serviceUser.serviceuserUsername, serviceUser.serviceuserPassword)
                     connection.start()
                     val session = connection.createSession(false, Session.CLIENT_ACKNOWLEDGE)
 
@@ -67,16 +64,6 @@ fun main() {
 
                     val applicationServer = ApplicationServer(applicationEngine, applicationState)
                     applicationServer.start()
-
-
-                }
-        } catch (e: TrackableException) {
-            log.error("An unhandled error occurred, the application restarts", e.cause)
-        } finally {
-            applicationState.ready = false
-            applicationState.alive = false
-        }
-    }
 
 
 }
