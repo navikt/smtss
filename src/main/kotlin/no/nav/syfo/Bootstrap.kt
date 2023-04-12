@@ -10,11 +10,10 @@ import io.prometheus.client.hotspot.DefaultExports
 import java.net.URL
 import java.util.concurrent.TimeUnit
 import javax.jms.Session
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+
 import no.nav.syfo.application.ApplicationServer
 import no.nav.syfo.application.ApplicationState
 import no.nav.syfo.application.createApplicationEngine
@@ -45,14 +44,32 @@ fun main() {
 
     MqTlsUtils.getMqTlsConfig().forEach { key, value -> System.setProperty(key as String, value as String) }
 
-    launch(env, applicationState, serviceUser)
-}
-
-@DelicateCoroutinesApi
-fun create(applicationState: ApplicationState, action: suspend CoroutineScope.() -> Unit): Job =
     GlobalScope.launch {
         try {
-            action()
+            connectionFactory(env).createConnection(serviceUser.serviceuserUsername, serviceUser.serviceuserPassword)
+                .use { connection ->
+                    connection.start()
+                    val session = connection.createSession(false, Session.CLIENT_ACKNOWLEDGE)
+
+                    val tssService = TssService(session)
+
+                    val jwkProviderAad = JwkProviderBuilder(URL(env.jwkKeysUrl))
+                        .cached(10, 24, TimeUnit.HOURS)
+                        .rateLimited(10, 1, TimeUnit.MINUTES)
+                        .build()
+
+                    val applicationEngine = createApplicationEngine(
+                        env,
+                        applicationState,
+                        tssService,
+                        jwkProviderAad,
+                    )
+
+                    val applicationServer = ApplicationServer(applicationEngine, applicationState)
+                    applicationServer.start()
+
+
+                }
         } catch (e: TrackableException) {
             log.error("An unhandled error occurred, the application restarts", e.cause)
         } finally {
@@ -61,36 +78,5 @@ fun create(applicationState: ApplicationState, action: suspend CoroutineScope.()
         }
     }
 
-@DelicateCoroutinesApi
-fun launch(
-    env: Environment,
-    applicationState: ApplicationState,
-    serviceUser: ServiceUser,
-) {
-    create(applicationState) {
-        connectionFactory(env).createConnection(serviceUser.serviceuserUsername, serviceUser.serviceuserPassword)
-            .use { connection ->
-                connection.start()
-                val session = connection.createSession(false, Session.CLIENT_ACKNOWLEDGE)
 
-                val tssService = TssService(session)
-
-                val jwkProviderAad = JwkProviderBuilder(URL(env.jwkKeysUrl))
-                    .cached(10, 24, TimeUnit.HOURS)
-                    .rateLimited(10, 1, TimeUnit.MINUTES)
-                    .build()
-
-                val applicationEngine = createApplicationEngine(
-                    env,
-                    applicationState,
-                    tssService,
-                    jwkProviderAad,
-                )
-
-                val applicationServer = ApplicationServer(applicationEngine, applicationState)
-                applicationServer.start()
-
-
-            }
-    }
 }
