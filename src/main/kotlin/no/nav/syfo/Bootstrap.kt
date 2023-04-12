@@ -36,24 +36,26 @@ fun main() {
     val serviceUser = ServiceUser()
 
     MqTlsUtils.getMqTlsConfig().forEach { key, value -> System.setProperty(key as String, value as String) }
-    connectionFactory(env).createConnection(serviceUser.serviceuserUsername, serviceUser.serviceuserPassword).use { connection ->
-        connection.start()
+    val connection =
+        connectionFactory(env).createConnection(serviceUser.serviceuserUsername, serviceUser.serviceuserPassword)
 
-        val session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE)
+    connection.start()
 
-        val jwkProviderAad = JwkProviderBuilder(URL(env.jwkKeysUrl))
-            .cached(10, 24, TimeUnit.HOURS)
-            .rateLimited(10, 1, TimeUnit.MINUTES)
-            .build()
+    val session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE)
 
-        val applicationEngine = createApplicationEngine(
-            env,
-            applicationState,
-            session,
-            jwkProviderAad,
-        )
+    val jwkProviderAad = JwkProviderBuilder(URL(env.jwkKeysUrl))
+        .cached(10, 24, TimeUnit.HOURS)
+        .rateLimited(10, 1, TimeUnit.MINUTES)
+        .build()
 
-        val applicationServer = ApplicationServer(applicationEngine, applicationState)
-        applicationServer.start()
-    }
+    val applicationEngine = createApplicationEngine(
+        env,
+        applicationState,
+        session,
+        jwkProviderAad,
+    )
+
+    val applicationServer = ApplicationServer(applicationEngine, applicationState)
+    applicationServer.start()
+
 }
