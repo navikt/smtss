@@ -13,9 +13,12 @@ import no.nav.syfo.application.ApplicationServer
 import no.nav.syfo.application.ApplicationState
 import no.nav.syfo.application.createApplicationEngine
 import no.nav.syfo.mq.MqTlsUtils
+import no.nav.syfo.redis.EnkeltSamhandlerFromTSSResponsRedis
 import no.nav.syfo.tss.service.TssService
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import redis.clients.jedis.JedisPool
+import redis.clients.jedis.JedisPoolConfig
 
 
 val log: Logger = LoggerFactory.getLogger("no.nav.syfo.smtss")
@@ -36,7 +39,11 @@ fun main() {
 
     MqTlsUtils.getMqTlsConfig().forEach { key, value -> System.setProperty(key as String, value as String) }
 
-    val tssService = TssService(env, serviceUser)
+    val jedisPool = JedisPool(JedisPoolConfig(), env.redisHost, env.redisPort)
+
+    val enkeltSamhandlerFromTSSResponsRedis = EnkeltSamhandlerFromTSSResponsRedis(jedisPool, env.redisSecret)
+
+    val tssService = TssService(env, serviceUser, enkeltSamhandlerFromTSSResponsRedis)
 
     val jwkProviderAad = JwkProviderBuilder(URL(env.jwkKeysUrl))
         .cached(10, 24, TimeUnit.HOURS)

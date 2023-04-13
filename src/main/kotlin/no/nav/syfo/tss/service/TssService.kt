@@ -11,10 +11,13 @@ import no.nav.helse.tssSamhandlerData.XMLSamhAvdPraType
 import no.nav.helse.tssSamhandlerData.XMLTypeKomplett
 import no.nav.syfo.Environment
 import no.nav.syfo.ServiceUser
+import no.nav.syfo.redis.EnkeltSamhandlerFromTSSResponsRedis
 import org.apache.commons.text.similarity.LevenshteinDistance
 
 class TssService(private val environment: Environment,
-                 private val serviceUser: ServiceUser) {
+                 private val serviceUser: ServiceUser,
+                 private val enkeltSamhandlerFromTSSResponsRedis: EnkeltSamhandlerFromTSSResponsRedis
+) {
     fun findBestTssIdEmottak(
         samhandlerfnr: String,
         samhandlerOrgName: String,
@@ -22,7 +25,7 @@ class TssService(private val environment: Environment,
         return try {
 
 
-            val enkeltSamhandler = fetchTssSamhandlerData(samhandlerfnr, environment, serviceUser)
+            val enkeltSamhandler = fetchTssSamhandlerData(samhandlerfnr, environment, serviceUser, enkeltSamhandlerFromTSSResponsRedis)
             securelog.info("enkeltSamhandler: ${objectMapper.writeValueAsString(enkeltSamhandler)}")
 
             return filterOutTssIdForEmottak(enkeltSamhandler, samhandlerOrgName)
@@ -38,7 +41,7 @@ class TssService(private val environment: Environment,
     ): TSSident? {
         return try {
 
-            val enkeltSamhandler = fetchTssSamhandlerData(samhandlerfnr, environment, serviceUser)
+            val enkeltSamhandler = fetchTssSamhandlerData(samhandlerfnr, environment, serviceUser, enkeltSamhandlerFromTSSResponsRedis)
             securelog.info("enkeltSamhandler: ${objectMapper.writeValueAsString(enkeltSamhandler)}")
 
             val tssid = enkeltSamhandler?.firstOrNull()?.samhandlerAvd125?.samhAvd?.find {

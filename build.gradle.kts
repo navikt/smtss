@@ -18,6 +18,8 @@ val syfoXmlCodegen = "1.35193f7"
 val ibmMqVersion = "9.3.2.0"
 val jaxbApiVersion = "2.4.0-b180830.0359"
 val commonsTextVersion = "1.10.0"
+val jedisVersion = "4.3.1"
+
 
 tasks.withType<Jar> {
     manifest.attributes["Main-Class"] = "no.nav.syfo.BootstrapKt"
@@ -80,6 +82,9 @@ dependencies {
     implementation("javax.xml.bind:jaxb-api:$jaxbApiVersion")
 
     implementation("org.apache.commons:commons-text:$commonsTextVersion")
+
+    implementation ("redis.clients:jedis:$jedisVersion")
+
 
     testImplementation("io.ktor:ktor-server-test-host:$ktorVersion") {
         exclude(group = "org.eclipse.jetty") 

@@ -42,6 +42,8 @@ spec:
       rules:
         - application: syfosmmottak
     outbound:
+      rules:
+        - application: smtss-redis
       external:
         - host: b27apvl221.preprod.local
           ports:
@@ -53,6 +55,7 @@ spec:
   envFrom:
     - secret: smtss-secrets
     - secret: smtss-keystore-pwd
+    - secret: smtss-redis-password
   filesFrom:
     - mountPath: /var/run/keystore
       secret: smtss-keystore

@@ -7,6 +7,8 @@ import no.nav.syfo.util.toString
 import no.nav.syfo.util.tssSamhandlerdataInputMarshaller
 import no.nav.syfo.util.tssSamhandlerdataUnmarshaller
 import java.io.StringReader
+import java.time.OffsetDateTime
+import java.time.ZoneOffset
 import javax.jms.MessageProducer
 import javax.jms.Session
 import javax.jms.TemporaryQueue
@@ -15,14 +17,23 @@ import no.nav.helse.tssSamhandlerData.XMLSamhandlerIDataB910Type
 import no.nav.helse.tssSamhandlerData.XMLTypeKomplett
 import no.nav.syfo.Environment
 import no.nav.syfo.ServiceUser
+import no.nav.syfo.log
 import no.nav.syfo.mq.connectionFactory
 import no.nav.syfo.mq.producerForQueue
+import no.nav.syfo.redis.EnkeltSamhandlerFromTSSResponsRedis
+import no.nav.syfo.redis.JedisEnkeltSamhandlerModel
 
 fun fetchTssSamhandlerData(
     samhandlerfnr: String,
     environment: Environment,
     serviceUser: ServiceUser,
+    enkeltSamhandlerFromTSSResponsRedis: EnkeltSamhandlerFromTSSResponsRedis
 ): List<XMLTypeKomplett>? {
+
+    val fromRedis = enkeltSamhandlerFromTSSResponsRedis.get(samhandlerfnr)
+    if (fromRedis != null && shouldUseRedisModel(fromRedis)) {
+        return fromRedis.enkeltSamhandlerFromTSSRespons
+    }
     val tssSamhandlerDatainput = XMLTssSamhandlerData().apply {
         tssInputData = XMLTssSamhandlerData.TssInputData().apply {
             tssServiceRutine = XMLTServicerutiner().apply {
@@ -56,12 +67,22 @@ fun fetchTssSamhandlerData(
                                 consumedMessage.text
                             )
                         ) as XMLTssSamhandlerData
-                    )
+                    ).also {
+                        log.info("Fetched enkeltSamhandlerFromTSSRespons")
+                        enkeltSamhandlerFromTSSResponsRedis.save(samhandlerfnr,it)
+                    }
                 }
+            } catch (exception: Exception) {
+                log.warn("An error occured while getting data from tss, ${exception.message}")
+                return emptyList()
             } finally {
                 temporaryQueue.delete()
             }
         }
+}
+
+private fun shouldUseRedisModel(redisBehandlerModel: JedisEnkeltSamhandlerModel): Boolean {
+    return redisBehandlerModel.timestamp.isAfter(OffsetDateTime.now(ZoneOffset.UTC).minusHours(1L))
 }
 
 fun sendTssSporring(
