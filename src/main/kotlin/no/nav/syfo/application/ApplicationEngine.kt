@@ -37,7 +37,7 @@ fun createApplicationEngine(
         routing {
             registerNaisApi(applicationState)
             authenticate("servicebrukerAAD") {
-                getTssId(tssService, env.tssQueue)
+                getTssId(tssService)
             }
             swaggerUI(path = "swagger", swaggerFile = "openapi/documentation.yaml")
         }

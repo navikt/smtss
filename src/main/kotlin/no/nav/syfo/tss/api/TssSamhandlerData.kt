@@ -11,7 +11,6 @@ import no.nav.syfo.tss.service.TssService
 
 fun Route.getTssId(
     tssService: TssService,
-    tssQueue: String,
 ) {
     route("/api/v1") {
         get("samhandler/emottak") {
@@ -24,7 +23,7 @@ fun Route.getTssId(
                 call.respond(HttpStatusCode.BadRequest, "Missing samhandlerOrgName")
             } else {
 
-                val tssIdent: TSSident? = tssService.findBestTssIdEmottak(samhandlerfnr, samhandlerOrgName, tssQueue)
+                val tssIdent: TSSident? = tssService.findBestTssIdEmottak(samhandlerfnr, samhandlerOrgName)
                 if (tssIdent != null) {
                     call.respond(HttpStatusCode.OK, tssIdent)
                 } else {
@@ -43,7 +42,7 @@ fun Route.getTssId(
             } else if (samhandlerOrgName == null) {
                 call.respond(HttpStatusCode.BadRequest, "Missing samhandlerOrgName")
             } else {
-                val tssIdent: TSSident? =  tssService.findBestTssInfotrygdId(samhandlerfnr, tssQueue)
+                val tssIdent: TSSident? =  tssService.findBestTssInfotrygdId(samhandlerfnr)
                 if (tssIdent != null) {
                     call.respond(HttpStatusCode.OK, tssIdent)
                 } else {

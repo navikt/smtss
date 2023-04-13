@@ -3,51 +3,66 @@ package no.nav.syfo.tss.service
 import no.nav.helse.tssSamhandlerData.XMLTServicerutiner
 import no.nav.helse.tssSamhandlerData.XMLTidOFF1
 import no.nav.helse.tssSamhandlerData.XMLTssSamhandlerData
-import no.nav.syfo.helpers.retry
 import no.nav.syfo.util.toString
 import no.nav.syfo.util.tssSamhandlerdataInputMarshaller
 import no.nav.syfo.util.tssSamhandlerdataUnmarshaller
-import java.io.IOException
 import java.io.StringReader
-import java.lang.IllegalStateException
 import javax.jms.MessageProducer
 import javax.jms.Session
 import javax.jms.TemporaryQueue
 import javax.jms.TextMessage
 import no.nav.helse.tssSamhandlerData.XMLSamhandlerIDataB910Type
 import no.nav.helse.tssSamhandlerData.XMLTypeKomplett
+import no.nav.syfo.Environment
+import no.nav.syfo.ServiceUser
+import no.nav.syfo.mq.connectionFactory
+import no.nav.syfo.mq.producerForQueue
 
 fun fetchTssSamhandlerData(
     samhandlerfnr: String,
-    tssSamhnadlerInfoProducer: MessageProducer,
-    session: Session,
-): List<XMLTypeKomplett>?
-    {
-        val tssSamhandlerDatainput = XMLTssSamhandlerData().apply {
-            tssInputData = XMLTssSamhandlerData.TssInputData().apply {
-                tssServiceRutine = XMLTServicerutiner().apply {
-                    samhandlerIDataB960 = XMLSamhandlerIDataB910Type().apply {
-                        ofFid = XMLTidOFF1().apply {
-                            idOff = samhandlerfnr
-                            kodeIdType = setFnrOrDnr(samhandlerfnr)
-                        }
-                        historikk = "J"
+    environment: Environment,
+    serviceUser: ServiceUser,
+): List<XMLTypeKomplett>? {
+    val tssSamhandlerDatainput = XMLTssSamhandlerData().apply {
+        tssInputData = XMLTssSamhandlerData.TssInputData().apply {
+            tssServiceRutine = XMLTServicerutiner().apply {
+                samhandlerIDataB960 = XMLSamhandlerIDataB910Type().apply {
+                    ofFid = XMLTidOFF1().apply {
+                        idOff = samhandlerfnr
+                        kodeIdType = setFnrOrDnr(samhandlerfnr)
                     }
+                    historikk = "J"
                 }
             }
         }
-
-        val temporaryQueue = session.createTemporaryQueue()
-        try {
-            sendTssSporring(tssSamhnadlerInfoProducer, session, tssSamhandlerDatainput, temporaryQueue)
-            session.createConsumer(temporaryQueue).use { tmpConsumer ->
-                val consumedMessage = tmpConsumer.receive(20000) as TextMessage
-               return findEnkeltSamhandlerFromTSSRespons(tssSamhandlerdataUnmarshaller.unmarshal(StringReader(consumedMessage.text)) as XMLTssSamhandlerData)
-            }
-        } finally {
-            temporaryQueue.delete()
-        }
     }
+
+    connectionFactory(environment).createConnection(serviceUser.serviceuserUsername, serviceUser.serviceuserPassword)
+        .use { connection ->
+            connection.start()
+            val session = connection.createSession(false, Session.CLIENT_ACKNOWLEDGE)
+
+            val tssSamhnadlerInfoProducer = session.producerForQueue("queue:///${environment.tssQueue}?targetClient=1")
+
+
+            val temporaryQueue = session.createTemporaryQueue()
+            try {
+                sendTssSporring(tssSamhnadlerInfoProducer, session, tssSamhandlerDatainput, temporaryQueue)
+                session.createConsumer(temporaryQueue).use { tmpConsumer ->
+                    val consumedMessage = tmpConsumer.receive(20000) as TextMessage
+                    return findEnkeltSamhandlerFromTSSRespons(
+                        tssSamhandlerdataUnmarshaller.unmarshal(
+                            StringReader(
+                                consumedMessage.text
+                            )
+                        ) as XMLTssSamhandlerData
+                    )
+                }
+            } finally {
+                temporaryQueue.delete()
+            }
+        }
+}
 
 fun sendTssSporring(
     producer: MessageProducer,

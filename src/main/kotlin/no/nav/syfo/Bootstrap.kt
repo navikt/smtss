@@ -9,18 +9,11 @@ import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import io.prometheus.client.hotspot.DefaultExports
 import java.net.URL
 import java.util.concurrent.TimeUnit
-import javax.jms.Session
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-
 import no.nav.syfo.application.ApplicationServer
 import no.nav.syfo.application.ApplicationState
 import no.nav.syfo.application.createApplicationEngine
 import no.nav.syfo.mq.MqTlsUtils
-import no.nav.syfo.mq.connectionFactory
 import no.nav.syfo.tss.service.TssService
-import no.nav.syfo.util.TrackableException
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -35,7 +28,6 @@ val objectMapper: ObjectMapper = ObjectMapper().apply {
     configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
 }
 
-@OptIn(DelicateCoroutinesApi::class)
 fun main() {
     val env = Environment()
     DefaultExports.initialize()
@@ -43,27 +35,23 @@ fun main() {
     val serviceUser = ServiceUser()
 
     MqTlsUtils.getMqTlsConfig().forEach { key, value -> System.setProperty(key as String, value as String) }
-    
-    val connection = connectionFactory(env).createConnection(serviceUser.serviceuserUsername, serviceUser.serviceuserPassword)
-                    connection.start()
-                    val session = connection.createSession(false, Session.CLIENT_ACKNOWLEDGE)
 
-                    val tssService = TssService(session)
+    val tssService = TssService(env, serviceUser)
 
-                    val jwkProviderAad = JwkProviderBuilder(URL(env.jwkKeysUrl))
-                        .cached(10, 24, TimeUnit.HOURS)
-                        .rateLimited(10, 1, TimeUnit.MINUTES)
-                        .build()
+    val jwkProviderAad = JwkProviderBuilder(URL(env.jwkKeysUrl))
+        .cached(10, 24, TimeUnit.HOURS)
+        .rateLimited(10, 1, TimeUnit.MINUTES)
+        .build()
 
-                    val applicationEngine = createApplicationEngine(
-                        env,
-                        applicationState,
-                        tssService,
-                        jwkProviderAad,
-                    )
+    val applicationEngine = createApplicationEngine(
+        env,
+        applicationState,
+        tssService,
+        jwkProviderAad,
+    )
 
-                    val applicationServer = ApplicationServer(applicationEngine, applicationState)
-                    applicationServer.start()
+    val applicationServer = ApplicationServer(applicationEngine, applicationState)
+    applicationServer.start()
 
 
 }

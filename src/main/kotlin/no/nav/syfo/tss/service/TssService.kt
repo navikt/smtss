@@ -9,18 +9,20 @@ import javax.jms.Session
 import kotlin.math.max
 import no.nav.helse.tssSamhandlerData.XMLSamhAvdPraType
 import no.nav.helse.tssSamhandlerData.XMLTypeKomplett
+import no.nav.syfo.Environment
+import no.nav.syfo.ServiceUser
 import org.apache.commons.text.similarity.LevenshteinDistance
 
-class TssService(private val session: Session) {
+class TssService(private val environment: Environment,
+                 private val serviceUser: ServiceUser) {
     fun findBestTssIdEmottak(
         samhandlerfnr: String,
         samhandlerOrgName: String,
-        tssQueue: String,
     ): TSSident? {
         return try {
-            val tssProducer = session.producerForQueue("queue:///$tssQueue?targetClient=1")
 
-            val enkeltSamhandler = fetchTssSamhandlerData(samhandlerfnr, tssProducer, session)
+
+            val enkeltSamhandler = fetchTssSamhandlerData(samhandlerfnr, environment, serviceUser)
             securelog.info("enkeltSamhandler: ${objectMapper.writeValueAsString(enkeltSamhandler)}")
 
             return filterOutTssIdForEmottak(enkeltSamhandler, samhandlerOrgName)
@@ -33,12 +35,10 @@ class TssService(private val session: Session) {
 
     fun findBestTssInfotrygdId(
         samhandlerfnr: String,
-        tssQueue: String,
     ): TSSident? {
         return try {
-            val tssProducer = session.producerForQueue("queue:///$tssQueue?targetClient=1")
 
-            val enkeltSamhandler = fetchTssSamhandlerData(samhandlerfnr, tssProducer, session)
+            val enkeltSamhandler = fetchTssSamhandlerData(samhandlerfnr, environment, serviceUser)
             securelog.info("enkeltSamhandler: ${objectMapper.writeValueAsString(enkeltSamhandler)}")
 
             val tssid = enkeltSamhandler?.firstOrNull()?.samhandlerAvd125?.samhAvd?.find {
