@@ -18,7 +18,7 @@ val syfoXmlCodegen = "1.35193f7"
 val ibmMqVersion = "9.3.2.0"
 val jaxbApiVersion = "2.4.0-b180830.0359"
 val commonsTextVersion = "1.10.0"
-val jedisVersion = "4.3.1"
+val jedisVersion = "4.3.2"
 
 
 tasks.withType<Jar> {
