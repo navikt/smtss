@@ -9,6 +9,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
 import redis.clients.jedis.JedisPool
+import redis.clients.jedis.JedisPoolConfig
 import redis.embedded.RedisServer
 
 internal class EnkeltSamhandlerFromTSSResponsRedisTest {
@@ -30,7 +31,7 @@ internal class EnkeltSamhandlerFromTSSResponsRedisTest {
     }
 
 
-    val jedisPool = JedisPool(JedisConfig(), "localhost", randomport)
+    val jedisPool = JedisPool(JedisPoolConfig(), "localhost", randomport)
 
     val enkeltSamhandlerFromTSSResponsRedis = EnkeltSamhandlerFromTSSResponsRedis(jedisPool, "secret")
 
