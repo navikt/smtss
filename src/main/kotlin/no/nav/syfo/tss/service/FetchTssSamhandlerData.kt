@@ -19,7 +19,9 @@ import no.nav.syfo.ServiceUser
 import no.nav.syfo.log
 import no.nav.syfo.mq.connectionFactory
 import no.nav.syfo.mq.producerForQueue
+import no.nav.syfo.objectMapper
 import no.nav.syfo.redis.EnkeltSamhandlerFromTSSResponsRedis
+import no.nav.syfo.securelog
 
 fun fetchTssSamhandlerData(
     samhandlerfnr: String,
@@ -68,7 +70,9 @@ fun fetchTssSamhandlerData(
                         ) as XMLTssSamhandlerData
                     ).also {
                         log.info("Fetched enkeltSamhandlerFromTSSRespons from tss")
-                        enkeltSamhandlerFromTSSResponsRedis.save(samhandlerfnr,it)
+                        if (!it.isNullOrEmpty()) {
+                            enkeltSamhandlerFromTSSResponsRedis.save(samhandlerfnr, it)
+                        }
                     }
                 }
             } catch (exception: Exception) {
@@ -93,6 +97,7 @@ fun sendTssSporring(
 )
 
 fun findEnkeltSamhandlerFromTSSRespons(tssSamhandlerInfoResponse: XMLTssSamhandlerData): List<XMLTypeKomplett>? {
+    securelog.info("raw repsone from tss: ${objectMapper.writeValueAsString(tssSamhandlerInfoResponse)}")
     return tssSamhandlerInfoResponse.tssOutputData?.samhandlerODataB960?.enkeltSamhandler
 }
 
