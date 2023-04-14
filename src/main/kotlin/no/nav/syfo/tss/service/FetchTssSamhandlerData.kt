@@ -7,8 +7,7 @@ import no.nav.syfo.util.toString
 import no.nav.syfo.util.tssSamhandlerdataInputMarshaller
 import no.nav.syfo.util.tssSamhandlerdataUnmarshaller
 import java.io.StringReader
-import java.time.OffsetDateTime
-import java.time.ZoneOffset
+
 import javax.jms.MessageProducer
 import javax.jms.Session
 import javax.jms.TemporaryQueue
@@ -21,7 +20,6 @@ import no.nav.syfo.log
 import no.nav.syfo.mq.connectionFactory
 import no.nav.syfo.mq.producerForQueue
 import no.nav.syfo.redis.EnkeltSamhandlerFromTSSResponsRedis
-import no.nav.syfo.redis.JedisEnkeltSamhandlerFromTSSResponsModel
 
 fun fetchTssSamhandlerData(
     samhandlerfnr: String,
@@ -31,11 +29,10 @@ fun fetchTssSamhandlerData(
 ): List<XMLTypeKomplett>? {
 
     val fromRedis = enkeltSamhandlerFromTSSResponsRedis.get(samhandlerfnr)
-    if (fromRedis != null && shouldUseRedisModel(fromRedis)) {
+    if (fromRedis != null) {
         log.info("Fetched enkeltSamhandlerFromTSSRespons from redis")
         return fromRedis.enkeltSamhandlerFromTSSRespons
     }
-    log.info("Fetched enkeltSamhandlerFromTSSRespons from tss")
     val tssSamhandlerDatainput = XMLTssSamhandlerData().apply {
         tssInputData = XMLTssSamhandlerData.TssInputData().apply {
             tssServiceRutine = XMLTServicerutiner().apply {
@@ -70,7 +67,7 @@ fun fetchTssSamhandlerData(
                             )
                         ) as XMLTssSamhandlerData
                     ).also {
-                        log.info("Fetched enkeltSamhandlerFromTSSRespons")
+                        log.info("Fetched enkeltSamhandlerFromTSSRespons from tss")
                         enkeltSamhandlerFromTSSResponsRedis.save(samhandlerfnr,it)
                     }
                 }
@@ -81,10 +78,6 @@ fun fetchTssSamhandlerData(
                 temporaryQueue.delete()
             }
         }
-}
-
-private fun shouldUseRedisModel(redisBehandlerModel: JedisEnkeltSamhandlerFromTSSResponsModel): Boolean {
-    return redisBehandlerModel.timestamp.isAfter(OffsetDateTime.now(ZoneOffset.UTC).minusHours(24L))
 }
 
 fun sendTssSporring(
