@@ -1,6 +1,5 @@
 name: Deploy to dev and prod
-on:
-  push
+on: push
 
 jobs:
   jar-app:
