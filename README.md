@@ -8,6 +8,7 @@ This project contains the application code and infrastructure for smtss
 * Gradle
 * Junit
 * Docker
+* MQ
 
 
 #### Requirements
@@ -58,27 +59,29 @@ or the command line:
 ### Building the application
 #### Compile and package application
 To build locally and run the integration tests you can simply run
-``` bash
+``` shell
 ./gradlew shadowJar
 ```
-or  on windows 
-`gradlew.bat shadowJar`
+or on windows
+``` shell
+gradlew.bat shadowJar
+```
 
 #### Creating a docker image
 Creating a docker image should be as simple as 
-``` bash
+``` shell
 docker build -t smtss .
 ```
 
 #### Running a docker image
-``` bash
+``` shell
 docker run --rm -it -p 8080:8080 smtss
 ```
 
 ### Upgrading the gradle wrapper
 Find the newest version of gradle here: https://gradle.org/releases/ Then run this command:
 
-``` bash
+``` shell
 ./gradlew wrapper --gradle-version $gradleVersjon
 ```
 
