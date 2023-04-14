@@ -15,7 +15,7 @@ data class Environment(
     val aadAccessTokenV2Url: String = getEnvVar("AZURE_OPENID_CONFIG_TOKEN_ENDPOINT"),
     val clientIdV2: String = getEnvVar("AZURE_APP_CLIENT_ID"),
     val clientSecretV2: String = getEnvVar("AZURE_APP_CLIENT_SECRET"),
-    val redisHost: String = getEnvVar("REDIS_HOST", "smtss-redis.teamsykmelding.svc.cluster.local"),
+    val redisHost: String = "smtss-redis.teamsykmelding.svc.cluster.local",
     val redisPort: Int = 6379,
     val redisSecret: String = getEnvVar("REDIS_PASSWORD"),
 ) : MqConfig
