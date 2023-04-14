@@ -41,6 +41,7 @@ spec:
     inbound:
       rules:
         - application: syfosmmottak
+        - application: pale-2
     outbound:
       rules:
         - application: smtss-redis
