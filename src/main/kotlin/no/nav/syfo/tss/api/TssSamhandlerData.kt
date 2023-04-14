@@ -42,7 +42,7 @@ fun Route.getTssId(
             } else if (samhandlerOrgName == null) {
                 call.respond(HttpStatusCode.BadRequest, "Missing samhandlerOrgName")
             } else {
-                val tssIdent: TSSident? =  tssService.findBestTssInfotrygdId(samhandlerfnr)
+                val tssIdent: TSSident? =  tssService.findBestTssInfotrygdId(samhandlerfnr, samhandlerOrgName)
                 if (tssIdent != null) {
                     call.respond(HttpStatusCode.OK, tssIdent)
                 } else {

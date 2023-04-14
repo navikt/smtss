@@ -38,26 +38,38 @@ class TssService(private val environment: Environment,
 
     fun findBestTssInfotrygdId(
         samhandlerfnr: String,
+        samhandlerOrgName: String,
     ): TSSident? {
         return try {
 
             val enkeltSamhandler = fetchTssSamhandlerData(samhandlerfnr, environment, serviceUser, enkeltSamhandlerFromTSSResponsRedis)
             securelog.info("enkeltSamhandler: ${objectMapper.writeValueAsString(enkeltSamhandler)}")
 
-            val tssid = enkeltSamhandler?.firstOrNull()?.samhandlerAvd125?.samhAvd?.find {
-                it.avdNr == "01"
-            }?.idOffTSS
-
-            if (tssid != null) {
-                TSSident(tssid)
-            }
-
-            null
+            return  filterOutTssIdForInfotrygd(enkeltSamhandler, samhandlerOrgName)
         } catch (e: Exception) {
             log.warn("Call to tss throws error", e)
             null
         }
     }
+}
+
+fun filterOutTssIdForInfotrygd(enkeltSamhandler: List<XMLTypeKomplett>?, samhandlerOrgName: String): TSSident? {
+    if (enkeltSamhandler?.firstOrNull()?.samhandlerAvd125 != null)
+    {
+        val samhandlerAvdelding = samhandlerMatchingPaaOrganisjonsNavn(enkeltSamhandler.first().samhandlerAvd125.samhAvd, samhandlerOrgName)?.samhandlerAvdeling
+
+        if (samhandlerAvdelding?.idOffTSS != null && (
+                    !samhandlerAvdelingIsLegevakt(samhandlerAvdelding) &&
+                            !samhandlerAvdelingIsSykehusOrRegionalHelseforetak(samhandlerAvdelding))) {
+            return TSSident(samhandlerAvdelding.idOffTSS)
+        }
+        else {
+            enkeltSamhandler.firstOrNull()?.samhandlerAvd125?.samhAvd?.find {
+                it.avdNr == "01"
+            }?.idOffTSS
+        }
+    }
+    return null
 }
 
 fun filterOutTssIdForEmottak(enkeltSamhandler: List<XMLTypeKomplett>?, samhandlerOrgName: String): TSSident? {
