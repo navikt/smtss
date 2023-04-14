@@ -14,11 +14,11 @@ import no.nav.syfo.application.ApplicationState
 import no.nav.syfo.application.createApplicationEngine
 import no.nav.syfo.mq.MqTlsUtils
 import no.nav.syfo.redis.EnkeltSamhandlerFromTSSResponsRedis
+import no.nav.syfo.redis.JedisConfig
 import no.nav.syfo.tss.service.TssService
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import redis.clients.jedis.JedisPool
-import redis.clients.jedis.JedisPoolConfig
 
 
 val log: Logger = LoggerFactory.getLogger("no.nav.syfo.smtss")
@@ -39,7 +39,7 @@ fun main() {
 
     MqTlsUtils.getMqTlsConfig().forEach { key, value -> System.setProperty(key as String, value as String) }
 
-    val jedisPool = JedisPool(JedisPoolConfig(), env.redisHost, env.redisPort)
+    val jedisPool = JedisPool(JedisConfig(), env.redisHost, env.redisPort)
 
     val enkeltSamhandlerFromTSSResponsRedis = EnkeltSamhandlerFromTSSResponsRedis(jedisPool, env.redisSecret)
 

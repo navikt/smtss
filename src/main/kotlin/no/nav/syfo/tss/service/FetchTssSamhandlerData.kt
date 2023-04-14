@@ -21,7 +21,7 @@ import no.nav.syfo.log
 import no.nav.syfo.mq.connectionFactory
 import no.nav.syfo.mq.producerForQueue
 import no.nav.syfo.redis.EnkeltSamhandlerFromTSSResponsRedis
-import no.nav.syfo.redis.JedisEnkeltSamhandlerModel
+import no.nav.syfo.redis.JedisEnkeltSamhandlerFromTSSResponsModel
 
 fun fetchTssSamhandlerData(
     samhandlerfnr: String,
@@ -32,8 +32,10 @@ fun fetchTssSamhandlerData(
 
     val fromRedis = enkeltSamhandlerFromTSSResponsRedis.get(samhandlerfnr)
     if (fromRedis != null && shouldUseRedisModel(fromRedis)) {
+        log.info("Fetched enkeltSamhandlerFromTSSRespons from redis")
         return fromRedis.enkeltSamhandlerFromTSSRespons
     }
+    log.info("Fetched enkeltSamhandlerFromTSSRespons from tss")
     val tssSamhandlerDatainput = XMLTssSamhandlerData().apply {
         tssInputData = XMLTssSamhandlerData.TssInputData().apply {
             tssServiceRutine = XMLTServicerutiner().apply {
@@ -81,8 +83,8 @@ fun fetchTssSamhandlerData(
         }
 }
 
-private fun shouldUseRedisModel(redisBehandlerModel: JedisEnkeltSamhandlerModel): Boolean {
-    return redisBehandlerModel.timestamp.isAfter(OffsetDateTime.now(ZoneOffset.UTC).minusHours(1L))
+private fun shouldUseRedisModel(redisBehandlerModel: JedisEnkeltSamhandlerFromTSSResponsModel): Boolean {
+    return redisBehandlerModel.timestamp.isAfter(OffsetDateTime.now(ZoneOffset.UTC).minusHours(24L))
 }
 
 fun sendTssSporring(

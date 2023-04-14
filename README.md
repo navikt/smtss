@@ -7,6 +7,7 @@ This project contains the application code and infrastructure for smtss
 * Ktor
 * Gradle
 * Junit
+* Docker
 
 
 #### Requirements

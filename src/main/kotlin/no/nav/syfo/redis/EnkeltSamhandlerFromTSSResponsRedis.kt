@@ -18,10 +18,10 @@ class EnkeltSamhandlerFromTSSResponsRedis(private var jedisPool: JedisPool, priv
         try {
             jedis = jedisPool.resource
             jedis.auth(redisSecret)
-            val jedisEnkeltSamhandlerModel = JedisEnkeltSamhandlerModel(timestamp, enkeltSamhandlerFromTSSRespons)
+            val jedisEnkeltSamhandlerFromTSSResponsModel = JedisEnkeltSamhandlerFromTSSResponsModel(timestamp, enkeltSamhandlerFromTSSRespons)
             jedis.set(
                 "fnr:${samhandlerfnr}",
-                objectMapper.writeValueAsString(jedisEnkeltSamhandlerModel)
+                objectMapper.writeValueAsString(jedisEnkeltSamhandlerFromTSSResponsModel)
             )
 
 
@@ -32,11 +32,11 @@ class EnkeltSamhandlerFromTSSResponsRedis(private var jedisPool: JedisPool, priv
         }
     }
 
-    fun get(samhandlerfnr: String): JedisEnkeltSamhandlerModel? {
+    fun get(samhandlerfnr: String): JedisEnkeltSamhandlerFromTSSResponsModel? {
         return when (samhandlerfnr.isNotBlank()) {
             true -> initRedis { jedis ->
                 jedis.get("fnr:$samhandlerfnr")?.let {
-                    getBehandlerFromRedis(jedis, it)
+                    getEnkeltSamhandlerFromTSSResponsFromRedis(jedis, it)
                 }
             }
 
@@ -44,7 +44,7 @@ class EnkeltSamhandlerFromTSSResponsRedis(private var jedisPool: JedisPool, priv
         }
     }
 
-    private fun initRedis(block: (jedis: Jedis) -> JedisEnkeltSamhandlerModel?): JedisEnkeltSamhandlerModel? {
+    private fun initRedis(block: (jedis: Jedis) -> JedisEnkeltSamhandlerFromTSSResponsModel?): JedisEnkeltSamhandlerFromTSSResponsModel? {
         var jedis: Jedis? = null
         return try {
             jedis = jedisPool.resource
@@ -58,14 +58,14 @@ class EnkeltSamhandlerFromTSSResponsRedis(private var jedisPool: JedisPool, priv
         }
     }
 
-    private fun getBehandlerFromRedis(
+    private fun getEnkeltSamhandlerFromTSSResponsFromRedis(
         jedis: Jedis,
         samhandlerfnr: String
-    ): JedisEnkeltSamhandlerModel? {
+    ): JedisEnkeltSamhandlerFromTSSResponsModel? {
         val behandlerString = jedis.get("fnr:$samhandlerfnr")
         return when (behandlerString.isNullOrBlank()) {
             true -> null
-            false -> objectMapper.readValue(behandlerString, JedisEnkeltSamhandlerModel::class.java)
+            false -> objectMapper.readValue(behandlerString, JedisEnkeltSamhandlerFromTSSResponsModel::class.java)
         }
     }
 }

@@ -19,6 +19,7 @@ val ibmMqVersion = "9.3.2.0"
 val jaxbApiVersion = "2.4.0-b180830.0359"
 val commonsTextVersion = "1.10.0"
 val jedisVersion = "4.3.2"
+val embeddedRedisVersion = "1.0.0"
 
 
 tasks.withType<Jar> {
@@ -91,6 +92,7 @@ dependencies {
     }
 
     testImplementation("org.junit.jupiter:junit-jupiter:$junitJupiterVersion")
+    testImplementation("com.github.codemonstur:embedded-redis:$embeddedRedisVersion")
 }
 
 tasks {
