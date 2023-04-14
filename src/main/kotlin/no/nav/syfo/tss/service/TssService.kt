@@ -23,10 +23,7 @@ class TssService(private val environment: Environment,
         samhandlerOrgName: String,
     ): TSSident? {
         return try {
-
-
             val enkeltSamhandler = fetchTssSamhandlerData(samhandlerfnr, environment, serviceUser, enkeltSamhandlerFromTSSResponsRedis)
-            securelog.info("enkeltSamhandler: ${objectMapper.writeValueAsString(enkeltSamhandler)}")
 
             return filterOutTssIdForEmottak(enkeltSamhandler, samhandlerOrgName)
 
@@ -41,9 +38,7 @@ class TssService(private val environment: Environment,
         samhandlerOrgName: String,
     ): TSSident? {
         return try {
-
             val enkeltSamhandler = fetchTssSamhandlerData(samhandlerfnr, environment, serviceUser, enkeltSamhandlerFromTSSResponsRedis)
-            securelog.info("enkeltSamhandler: ${objectMapper.writeValueAsString(enkeltSamhandler)}")
 
             return  filterOutTssIdForInfotrygd(enkeltSamhandler, samhandlerOrgName)
         } catch (e: Exception) {
