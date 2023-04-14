@@ -49,6 +49,8 @@ fun fetchTssSamhandlerData(
         }
     }
 
+    securelog.info("Request to tss: ${objectMapper.writeValueAsString(tssSamhandlerDatainput)}")
+
     connectionFactory(environment).createConnection(serviceUser.serviceuserUsername, serviceUser.serviceuserPassword)
         .use { connection ->
             connection.start()
@@ -97,7 +99,7 @@ fun sendTssSporring(
 )
 
 fun findEnkeltSamhandlerFromTSSRespons(tssSamhandlerInfoResponse: XMLTssSamhandlerData): List<XMLTypeKomplett>? {
-    securelog.info("raw repsone from tss: ${objectMapper.writeValueAsString(tssSamhandlerInfoResponse)}")
+    securelog.info("Response to tss: ${objectMapper.writeValueAsString(tssSamhandlerInfoResponse)}")
     return tssSamhandlerInfoResponse.tssOutputData?.samhandlerODataB960?.enkeltSamhandler
 }
 
