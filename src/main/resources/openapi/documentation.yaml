@@ -6,13 +6,18 @@ info:
 servers:
 - url: "https://smtss"
 paths:
-  /api/v1/samhandler/emottak/{samhandlerFnr}:
+  /api/v1/samhandler/emottak:
     get:
       description: ""
       parameters:
       - name: "samhandlerFnr"
-        in: "path"
-        required: true
+        in: "query"
+        required: false
+        schema:
+          type: "string"
+      - name: "samhandlerOrgName"
+        in: "query"
+        required: false
         schema:
           type: "string"
       responses:
@@ -24,23 +29,33 @@ paths:
                 type: "string"
               examples:
                 Example#1:
+                  value: "Missing samhandlerOrgName"
+                Example#2:
                   value: "Missing samhandlerFnr"
         "200":
           description: "OK"
           content:
             '*/*':
               schema:
-                type: "string"
-              examples:
-                Example#1:
-                  value: "tssid"
-  /api/v1/samhandler/infotrygd/{samhandlerFnr}:
+                $ref: "#/components/schemas/TSSident"
+        "404":
+          description: "Not Found"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+  /api/v1/samhandler/infotrygd:
     get:
       description: ""
       parameters:
       - name: "samhandlerFnr"
-        in: "path"
-        required: true
+        in: "query"
+        required: false
+        schema:
+          type: "string"
+      - name: "samhandlerOrgName"
+        in: "query"
+        required: false
         schema:
           type: "string"
       responses:
@@ -52,16 +67,21 @@ paths:
                 type: "string"
               examples:
                 Example#1:
+                  value: "Missing samhandlerOrgName"
+                Example#2:
                   value: "Missing samhandlerFnr"
         "200":
           description: "OK"
           content:
             '*/*':
               schema:
-                type: "string"
-              examples:
-                Example#1:
-                  value: "tssid"
+                $ref: "#/components/schemas/TSSident"
+        "404":
+          description: "Not Found"
+          content:
+            '*/*':
+              schema:
+                type: "object"
   /internal/is_alive:
     get:
       description: ""
@@ -114,4 +134,13 @@ paths:
         in: "query"
         required: false
         schema:
+          type: "array"
+          items:
+            type: "string"
+components:
+  schemas:
+    TSSident:
+      type: "object"
+      properties:
+        tssid:
           type: "string"
