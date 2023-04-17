@@ -1,1 +1,1 @@
-uses: navikt/teamsykmelding-github-actions-workflows/.github/dependabot-gradle.yml@dependabot
+uses: navikt/teamsykmelding-github-actions-workflows/.github/dependabot-gradle.yml@main
