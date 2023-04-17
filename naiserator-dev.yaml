@@ -42,6 +42,8 @@ spec:
       rules:
         - application: syfosmmottak
         - application: pale-2
+        - application: syfosmpapirmottak
+        - application: smregistrering-backend
     outbound:
       rules:
         - application: smtss-redis
