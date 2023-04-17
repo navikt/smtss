@@ -3,7 +3,7 @@ on: push
 
 jobs:
   jar-app:
-    uses: navikt/teamsykmelding-github-actions-workflows/.github/workflows/jar-app.yaml@gradlecached
+    uses: navikt/teamsykmelding-github-actions-workflows/.github/workflows/jar-app.yaml@main
     secrets: inherit
     with:
       app: smtss
