@@ -1,14 +1,9 @@
 package no.nav.syfo.tss.service
 
 import no.nav.syfo.log
-import no.nav.syfo.mq.producerForQueue
-import no.nav.syfo.objectMapper
-import no.nav.syfo.securelog
-import javax.jms.Connection
-import javax.jms.Session
 import kotlin.math.max
 import no.nav.helse.tssSamhandlerData.XMLSamhAvdPraType
-import no.nav.helse.tssSamhandlerData.XMLTypeKomplett
+import no.nav.helse.tssSamhandlerData.XMLSamhandler
 import no.nav.syfo.Environment
 import no.nav.syfo.ServiceUser
 import no.nav.syfo.redis.EnkeltSamhandlerFromTSSResponsRedis
@@ -48,7 +43,7 @@ class TssService(private val environment: Environment,
     }
 }
 
-fun filterOutTssIdForInfotrygd(enkeltSamhandler: List<XMLTypeKomplett>?, samhandlerOrgName: String): TSSident? {
+fun filterOutTssIdForInfotrygd(enkeltSamhandler: List<XMLSamhandler>?, samhandlerOrgName: String): TSSident? {
     if (enkeltSamhandler?.firstOrNull()?.samhandlerAvd125 != null)
     {
         val samhandlerAvdelding = samhandlerMatchingPaaOrganisjonsNavn(enkeltSamhandler.first().samhandlerAvd125.samhAvd, samhandlerOrgName)?.samhandlerAvdeling
@@ -67,7 +62,7 @@ fun filterOutTssIdForInfotrygd(enkeltSamhandler: List<XMLTypeKomplett>?, samhand
     return null
 }
 
-fun filterOutTssIdForEmottak(enkeltSamhandler: List<XMLTypeKomplett>?, samhandlerOrgName: String): TSSident? {
+fun filterOutTssIdForEmottak(enkeltSamhandler: List<XMLSamhandler>?, samhandlerOrgName: String): TSSident? {
     if (enkeltSamhandler?.firstOrNull()?.samhandlerAvd125 != null)
     {
         val samhandlerAvdelding = samhandlerMatchingPaaOrganisjonsNavn(enkeltSamhandler.first().samhandlerAvd125.samhAvd, samhandlerOrgName)?.samhandlerAvdeling

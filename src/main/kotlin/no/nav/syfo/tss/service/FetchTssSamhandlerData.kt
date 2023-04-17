@@ -12,8 +12,8 @@ import javax.jms.MessageProducer
 import javax.jms.Session
 import javax.jms.TemporaryQueue
 import javax.jms.TextMessage
+import no.nav.helse.tssSamhandlerData.XMLSamhandler
 import no.nav.helse.tssSamhandlerData.XMLSamhandlerIDataB910Type
-import no.nav.helse.tssSamhandlerData.XMLTypeKomplett
 import no.nav.syfo.Environment
 import no.nav.syfo.ServiceUser
 import no.nav.syfo.log
@@ -28,7 +28,7 @@ fun fetchTssSamhandlerData(
     environment: Environment,
     serviceUser: ServiceUser,
     enkeltSamhandlerFromTSSResponsRedis: EnkeltSamhandlerFromTSSResponsRedis
-): List<XMLTypeKomplett>? {
+): List<XMLSamhandler>? {
 
     val fromRedis = enkeltSamhandlerFromTSSResponsRedis.get(samhandlerfnr)
     if (fromRedis != null) {
@@ -38,12 +38,12 @@ fun fetchTssSamhandlerData(
     val tssSamhandlerDatainput = XMLTssSamhandlerData().apply {
         tssInputData = XMLTssSamhandlerData.TssInputData().apply {
             tssServiceRutine = XMLTServicerutiner().apply {
-                samhandlerIDataB960 = XMLSamhandlerIDataB910Type().apply {
+                samhandlerIDataB910 = XMLSamhandlerIDataB910Type().apply {
                     ofFid = XMLTidOFF1().apply {
                         idOff = samhandlerfnr
                         kodeIdType = setFnrOrDnr(samhandlerfnr)
                     }
-                    historikk = "J"
+                    historikk = "N"
                 }
             }
         }
@@ -98,9 +98,9 @@ fun sendTssSporring(
     },
 )
 
-fun findEnkeltSamhandlerFromTSSRespons(tssSamhandlerInfoResponse: XMLTssSamhandlerData): List<XMLTypeKomplett>? {
+fun findEnkeltSamhandlerFromTSSRespons(tssSamhandlerInfoResponse: XMLTssSamhandlerData): List<XMLSamhandler>? {
     securelog.info("Response to tss: ${objectMapper.writeValueAsString(tssSamhandlerInfoResponse)}")
-    return tssSamhandlerInfoResponse.tssOutputData?.samhandlerODataB960?.enkeltSamhandler
+    return tssSamhandlerInfoResponse.tssOutputData?.samhandlerODataB910?.enkeltSamhandler
 }
 
 fun setFnrOrDnr(personNumber: String): String {

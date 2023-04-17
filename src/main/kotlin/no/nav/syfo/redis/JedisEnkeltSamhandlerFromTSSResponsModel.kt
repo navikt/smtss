@@ -1,7 +1,7 @@
 package no.nav.syfo.redis
 
-import no.nav.helse.tssSamhandlerData.XMLTypeKomplett
+import no.nav.helse.tssSamhandlerData.XMLSamhandler
 
 data class JedisEnkeltSamhandlerFromTSSResponsModel(
-    val enkeltSamhandlerFromTSSRespons: List<XMLTypeKomplett>?
+    val enkeltSamhandlerFromTSSRespons: List<XMLSamhandler>?
 )
