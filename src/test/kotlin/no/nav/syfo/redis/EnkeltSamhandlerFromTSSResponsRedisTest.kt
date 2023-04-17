@@ -1,7 +1,7 @@
 package no.nav.syfo.redis
 
 import com.fasterxml.jackson.module.kotlin.readValue
-import no.nav.helse.tssSamhandlerData.XMLTypeKomplett
+import no.nav.helse.tssSamhandlerData.XMLSamhandler
 import no.nav.syfo.objectMapper
 import no.nav.syfo.tss.service.TssServiceKtTest
 import org.junit.jupiter.api.AfterEach
@@ -40,7 +40,7 @@ internal class EnkeltSamhandlerFromTSSResponsRedisTest {
     internal fun `Should cache enkeltSamhandlerFromTSSRespons in redis`() {
         val samhandlerfnr = "1232134124"
 
-        val enkeltSamhandlerFromTSSRespons: List<XMLTypeKomplett>? = objectMapper.readValue(
+        val enkeltSamhandlerFromTSSRespons: List<XMLSamhandler>? = objectMapper.readValue(
             TssServiceKtTest::class.java.getResourceAsStream("/tssfatu.json")!!.readBytes()
                 .toString(Charsets.UTF_8),
         )
