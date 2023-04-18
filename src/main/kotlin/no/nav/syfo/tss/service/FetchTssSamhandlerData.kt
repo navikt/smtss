@@ -1,19 +1,18 @@
 package no.nav.syfo.tss.service
 
-import no.nav.helse.tssSamhandlerData.XMLTServicerutiner
-import no.nav.helse.tssSamhandlerData.XMLTidOFF1
-import no.nav.helse.tssSamhandlerData.XMLTssSamhandlerData
-import no.nav.syfo.util.toString
-import no.nav.syfo.util.tssSamhandlerdataInputMarshaller
-import no.nav.syfo.util.tssSamhandlerdataUnmarshaller
 import java.io.StringReader
-
 import javax.jms.MessageProducer
 import javax.jms.Session
 import javax.jms.TemporaryQueue
 import javax.jms.TextMessage
+import javax.xml.parsers.SAXParserFactory
+import javax.xml.transform.Source
+import javax.xml.transform.sax.SAXSource
 import no.nav.helse.tssSamhandlerData.XMLSamhandler
 import no.nav.helse.tssSamhandlerData.XMLSamhandlerIDataB910Type
+import no.nav.helse.tssSamhandlerData.XMLTServicerutiner
+import no.nav.helse.tssSamhandlerData.XMLTidOFF1
+import no.nav.helse.tssSamhandlerData.XMLTssSamhandlerData
 import no.nav.syfo.Environment
 import no.nav.syfo.ServiceUser
 import no.nav.syfo.log
@@ -22,6 +21,11 @@ import no.nav.syfo.mq.producerForQueue
 import no.nav.syfo.objectMapper
 import no.nav.syfo.redis.EnkeltSamhandlerFromTSSResponsRedis
 import no.nav.syfo.securelog
+import no.nav.syfo.util.toString
+import no.nav.syfo.util.tssSamhandlerdataInputMarshaller
+import no.nav.syfo.util.tssSamhandlerdataUnmarshaller
+import org.xml.sax.InputSource
+
 
 fun fetchTssSamhandlerData(
     samhandlerfnr: String,
@@ -64,13 +68,7 @@ fun fetchTssSamhandlerData(
                 sendTssSporring(tssSamhnadlerInfoProducer, session, tssSamhandlerDatainput, temporaryQueue)
                 session.createConsumer(temporaryQueue).use { tmpConsumer ->
                     val consumedMessage = tmpConsumer.receive(20000) as TextMessage
-                    return findEnkeltSamhandlerFromTSSRespons(
-                        tssSamhandlerdataUnmarshaller.unmarshal(
-                            StringReader(
-                                consumedMessage.text
-                            )
-                        ) as XMLTssSamhandlerData
-                    ).also {
+                    return findEnkeltSamhandlerFromTSSRespons( safeUnmarshal(consumedMessage.text)).also {
                         log.info("Fetched enkeltSamhandlerFromTSSRespons from tss")
                         if (!it.isNullOrEmpty()) {
                             enkeltSamhandlerFromTSSResponsRedis.save(samhandlerfnr, it)
@@ -84,6 +82,18 @@ fun fetchTssSamhandlerData(
                 temporaryQueue.delete()
             }
         }
+}
+
+fun safeUnmarshal(consumedMessageText: String): XMLTssSamhandlerData {
+    //Disable XXE
+    val spf = SAXParserFactory.newInstance()
+    spf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true)
+
+    val xmlSource: Source = SAXSource(
+        spf.newSAXParser().xmlReader,
+        InputSource(StringReader(consumedMessageText))
+    )
+    return tssSamhandlerdataUnmarshaller.unmarshal(xmlSource) as XMLTssSamhandlerData
 }
 
 fun sendTssSporring(
