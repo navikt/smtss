@@ -65,6 +65,7 @@ fun fetchTssSamhandlerData(
 
             val temporaryQueue = session.createTemporaryQueue()
             try {
+                securelog.info("xml request to tss ${tssSamhandlerdataInputMarshaller.toString(tssSamhandlerDatainput)}")
                 sendTssSporring(tssSamhnadlerInfoProducer, session, tssSamhandlerDatainput, temporaryQueue)
                 session.createConsumer(temporaryQueue).use { tmpConsumer ->
                     val consumedMessage = tmpConsumer.receive(20000) as TextMessage
