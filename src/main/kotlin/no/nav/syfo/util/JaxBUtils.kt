@@ -7,9 +7,7 @@ import javax.xml.bind.Marshaller
 import javax.xml.bind.Unmarshaller
 
 val tssSamhandlerdataInputJaxBContext: JAXBContext = JAXBContext.newInstance(XMLTssSamhandlerData::class.java)
-val tssSamhandlerdataInputMarshaller: Marshaller = tssSamhandlerdataInputJaxBContext.createMarshaller().apply {
-    setProperty(Marshaller.JAXB_SCHEMA_LOCATION, "")
-}
+val tssSamhandlerdataInputMarshaller: Marshaller = tssSamhandlerdataInputJaxBContext.createMarshaller()
 val tssSamhandlerdataUnmarshaller: Unmarshaller = tssSamhandlerdataInputJaxBContext.createUnmarshaller()
 
 
