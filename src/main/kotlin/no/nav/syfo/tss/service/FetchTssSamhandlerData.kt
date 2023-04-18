@@ -85,6 +85,7 @@ fun fetchTssSamhandlerData(
 }
 
 fun safeUnmarshal(consumedMessageText: String): XMLTssSamhandlerData {
+    securelog.info("the consumedMessageText: $consumedMessageText")
     //Disable XXE
     val spf = SAXParserFactory.newInstance()
     spf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true)
