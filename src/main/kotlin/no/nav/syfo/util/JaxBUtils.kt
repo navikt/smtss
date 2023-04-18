@@ -8,8 +8,7 @@ import javax.xml.bind.Unmarshaller
 
 val tssSamhandlerdataInputJaxBContext: JAXBContext = JAXBContext.newInstance(XMLTssSamhandlerData::class.java)
 val tssSamhandlerdataInputMarshaller: Marshaller = tssSamhandlerdataInputJaxBContext.createMarshaller().apply {
-    setProperty(Marshaller.JAXB_SCHEMA_LOCATION, "http://www.rtv.no/NamespaceTSS")
-    setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true)
+    setProperty(Marshaller.JAXB_SCHEMA_LOCATION, "")
 }
 val tssSamhandlerdataUnmarshaller: Unmarshaller = tssSamhandlerdataInputJaxBContext.createUnmarshaller()
 
