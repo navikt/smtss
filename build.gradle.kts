@@ -14,7 +14,7 @@ val smCommonVersion = "1.6783f68"
 val kotlinVersion = "1.8.20"
 val junitJupiterVersion = "5.9.2"
 val commonsCodecVersion = "1.15"
-val syfoXmlCodegen = "1.bf2ffd3"
+val syfoXmlCodegen = "1.198d128"
 val ibmMqVersion = "9.3.2.0"
 val jaxbApiVersion = "2.4.0-b180830.0359"
 val commonsTextVersion = "1.10.0"
@@ -75,7 +75,7 @@ dependencies {
 
     implementation("com.ibm.mq:com.ibm.mq.allclient:$ibmMqVersion")
 
-    implementation("no.nav.helse.xml:tssSamhandlerData:$syfoXmlCodegen")
+    implementation("no.nav.helse.xml:tss-samhandler-data:$syfoXmlCodegen")
 
     implementation("no.nav.helse:syfosm-common-mq:$smCommonVersion")
     implementation("no.nav.helse:syfosm-common-networking:$smCommonVersion")

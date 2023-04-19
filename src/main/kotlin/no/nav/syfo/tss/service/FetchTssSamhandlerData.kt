@@ -8,11 +8,11 @@ import javax.jms.TextMessage
 import javax.xml.parsers.SAXParserFactory
 import javax.xml.transform.Source
 import javax.xml.transform.sax.SAXSource
-import no.nav.helse.tssSamhandlerData.XMLSamhandler
-import no.nav.helse.tssSamhandlerData.XMLSamhandlerIDataB910Type
-import no.nav.helse.tssSamhandlerData.XMLTServicerutiner
-import no.nav.helse.tssSamhandlerData.XMLTidOFF1
-import no.nav.helse.tssSamhandlerData.XMLTssSamhandlerData
+import no.nav.helse.tss.samhandler.data.XMLSamhandler
+import no.nav.helse.tss.samhandler.data.XMLSamhandlerIDataB910Type
+import no.nav.helse.tss.samhandler.data.XMLTServicerutiner
+import no.nav.helse.tss.samhandler.data.XMLTidOFF1
+import no.nav.helse.tss.samhandler.data.XMLTssSamhandlerData
 import no.nav.syfo.Environment
 import no.nav.syfo.ServiceUser
 import no.nav.syfo.log
