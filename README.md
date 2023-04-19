@@ -1,6 +1,6 @@
 # smtss
 
-This project contains the application code and infrastructure for smtss
+Application that's try to find best tssid match from tss, based on given parameters
 
 ## Technologies used
 * Kotlin
