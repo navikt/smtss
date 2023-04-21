@@ -7,5 +7,6 @@ jobs:
     secrets: inherit
     with:
       app: smtss
-      dockerfiler_path: ./
+      dockerfile_path: Dockerfile
+      docker_context: .
       subprojects: false
