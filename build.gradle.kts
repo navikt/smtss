@@ -5,7 +5,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 group = "no.nav.syfo"
 version = "1.0.0"
 
-val jacksonVersion = "2.14.2"
+val jacksonVersion = "2.15.0"
 val ktorVersion = "2.2.4"
 val logbackVersion = "1.4.6"
 val logstashEncoderVersion = "7.3"
