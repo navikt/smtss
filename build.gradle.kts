@@ -6,12 +6,12 @@ group = "no.nav.syfo"
 version = "1.0.0"
 
 val jacksonVersion = "2.15.0"
-val ktorVersion = "2.2.4"
+val ktorVersion = "2.3.0"
 val logbackVersion = "1.4.7"
 val logstashEncoderVersion = "7.3"
 val prometheusVersion = "0.16.0"
 val smCommonVersion = "1.6783f68"
-val kotlinVersion = "1.8.20"
+val kotlinVersion = "1.8.21"
 val junitJupiterVersion = "5.9.2"
 val commonsCodecVersion = "1.15"
 val syfoXmlCodegen = "1.35193f7"
@@ -27,7 +27,7 @@ tasks.withType<Jar> {
 }
 
 plugins {
-    kotlin("jvm") version "1.8.20"
+    kotlin("jvm") version "1.8.21"
     id("com.github.johnrengelman.shadow") version "8.1.1"
 }
 
