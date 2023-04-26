@@ -27,7 +27,8 @@ fun fetchTssSamhandlerData(
     samhandlerfnr: String,
     environment: Environment,
     serviceUser: ServiceUser,
-    enkeltSamhandlerFromTSSResponsRedis: EnkeltSamhandlerFromTSSResponsRedis
+    enkeltSamhandlerFromTSSResponsRedis: EnkeltSamhandlerFromTSSResponsRedis,
+    requestId: String
 ): List<XMLSamhandler>? {
 
     val fromRedis = enkeltSamhandlerFromTSSResponsRedis.get(samhandlerfnr)
@@ -69,7 +70,7 @@ fun fetchTssSamhandlerData(
                             StringReader(
                                 consumedMessage.text
                             )
-                        ) as XMLTssSamhandlerData
+                        ) as XMLTssSamhandlerData, requestId
                     ).also {
                         log.info("Fetched enkeltSamhandlerFromTSSRespons from tss")
                         if (!it.isNullOrEmpty()) {
@@ -98,8 +99,8 @@ fun sendTssSporring(
     },
 )
 
-fun findEnkeltSamhandlerFromTSSRespons(tssSamhandlerInfoResponse: XMLTssSamhandlerData): List<XMLSamhandler>? {
-    securelog.info("Response to tss: ${objectMapper.writeValueAsString(tssSamhandlerInfoResponse)}")
+fun findEnkeltSamhandlerFromTSSRespons(tssSamhandlerInfoResponse: XMLTssSamhandlerData, requestId: String): List<XMLSamhandler>? {
+    securelog.info("Response from tss for requestId:$requestId : ${objectMapper.writeValueAsString(tssSamhandlerInfoResponse)}")
     return tssSamhandlerInfoResponse.tssOutputData?.samhandlerODataB910?.enkeltSamhandler
 }
 

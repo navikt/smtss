@@ -16,10 +16,10 @@ class TssService(private val environment: Environment,
     fun findBestTssIdEmottak(
         samhandlerfnr: String,
         samhandlerOrgName: String,
+        requestId: String
     ): TSSident? {
         return try {
-            val enkeltSamhandler = fetchTssSamhandlerData(samhandlerfnr, environment, serviceUser, enkeltSamhandlerFromTSSResponsRedis)
-
+            val enkeltSamhandler = fetchTssSamhandlerData(samhandlerfnr, environment, serviceUser, enkeltSamhandlerFromTSSResponsRedis, requestId)
             return filterOutTssIdForEmottak(enkeltSamhandler, samhandlerOrgName)
 
         } catch (exception: Exception) {
@@ -31,9 +31,10 @@ class TssService(private val environment: Environment,
     fun findBestTssInfotrygdId(
         samhandlerfnr: String,
         samhandlerOrgName: String,
+        requestId: String
     ): TSSident? {
         return try {
-            val enkeltSamhandler = fetchTssSamhandlerData(samhandlerfnr, environment, serviceUser, enkeltSamhandlerFromTSSResponsRedis)
+            val enkeltSamhandler = fetchTssSamhandlerData(samhandlerfnr, environment, serviceUser, enkeltSamhandlerFromTSSResponsRedis, requestId)
 
             return  filterOutTssIdForInfotrygd(enkeltSamhandler, samhandlerOrgName)
         } catch (e: Exception) {
