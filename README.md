@@ -67,15 +67,21 @@ or on windows
 gradlew.bat shadowJar
 ```
 
+#### Integrasion testing the application
 #### Creating a docker image
-Creating a docker image should be as simple as 
+Creating a docker image should be as simple as
 ``` shell
 docker build -t smtss .
 ```
 
-#### Running a docker image
-``` shell
-docker run --rm -it -p 8080:8080 smtss
+### Running the services from docker compose
+``` bash
+docker-compose -p smtss-compose up -d
+```
+
+### Tear down the services from docker compose
+``` bash
+docker-compose -p smtss-compose down
 ```
 
 ### Upgrading the gradle wrapper

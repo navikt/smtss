@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  smtss:
+    image: smtss
+    environment:
+      MQ_HOST_NAME: QM1
+      MQ_PORT: 1413
+      MQ_GATEWAY_NAME: QM1
+      MQ_CHANNEL_NAME: Q1_SMTSS
+      MQ_TSS_SAMHANDLER_SERVICE_QUEUE: QA.Q1_415.AS10_SAMHANDLER_SERVICE
+      MQ_KEYSTORE_PATH: /var/run/keystore/smtss-keystore.jks
+      AZURE_OPENID_CONFIG_ISSUER: smtss
+      AZURE_OPENID_CONFIG_JWKS_URI: localhost
+      AZURE_OPENID_CONFIG_TOKEN_ENDPOINT: localhost
+      AZURE_APP_CLIENT_ID: 1
+      AZURE_APP_CLIENT_SECRET: supersecret
+    ports:
+      - '8080:8080'
+  mq:
+    image: icr.io/ibm-messaging/mq:latest
+    container_name: mq
+    restart: always
+    environment:
+      LICENSE: accept
+      MQ_QMGR_NAME: QM1
+    ports:
+      - '1413:1413'
