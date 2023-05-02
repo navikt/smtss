@@ -79,7 +79,7 @@ fun fetchTssSamhandlerData(
                     }
                 }
             } catch (exception: Exception) {
-                log.warn("An error occured while getting data from tss, ${exception.message}")
+                log.error("An error occured while getting data from tss, ${exception.message}")
                 return emptyList()
             } finally {
                 temporaryQueue.delete()

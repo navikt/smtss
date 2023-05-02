@@ -23,7 +23,7 @@ class TssService(private val environment: Environment,
             return filterOutTssIdForEmottak(enkeltSamhandler, samhandlerOrgName)
 
         } catch (exception: Exception) {
-            log.warn("Call to tss throws error", exception)
+            log.error("Call to tss throws error", exception)
             null
         }
     }
@@ -38,7 +38,7 @@ class TssService(private val environment: Environment,
 
             return  filterOutTssIdForInfotrygd(enkeltSamhandler, samhandlerOrgName)
         } catch (e: Exception) {
-            log.warn("Call to tss throws error", e)
+            log.error("Call to tss throws error", e)
             null
         }
     }

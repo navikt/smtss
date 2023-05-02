@@ -31,12 +31,12 @@ fun Application.setupAuth(
 
 fun hasAccsess(credentials: JWTCredential, clientId: String): Boolean {
     val appid: String = credentials.payload.getClaim("azp").asString()
-    log.debug("authorization attempt for $appid")
+    log.info("authorization attempt for $appid")
     return credentials.payload.audience.contains(clientId)
 }
 
 fun unauthorized(credentials: JWTCredential): Principal? {
-    log.warn(
+    log.error(
         "Auth: Unexpected audience for jwt {}, {}",
         StructuredArguments.keyValue("issuer", credentials.payload.issuer),
         StructuredArguments.keyValue("audience", credentials.payload.audience),
