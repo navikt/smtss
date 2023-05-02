@@ -1,8 +1,8 @@
 package no.nav.syfo.tss.service
 
-import no.nav.helse.tssSamhandlerData.XMLTServicerutiner
-import no.nav.helse.tssSamhandlerData.XMLTidOFF1
-import no.nav.helse.tssSamhandlerData.XMLTssSamhandlerData
+import  no.nav.helse.tss.samhandler.data.XMLTServicerutiner
+import  no.nav.helse.tss.samhandler.data.XMLTidOFF1
+import  no.nav.helse.tss.samhandler.data.XMLTssSamhandlerData
 import no.nav.syfo.util.toString
 import no.nav.syfo.util.tssSamhandlerdataInputMarshaller
 import no.nav.syfo.util.tssSamhandlerdataUnmarshaller
@@ -12,8 +12,8 @@ import javax.jms.MessageProducer
 import javax.jms.Session
 import javax.jms.TemporaryQueue
 import javax.jms.TextMessage
-import no.nav.helse.tssSamhandlerData.XMLSamhandler
-import no.nav.helse.tssSamhandlerData.XMLSamhandlerIDataB910Type
+import  no.nav.helse.tss.samhandler.data.XMLSamhandler
+import  no.nav.helse.tss.samhandler.data.XMLSamhandlerIDataB910Type
 import no.nav.syfo.Environment
 import no.nav.syfo.ServiceUser
 import no.nav.syfo.log

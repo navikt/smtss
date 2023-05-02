@@ -1,6 +1,6 @@
 package no.nav.syfo.util
 
-import no.nav.helse.tssSamhandlerData.XMLTssSamhandlerData
+import no.nav.helse.tss.samhandler.data.XMLTssSamhandlerData
 import java.io.StringWriter
 import javax.xml.bind.JAXBContext
 import javax.xml.bind.Marshaller

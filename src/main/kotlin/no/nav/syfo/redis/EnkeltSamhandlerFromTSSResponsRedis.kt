@@ -1,6 +1,6 @@
 package no.nav.syfo.redis
 
-import no.nav.helse.tssSamhandlerData.XMLSamhandler
+import  no.nav.helse.tss.samhandler.data.XMLSamhandler
 import no.nav.syfo.log
 import no.nav.syfo.objectMapper
 import redis.clients.jedis.Jedis

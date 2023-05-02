@@ -2,8 +2,8 @@ package no.nav.syfo.tss.service
 
 import no.nav.syfo.log
 import kotlin.math.max
-import no.nav.helse.tssSamhandlerData.XMLSamhAvdPraType
-import no.nav.helse.tssSamhandlerData.XMLSamhandler
+import  no.nav.helse.tss.samhandler.data.XMLSamhAvdPraType
+import  no.nav.helse.tss.samhandler.data.XMLSamhandler
 import no.nav.syfo.Environment
 import no.nav.syfo.ServiceUser
 import no.nav.syfo.redis.EnkeltSamhandlerFromTSSResponsRedis

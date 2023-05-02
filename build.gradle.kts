@@ -10,11 +10,11 @@ val ktorVersion = "2.3.0"
 val logbackVersion = "1.4.7"
 val logstashEncoderVersion = "7.3"
 val prometheusVersion = "0.16.0"
-val smCommonVersion = "1.6783f68"
+val smCommonVersion = "1.0.1"
 val kotlinVersion = "1.8.21"
 val junitJupiterVersion = "5.9.3"
 val commonsCodecVersion = "1.15"
-val syfoXmlCodegen = "1.35193f7"
+val syfoXmlCodegen = "1.0.3"
 val ibmMqVersion = "9.3.2.0"
 val jaxbApiVersion = "2.4.0-b180830.0359"
 val commonsTextVersion = "1.10.0"
@@ -75,7 +75,7 @@ dependencies {
 
     implementation("com.ibm.mq:com.ibm.mq.allclient:$ibmMqVersion")
 
-    implementation("no.nav.helse.xml:tssSamhandlerData:$syfoXmlCodegen")
+    implementation("no.nav.helse.xml:tss-samhandler-data:$syfoXmlCodegen")
 
     implementation("no.nav.helse:syfosm-common-mq:$smCommonVersion")
     implementation("no.nav.helse:syfosm-common-networking:$smCommonVersion")
