@@ -54,10 +54,16 @@ fun filterOutTssIdForInfotrygd(enkeltSamhandler: List<XMLSamhandler>?, samhandle
                             !samhandlerAvdelingIsSykehusOrRegionalHelseforetak(samhandlerAvdelding))) {
             return TSSident(samhandlerAvdelding.idOffTSS)
         }
-        else {
-            enkeltSamhandler.firstOrNull()?.samhandlerAvd125?.samhAvd?.find {
+        else if (enkeltSamhandler.firstOrNull()?.samhandlerAvd125?.samhAvd?.find {
                 it.avdNr == "01"
-            }?.idOffTSS
+            }?.idOffTSS != null) {
+
+            return TSSident(enkeltSamhandler.firstOrNull()?.samhandlerAvd125?.samhAvd?.find {
+                it.avdNr == "01"
+            }?.idOffTSS!!)
+        }
+        else {
+            return null
         }
     }
     return null
