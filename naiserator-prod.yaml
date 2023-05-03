@@ -44,6 +44,9 @@ spec:
         - application: pale-2
         - application: syfosmpapirmottak
         - application: smregistrering-backend
+        - application: padm2
+          namespace: teamsykefravr
+          cluster: prod-gcp
     outbound:
       rules:
         - application: smtss-redis
