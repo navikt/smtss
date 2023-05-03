@@ -50,7 +50,6 @@ spec:
     outbound:
       rules:
         - application: smtss-redis
-        - application: pale-2
       external:
         - host: mpls03.adeo.no
           ports:
