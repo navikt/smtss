@@ -78,6 +78,21 @@ docker build -t smtss .
 docker run --rm -it -p 8080:8080 smtss
 ```
 
+
+### Add new application to consume api (only NAV applications is supported)
+You can create a PR: example https://github.com/navikt/smtss/pull/14
+That's updates the naiserator files [dev](naiserator-dev.yaml) and [prod](naiserator-prod.yaml)
+with the following:
+Remember to replace, $yourapplication, $yournamespace, $yourcluster with real values
+``` 
+  accessPolicy:
+    inbound:
+      rules:
+        - application: $yourapplication
+          namespace: $yournamespace
+          cluster: $yourcluster
+```
+
 ### Upgrading the gradle wrapper
 Find the newest version of gradle here: https://gradle.org/releases/ Then run this command:
 

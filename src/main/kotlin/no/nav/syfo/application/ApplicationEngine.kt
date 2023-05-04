@@ -22,6 +22,7 @@ import no.nav.syfo.application.api.registerNaisApi
 import no.nav.syfo.application.authentication.setupAuth
 import no.nav.syfo.application.metrics.monitorHttpRequests
 import no.nav.syfo.log
+import no.nav.syfo.securelog
 import no.nav.syfo.tss.api.getTssId
 import no.nav.syfo.tss.service.TssService
 
@@ -52,7 +53,8 @@ fun createApplicationEngine(
         }
         install(StatusPages) {
             exception<Throwable> { call, cause ->
-                log.error("Caught exception", cause)
+                log.error("Caught exception", cause.message)
+                securelog.error("Caught exception", cause)
                 call.respond(HttpStatusCode.InternalServerError, cause.message ?: "Unknown error")
                 throw cause
             }
