@@ -16,7 +16,7 @@ paths:
         schema:
           type: "string"
       - name: "samhandlerOrgName"
-        in: "query"
+        in: "header"
         required: false
         schema:
           type: "string"
@@ -36,9 +36,9 @@ paths:
                 Example#1:
                   value: "Missing requestId in header"
                 Example#2:
-                  value: "Missing samhandlerOrgName"
+                  value: "Missing samhandlerOrgName in header"
                 Example#3:
-                  value: "Missing samhandlerFnr"
+                  value: "Missing samhandlerFnr in header"
         "200":
           description: "OK"
           content:
@@ -61,7 +61,7 @@ paths:
         schema:
           type: "string"
       - name: "samhandlerOrgName"
-        in: "query"
+        in: "header"
         required: false
         schema:
           type: "string"
@@ -81,9 +81,9 @@ paths:
                 Example#1:
                   value: "Missing requestId in header"
                 Example#2:
-                  value: "Missing samhandlerOrgName"
+                  value: "Missing samhandlerOrgName in header"
                 Example#3:
-                  value: "Missing samhandlerFnr"
+                  value: "Missing samhandlerFnr in header"
         "200":
           description: "OK"
           content:
