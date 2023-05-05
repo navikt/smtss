@@ -16,17 +16,16 @@ fun Route.getTssId(
     route("/api/v1") {
         get("samhandler/emottak") {
 
-            val samhandlerfnr = call.parameters["samhandlerFnr"]
-            val samhandlerOrgName = call.parameters["samhandlerOrgName"]
-
+            val samhandlerfnr = call.request.headers["samhandlerFnr"]
+            val samhandlerOrgName = call.request.headers["samhandlerOrgName"]
             val requestid = call.request.headers["requestId"]
 
             if (samhandlerfnr == null) {
-                log.warn("Missing samhandlerFnr for requestid $requestid")
-                call.respond(HttpStatusCode.BadRequest, "Missing samhandlerFnr")
+                log.warn("Missing samhandlerFnr in header for requestid $requestid")
+                call.respond(HttpStatusCode.BadRequest, "Missing samhandlerFnr in header")
             } else if (samhandlerOrgName == null) {
-                log.warn("Missing samhandlerOrgName for requestid $requestid")
-                call.respond(HttpStatusCode.BadRequest, "Missing samhandlerOrgName")
+                log.warn("Missing samhandlerOrgName in header for requestid $requestid")
+                call.respond(HttpStatusCode.BadRequest, "Missing samhandlerOrgName in header")
             } else if (requestid == null) {
                 log.warn("Missing requestId in header")
                 call.respond(HttpStatusCode.BadRequest, "Missing requestId in header")
@@ -45,14 +44,14 @@ fun Route.getTssId(
         }
         get("samhandler/infotrygd") {
 
-            val samhandlerfnr = call.parameters["samhandlerFnr"]
-            val samhandlerOrgName = call.parameters["samhandlerOrgName"]
+            val samhandlerfnr = call.request.headers["samhandlerFnr"]
+            val samhandlerOrgName = call.request.headers["samhandlerOrgName"]
             val requestid = call.request.headers["requestId"]
 
             if (samhandlerfnr == null) {
-                call.respond(HttpStatusCode.BadRequest, "Missing samhandlerFnr")
+                call.respond(HttpStatusCode.BadRequest, "Missing samhandlerFnr in header")
             } else if (samhandlerOrgName == null) {
-                call.respond(HttpStatusCode.BadRequest, "Missing samhandlerOrgName")
+                call.respond(HttpStatusCode.BadRequest, "Missing samhandlerOrgName in header")
             } else if (requestid == null) {
                 log.warn("Missing requestId in header")
                 call.respond(HttpStatusCode.BadRequest, "Missing requestId in header")
