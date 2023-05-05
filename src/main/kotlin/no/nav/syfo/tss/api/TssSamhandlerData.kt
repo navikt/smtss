@@ -16,13 +16,13 @@ fun Route.getTssId(
     route("/api/v1") {
         get("samhandler/emottak") {
 
-            val samhandlerfnr = call.parameters["samhandlerFnr"]
+            val samhandlerfnr = call.request.headers["samhandlerFnr"]
             val samhandlerOrgName = call.parameters["samhandlerOrgName"]
 
             val requestid = call.request.headers["requestId"]
 
             if (samhandlerfnr == null) {
-                log.warn("Missing samhandlerFnr for requestid $requestid")
+                log.warn("Missing samhandlerFnr in header for requestid $requestid")
                 call.respond(HttpStatusCode.BadRequest, "Missing samhandlerFnr")
             } else if (samhandlerOrgName == null) {
                 log.warn("Missing samhandlerOrgName for requestid $requestid")
@@ -45,7 +45,7 @@ fun Route.getTssId(
         }
         get("samhandler/infotrygd") {
 
-            val samhandlerfnr = call.parameters["samhandlerFnr"]
+            val samhandlerfnr = call.request.headers["samhandlerFnr"]
             val samhandlerOrgName = call.parameters["samhandlerOrgName"]
             val requestid = call.request.headers["requestId"]
 

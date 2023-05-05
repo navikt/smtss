@@ -11,12 +11,17 @@ paths:
       description: ""
       parameters:
       - name: "samhandlerFnr"
-        in: "query"
+        in: "header"
         required: false
         schema:
           type: "string"
       - name: "samhandlerOrgName"
         in: "query"
+        required: false
+        schema:
+          type: "string"
+      - name: "requestId"
+        in: "header"
         required: false
         schema:
           type: "string"
@@ -29,8 +34,10 @@ paths:
                 type: "string"
               examples:
                 Example#1:
-                  value: "Missing samhandlerOrgName"
+                  value: "Missing requestId in header"
                 Example#2:
+                  value: "Missing samhandlerOrgName"
+                Example#3:
                   value: "Missing samhandlerFnr"
         "200":
           description: "OK"
@@ -49,12 +56,17 @@ paths:
       description: ""
       parameters:
       - name: "samhandlerFnr"
-        in: "query"
+        in: "header"
         required: false
         schema:
           type: "string"
       - name: "samhandlerOrgName"
         in: "query"
+        required: false
+        schema:
+          type: "string"
+      - name: "requestId"
+        in: "header"
         required: false
         schema:
           type: "string"
@@ -67,8 +79,10 @@ paths:
                 type: "string"
               examples:
                 Example#1:
-                  value: "Missing samhandlerOrgName"
+                  value: "Missing requestId in header"
                 Example#2:
+                  value: "Missing samhandlerOrgName"
+                Example#3:
                   value: "Missing samhandlerFnr"
         "200":
           description: "OK"
