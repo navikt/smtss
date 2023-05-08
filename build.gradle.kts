@@ -18,7 +18,7 @@ val syfoXmlCodegen = "1.0.3"
 val ibmMqVersion = "9.3.2.1"
 val jaxbApiVersion = "2.4.0-b180830.0359"
 val commonsTextVersion = "1.10.0"
-val jedisVersion = "4.3.2"
+val jedisVersion = "4.4.0"
 val embeddedRedisVersion = "1.0.0"
 
 
