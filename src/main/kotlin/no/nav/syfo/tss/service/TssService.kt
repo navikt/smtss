@@ -47,7 +47,7 @@ class TssService(private val environment: Environment,
 fun filterOutTssIdForInfotrygd(enkeltSamhandler: List<XMLSamhandler>?, samhandlerOrgName: String): TSSident? {
     if (enkeltSamhandler?.firstOrNull()?.samhandlerAvd125 != null)
     {
-        val samhandlerAvdelding = samhandlerMatchingPaaOrganisjonsNavn(enkeltSamhandler.first().samhandlerAvd125.samhAvd, samhandlerOrgName)?.samhandlerAvdeling
+        val samhandlerAvdelding = samhandlerMatchingPaaOrganisjonsNavn(enkeltSamhandler.flatMap { it.samhandlerAvd125.samhAvd }, samhandlerOrgName)?.samhandlerAvdeling
 
         if (samhandlerAvdelding?.idOffTSS != null && (
                     !samhandlerAvdelingIsLegevakt(samhandlerAvdelding) &&
