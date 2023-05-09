@@ -76,7 +76,8 @@ fun filterOutTssIdForEmottak(enkeltSamhandler: List<XMLSamhandler>?, samhandlerO
 
         if (samhandlerAvdelding?.idOffTSS != null && (
                     !samhandlerAvdelingIsLegevakt(samhandlerAvdelding) &&
-                            !samhandlerAvdelingIsSykehusOrRegionalHelseforetak(samhandlerAvdelding))) {
+                            !samhandlerAvdelingIsSykehusOrRegionalHelseforetak(samhandlerAvdelding)) &&
+            !samhandlerAvdelingIsAvdNr01(samhandlerAvdelding)) {
            return TSSident(samhandlerAvdelding.idOffTSS)
         }
     }
@@ -114,7 +115,8 @@ fun samhandlerAvdelingIsSykehusOrRegionalHelseforetak(samhandlereAvdeling: XMLSa
             samhandlereAvdeling.typeAvd == "SYKE" ||
                     samhandlereAvdeling.typeAvd == "RHFO"
             )
-
+fun samhandlerAvdelingIsAvdNr01(samhandlereAvdeling: XMLSamhAvdPraType): Boolean =
+    samhandlereAvdeling.avdNr == "01"
 
 fun calculatePercentageStringMatch(str1: String?, str2: String): Double {
     val maxDistance = max(str1?.length!!, str2.length).toDouble()

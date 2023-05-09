@@ -15,6 +15,19 @@ Application that's try to find best tssid match from tss, based on given paramet
 
 * JDK 17
 
+## FlowChart
+This the high level flow of the application
+```mermaid
+  graph LR
+      EPJ --- eMottak
+      eMottak --- id1([SYFOSMMOTTAK.INPUT])
+      id1([SYFOSMMOTTAK.INPUT]) --> syfosmmottak
+      syfosmmottak --- smtss
+      syfosmmottak --- eMottak-subscription
+      smtss --- tss
+      smtss --- azure_ad
+```
+
 ## Getting started
 ### Getting github-package-registry packages NAV-IT
 Some packages used in this repo is uploaded to the GitHub Package Registry which requires authentication. 
