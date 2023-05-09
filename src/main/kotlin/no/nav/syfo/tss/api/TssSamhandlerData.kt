@@ -31,7 +31,7 @@ fun Route.getTssId(
                 call.respond(HttpStatusCode.BadRequest, "Missing requestId in header")
             }
             else {
-
+                log.info("Trying to find best tssid for emottak samhandlerOrgName: $samhandlerOrgName and requestid: $requestid")
                 val tssIdent: TSSident? = tssService.findBestTssIdEmottak(samhandlerfnr, samhandlerOrgName, requestid)
                 if (tssIdent != null) {
                     call.respond(HttpStatusCode.OK, tssIdent)
@@ -57,6 +57,7 @@ fun Route.getTssId(
                 call.respond(HttpStatusCode.BadRequest, "Missing requestId in header")
             }
             else {
+                log.info("Trying to find best tssid for infotrygd samhandlerOrgName: $samhandlerOrgName and requestid: $requestid")
                 val tssIdent: TSSident? =  tssService.findBestTssInfotrygdId(samhandlerfnr, samhandlerOrgName, requestid)
                 if (tssIdent != null) {
                     call.respond(HttpStatusCode.OK, tssIdent)
