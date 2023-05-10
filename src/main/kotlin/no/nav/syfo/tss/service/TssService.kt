@@ -47,7 +47,7 @@ class TssService(private val environment: Environment,
 fun filterOutTssIdForInfotrygd(enkeltSamhandler: List<XMLSamhandler>?, samhandlerOrgName: String): TSSident? {
     if (enkeltSamhandler?.firstOrNull()?.samhandlerAvd125 != null)
     {
-        val samhandlerAvdelding = samhandlerMatchingPaaOrganisjonsNavn(enkeltSamhandler.flatMap { it.samhandlerAvd125.samhAvd }, samhandlerOrgName)?.samhandlerAvdeling
+        val samhandlerAvdelding = samhandlerMatchingPaaOrganisjonsNavn(enkeltSamhandler.flatMapNotNull { it.samhandlerAvd125.samhAvd }, samhandlerOrgName)?.samhandlerAvdeling
 
         if (samhandlerAvdelding?.idOffTSS != null && (
                     !samhandlerAvdelingIsLegevakt(samhandlerAvdelding) &&
@@ -72,7 +72,7 @@ fun filterOutTssIdForInfotrygd(enkeltSamhandler: List<XMLSamhandler>?, samhandle
 fun filterOutTssIdForEmottak(enkeltSamhandler: List<XMLSamhandler>?, samhandlerOrgName: String): TSSident? {
     if (enkeltSamhandler?.firstOrNull()?.samhandlerAvd125 != null)
     {
-        val samhandlerAvdelding = samhandlerMatchingPaaOrganisjonsNavn(enkeltSamhandler.flatMap { it.samhandlerAvd125.samhAvd }, samhandlerOrgName)?.samhandlerAvdeling
+        val samhandlerAvdelding = samhandlerMatchingPaaOrganisjonsNavn(enkeltSamhandler.flatMapNotNull { it.samhandlerAvd125.samhAvd }, samhandlerOrgName)?.samhandlerAvdeling
 
         if (samhandlerAvdelding?.idOffTSS != null && (
                     !samhandlerAvdelingIsLegevakt(samhandlerAvdelding) &&
@@ -127,3 +127,10 @@ fun calculatePercentageStringMatch(str1: String?, str2: String): Double {
 data class TSSident(
     val tssid: String,
 )
+
+
+inline fun <T, R> Iterable<T>.flatMapNotNull(transform: (T) -> Iterable<R?>?): List<R> = buildList {
+    this@flatMapNotNull.forEach { element ->
+        transform(element)?.forEach { it?.let(::add) }
+    }
+}
