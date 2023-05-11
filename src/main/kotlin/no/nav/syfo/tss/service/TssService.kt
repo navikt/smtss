@@ -23,7 +23,7 @@ class TssService(private val environment: Environment,
             return filterOutTssIdForEmottak(enkeltSamhandler, samhandlerOrgName)
 
         } catch (exception: Exception) {
-            log.error("Call to tss throws error", exception)
+            log.error("Call to tss throws error for requestId $requestId", exception)
             null
         }
     }
@@ -38,7 +38,7 @@ class TssService(private val environment: Environment,
 
             return  filterOutTssIdForInfotrygd(enkeltSamhandler, samhandlerOrgName)
         } catch (e: Exception) {
-            log.error("Call to tss throws error", e)
+            log.error("Call to tss throws error for requestId $requestId", e)
             null
         }
     }
