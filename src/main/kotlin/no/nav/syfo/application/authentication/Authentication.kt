@@ -11,6 +11,7 @@ import io.ktor.server.auth.jwt.jwt
 import net.logstash.logback.argument.StructuredArguments
 import no.nav.syfo.Environment
 import no.nav.syfo.log
+import no.nav.syfo.securelog
 
 fun Application.setupAuth(
     environment: Environment,
@@ -31,7 +32,7 @@ fun Application.setupAuth(
 
 fun hasAccsess(credentials: JWTCredential, clientId: String): Boolean {
     val appid: String = credentials.payload.getClaim("azp").asString()
-    log.info("authorization attempt for $appid")
+    securelog.info("authorization attempt for $appid")
     return credentials.payload.audience.contains(clientId)
 }
 
