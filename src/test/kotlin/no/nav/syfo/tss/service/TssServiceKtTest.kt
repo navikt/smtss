@@ -23,4 +23,21 @@ internal class TssServiceKtTest {
         assertEquals(expectedTssId, tssId)
 
     }
+
+    @Test
+    internal fun `Returns correct tssid even when one samhandlerAvd125 is null`() {
+        val expectedTssId = "80000347193"
+
+        val enkeltSamhandler: List<XMLSamhandler>? = objectMapper.readValue(
+            TssServiceKtTest::class.java.getResourceAsStream("/tssavd125null.json")!!.readBytes()
+                .toString(Charsets.UTF_8),
+        )
+
+        val samhandlerOrgnavn = "test legesenter"
+
+        val tssId = filterOutTssIdForEmottak(enkeltSamhandler, samhandlerOrgnavn)?.tssid
+
+        assertEquals(expectedTssId, tssId)
+
+    }
 }

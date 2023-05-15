@@ -45,9 +45,10 @@ class TssService(private val environment: Environment,
 }
 
 fun filterOutTssIdForInfotrygd(enkeltSamhandler: List<XMLSamhandler>?, samhandlerOrgName: String): TSSident? {
-    if (enkeltSamhandler?.firstOrNull()?.samhandlerAvd125 != null)
+    val samhandlereAvdelinger = enkeltSamhandler?.filter { it.samhandlerAvd125 != null }
+    if (samhandlereAvdelinger?.flatMapNotNull { it.samhandlerAvd125?.samhAvd  } != null)
     {
-        val samhandlerAvdelding = samhandlerMatchingPaaOrganisjonsNavn(enkeltSamhandler.flatMapNotNull { it.samhandlerAvd125.samhAvd }, samhandlerOrgName)?.samhandlerAvdeling
+        val samhandlerAvdelding = samhandlerMatchingPaaOrganisjonsNavn(samhandlereAvdelinger.flatMapNotNull { it.samhandlerAvd125?.samhAvd }, samhandlerOrgName)?.samhandlerAvdeling
 
         if (samhandlerAvdelding?.idOffTSS != null && (
                     !samhandlerAvdelingIsLegevakt(samhandlerAvdelding) &&
@@ -70,9 +71,10 @@ fun filterOutTssIdForInfotrygd(enkeltSamhandler: List<XMLSamhandler>?, samhandle
 }
 
 fun filterOutTssIdForEmottak(enkeltSamhandler: List<XMLSamhandler>?, samhandlerOrgName: String): TSSident? {
-    if (enkeltSamhandler?.firstOrNull()?.samhandlerAvd125 != null)
+    val samhandlereAvdelinger = enkeltSamhandler?.filter { it.samhandlerAvd125 != null }
+    if (samhandlereAvdelinger?.flatMapNotNull { it.samhandlerAvd125?.samhAvd  } != null)
     {
-        val samhandlerAvdelding = samhandlerMatchingPaaOrganisjonsNavn(enkeltSamhandler.flatMapNotNull { it.samhandlerAvd125.samhAvd }, samhandlerOrgName)?.samhandlerAvdeling
+        val samhandlerAvdelding = samhandlerMatchingPaaOrganisjonsNavn(samhandlereAvdelinger.flatMapNotNull { it.samhandlerAvd125?.samhAvd }, samhandlerOrgName)?.samhandlerAvdeling
 
         if (samhandlerAvdelding?.idOffTSS != null && (
                     !samhandlerAvdelingIsLegevakt(samhandlerAvdelding) &&
