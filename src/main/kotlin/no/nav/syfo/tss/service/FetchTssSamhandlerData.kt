@@ -53,13 +53,12 @@ fun fetchTssSamhandlerData(
 
     securelog.info("Request to tss: ${objectMapper.writeValueAsString(tssSamhandlerDatainput)}")
 
-    connectionFactory(environment).createConnection(serviceUser.serviceuserUsername, serviceUser.serviceuserPassword).let {
+    connectionFactory(environment).let {
         val pooledConnectionFactory = JmsPoolConnectionFactory()
         pooledConnectionFactory.connectionFactory = it
         pooledConnectionFactory.maxConnections = 1
         pooledConnectionFactory
-    }.createConnection()
-        .use { connection ->
+    }.createConnection(serviceUser.serviceuserUsername, serviceUser.serviceuserPassword).use { connection ->
             connection.start()
             val session = connection.createSession(false, Session.CLIENT_ACKNOWLEDGE)
 
