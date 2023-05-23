@@ -1,4 +1,4 @@
-# smtss
+# smtss :floppy_disk:
 
 Application that's try to find best tssid match from tss, based on given parameters
 
@@ -79,18 +79,6 @@ or on windows
 ``` shell
 gradlew.bat shadowJar
 ```
-
-#### Creating a docker image
-Creating a docker image should be as simple as 
-``` shell
-docker build -t smtss .
-```
-
-#### Running a docker image
-``` shell
-docker run --rm -it -p 8080:8080 smtss
-```
-
 
 ### Add new application to consume api (only NAV applications is supported)
 You can create a PR: example https://github.com/navikt/smtss/pull/14
