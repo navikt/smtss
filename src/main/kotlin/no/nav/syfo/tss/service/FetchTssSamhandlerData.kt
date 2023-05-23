@@ -34,6 +34,7 @@ fun fetchTssSamhandlerData(
     val fromRedis = enkeltSamhandlerFromTSSResponsRedis.get(samhandlerfnr)
     if (fromRedis != null) {
         log.info("Fetched enkeltSamhandlerFromTSSRespons from redis")
+        securelog.info("Response from redis for requestId:$requestId : ${objectMapper.writeValueAsString(fromRedis.enkeltSamhandlerFromTSSRespons)}")
         return fromRedis.enkeltSamhandlerFromTSSRespons
     }
     val tssSamhandlerDatainput = XMLTssSamhandlerData().apply {
