@@ -22,6 +22,7 @@ import no.nav.syfo.mq.producerForQueue
 import no.nav.syfo.objectMapper
 import no.nav.syfo.redis.EnkeltSamhandlerFromTSSResponsRedis
 import no.nav.syfo.securelog
+import org.messaginghub.pooled.jms.JmsPoolConnectionFactory
 
 fun fetchTssSamhandlerData(
     samhandlerfnr: String,
@@ -52,7 +53,12 @@ fun fetchTssSamhandlerData(
 
     securelog.info("Request to tss: ${objectMapper.writeValueAsString(tssSamhandlerDatainput)}")
 
-    connectionFactory(environment).createConnection(serviceUser.serviceuserUsername, serviceUser.serviceuserPassword)
+    connectionFactory(environment).createConnection(serviceUser.serviceuserUsername, serviceUser.serviceuserPassword).let {
+        val pooledConnectionFactory = JmsPoolConnectionFactory()
+        pooledConnectionFactory.connectionFactory = it
+        pooledConnectionFactory.maxConnections = 1
+        pooledConnectionFactory
+    }.createConnection()
         .use { connection ->
             connection.start()
             val session = connection.createSession(false, Session.CLIENT_ACKNOWLEDGE)

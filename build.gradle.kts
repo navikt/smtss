@@ -20,6 +20,7 @@ val jaxbApiVersion = "2.4.0-b180830.0359"
 val commonsTextVersion = "1.10.0"
 val jedisVersion = "4.4.1"
 val embeddedRedisVersion = "1.0.0"
+val pooledJms = "1.1.0"
 
 
 tasks.withType<Jar> {
@@ -78,6 +79,7 @@ dependencies {
     implementation("no.nav.helse.xml:tss-samhandler-data:$syfoXmlCodegen")
 
     implementation("no.nav.helse:syfosm-common-mq:$smCommonVersion")
+    implementation("org.messaginghub:pooled-jms:$pooledJms")
     implementation("no.nav.helse:syfosm-common-networking:$smCommonVersion")
 
     implementation("javax.xml.bind:jaxb-api:$jaxbApiVersion")
