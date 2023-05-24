@@ -7,6 +7,7 @@ import no.nav.syfo.util.toString
 import no.nav.syfo.util.tssSamhandlerdataInputMarshaller
 import no.nav.syfo.util.tssSamhandlerdataUnmarshaller
 import java.io.StringReader
+import javax.jms.Connection
 
 import javax.jms.MessageProducer
 import javax.jms.Session
@@ -15,9 +16,7 @@ import javax.jms.TextMessage
 import  no.nav.helse.tss.samhandler.data.XMLSamhandler
 import  no.nav.helse.tss.samhandler.data.XMLSamhandlerIDataB910Type
 import no.nav.syfo.Environment
-import no.nav.syfo.ServiceUser
 import no.nav.syfo.log
-import no.nav.syfo.mq.connectionFactory
 import no.nav.syfo.mq.producerForQueue
 import no.nav.syfo.objectMapper
 import no.nav.syfo.redis.EnkeltSamhandlerFromTSSResponsRedis
@@ -26,9 +25,9 @@ import no.nav.syfo.securelog
 fun fetchTssSamhandlerData(
     samhandlerfnr: String,
     environment: Environment,
-    serviceUser: ServiceUser,
     enkeltSamhandlerFromTSSResponsRedis: EnkeltSamhandlerFromTSSResponsRedis,
-    requestId: String
+    requestId: String,
+    connection: Connection
 ): List<XMLSamhandler>? {
 
     val fromRedis = enkeltSamhandlerFromTSSResponsRedis.get(samhandlerfnr)
@@ -53,39 +52,35 @@ fun fetchTssSamhandlerData(
 
     securelog.info("Request to tss: ${objectMapper.writeValueAsString(tssSamhandlerDatainput)}")
 
-    connectionFactory(environment).createConnection(serviceUser.serviceuserUsername, serviceUser.serviceuserPassword)
-        .use { connection ->
-            connection.start()
-            val session = connection.createSession(false, Session.CLIENT_ACKNOWLEDGE)
+    val session = connection.createSession(Session.CLIENT_ACKNOWLEDGE)
 
-            val tssSamhnadlerInfoProducer = session.producerForQueue("queue:///${environment.tssQueue}?targetClient=1")
+    val tssSamhnadlerInfoProducer = session.producerForQueue("queue:///${environment.tssQueue}?targetClient=1")
 
 
-            val temporaryQueue = session.createTemporaryQueue()
-            try {
-                sendTssSporring(tssSamhnadlerInfoProducer, session, tssSamhandlerDatainput, temporaryQueue)
-                session.createConsumer(temporaryQueue).use { tmpConsumer ->
-                    val consumedMessage = tmpConsumer.receive(20000) as TextMessage
-                    return findEnkeltSamhandlerFromTSSRespons(
-                        tssSamhandlerdataUnmarshaller.unmarshal(
-                            StringReader(
-                                consumedMessage.text
-                            )
-                        ) as XMLTssSamhandlerData, requestId
-                    ).also {
-                        log.info("Fetched enkeltSamhandlerFromTSSRespons from tss")
-                        if (!it.isNullOrEmpty()) {
-                            enkeltSamhandlerFromTSSResponsRedis.save(samhandlerfnr, it)
-                        }
-                    }
+    val temporaryQueue = session.createTemporaryQueue()
+    try {
+        sendTssSporring(tssSamhnadlerInfoProducer, session, tssSamhandlerDatainput, temporaryQueue)
+        session.createConsumer(temporaryQueue).use { tmpConsumer ->
+            val consumedMessage = tmpConsumer.receive(20000) as TextMessage
+            return findEnkeltSamhandlerFromTSSRespons(
+                tssSamhandlerdataUnmarshaller.unmarshal(
+                    StringReader(
+                        consumedMessage.text
+                    )
+                ) as XMLTssSamhandlerData, requestId
+            ).also {
+                log.info("Fetched enkeltSamhandlerFromTSSRespons from tss")
+                if (!it.isNullOrEmpty()) {
+                    enkeltSamhandlerFromTSSResponsRedis.save(samhandlerfnr, it)
                 }
-            } catch (exception: Exception) {
-                log.error("An error occured while getting data from tss, ${exception.message}")
-                return emptyList()
-            } finally {
-                temporaryQueue.delete()
             }
         }
+    } catch (exception: Exception) {
+        log.error("An error occured while getting data from tss, ${exception.message}")
+        return emptyList()
+    } finally {
+        temporaryQueue.delete()
+    }
 }
 
 fun sendTssSporring(
@@ -100,8 +95,17 @@ fun sendTssSporring(
     },
 )
 
-fun findEnkeltSamhandlerFromTSSRespons(tssSamhandlerInfoResponse: XMLTssSamhandlerData, requestId: String): List<XMLSamhandler>? {
-    securelog.info("Response from tss for requestId:$requestId : ${objectMapper.writeValueAsString(tssSamhandlerInfoResponse)}")
+fun findEnkeltSamhandlerFromTSSRespons(
+    tssSamhandlerInfoResponse: XMLTssSamhandlerData,
+    requestId: String
+): List<XMLSamhandler>? {
+    securelog.info(
+        "Response from tss for requestId:$requestId : ${
+            objectMapper.writeValueAsString(
+                tssSamhandlerInfoResponse
+            )
+        }"
+    )
     return tssSamhandlerInfoResponse.tssOutputData?.samhandlerODataB910?.enkeltSamhandler
 }
 
