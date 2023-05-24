@@ -1,25 +1,35 @@
 package no.nav.syfo.tss.service
 
+import javax.jms.Connection
+
 import no.nav.syfo.log
 import kotlin.math.max
-import  no.nav.helse.tss.samhandler.data.XMLSamhAvdPraType
-import  no.nav.helse.tss.samhandler.data.XMLSamhandler
+import no.nav.helse.tss.samhandler.data.XMLSamhAvdPraType
+import no.nav.helse.tss.samhandler.data.XMLSamhandler
 import no.nav.syfo.Environment
-import no.nav.syfo.ServiceUser
 import no.nav.syfo.redis.EnkeltSamhandlerFromTSSResponsRedis
 import org.apache.commons.text.similarity.LevenshteinDistance
 
-class TssService(private val environment: Environment,
-                 private val serviceUser: ServiceUser,
-                 private val enkeltSamhandlerFromTSSResponsRedis: EnkeltSamhandlerFromTSSResponsRedis
+class TssService(
+    private val environment: Environment,
+    private val enkeltSamhandlerFromTSSResponsRedis: EnkeltSamhandlerFromTSSResponsRedis,
+    private val connection: Connection,
 ) {
+
+
     fun findBestTssIdEmottak(
         samhandlerfnr: String,
         samhandlerOrgName: String,
         requestId: String
     ): TSSident? {
         return try {
-            val enkeltSamhandler = fetchTssSamhandlerData(samhandlerfnr, environment, serviceUser, enkeltSamhandlerFromTSSResponsRedis, requestId)
+            val enkeltSamhandler = fetchTssSamhandlerData(
+                samhandlerfnr,
+                environment,
+                enkeltSamhandlerFromTSSResponsRedis,
+                requestId,
+                connection
+            )
             return filterOutTssIdForEmottak(enkeltSamhandler, samhandlerOrgName)
 
         } catch (exception: Exception) {
@@ -34,9 +44,15 @@ class TssService(private val environment: Environment,
         requestId: String
     ): TSSident? {
         return try {
-            val enkeltSamhandler = fetchTssSamhandlerData(samhandlerfnr, environment, serviceUser, enkeltSamhandlerFromTSSResponsRedis, requestId)
+            val enkeltSamhandler = fetchTssSamhandlerData(
+                samhandlerfnr,
+                environment,
+                enkeltSamhandlerFromTSSResponsRedis,
+                requestId,
+                connection
+            )
 
-            return  filterOutTssIdForInfotrygd(enkeltSamhandler, samhandlerOrgName)
+            return filterOutTssIdForInfotrygd(enkeltSamhandler, samhandlerOrgName)
         } catch (e: Exception) {
             log.error("Call to tss throws error for requestId $requestId", e)
             null
@@ -46,24 +62,25 @@ class TssService(private val environment: Environment,
 
 fun filterOutTssIdForInfotrygd(enkeltSamhandler: List<XMLSamhandler>?, samhandlerOrgName: String): TSSident? {
     val samhandlereAvdelinger = enkeltSamhandler?.filter { it.samhandlerAvd125 != null }
-    if (samhandlereAvdelinger?.flatMapNotNull { it.samhandlerAvd125?.samhAvd  } != null)
-    {
-        val samhandlerAvdelding = samhandlerMatchingPaaOrganisjonsNavn(samhandlereAvdelinger.flatMapNotNull { it.samhandlerAvd125?.samhAvd }, samhandlerOrgName)?.samhandlerAvdeling
+    if (samhandlereAvdelinger?.flatMapNotNull { it.samhandlerAvd125?.samhAvd } != null) {
+        val samhandlerAvdelding = samhandlerMatchingPaaOrganisjonsNavn(
+            samhandlereAvdelinger.flatMapNotNull { it.samhandlerAvd125?.samhAvd },
+            samhandlerOrgName
+        )?.samhandlerAvdeling
 
         if (samhandlerAvdelding?.idOffTSS != null && (
                     !samhandlerAvdelingIsLegevakt(samhandlerAvdelding) &&
-                            !samhandlerAvdelingIsSykehusOrRegionalHelseforetak(samhandlerAvdelding))) {
+                            !samhandlerAvdelingIsSykehusOrRegionalHelseforetak(samhandlerAvdelding))
+        ) {
             return TSSident(samhandlerAvdelding.idOffTSS)
-        }
-        else if (enkeltSamhandler.firstOrNull()?.samhandlerAvd125?.samhAvd?.find {
+        } else if (enkeltSamhandler.firstOrNull()?.samhandlerAvd125?.samhAvd?.find {
                 it.avdNr == "01"
             }?.idOffTSS != null) {
 
             return TSSident(enkeltSamhandler.firstOrNull()?.samhandlerAvd125?.samhAvd?.find {
                 it.avdNr == "01"
             }?.idOffTSS!!)
-        }
-        else {
+        } else {
             return null
         }
     }
@@ -72,23 +89,28 @@ fun filterOutTssIdForInfotrygd(enkeltSamhandler: List<XMLSamhandler>?, samhandle
 
 fun filterOutTssIdForEmottak(enkeltSamhandler: List<XMLSamhandler>?, samhandlerOrgName: String): TSSident? {
     val samhandlereAvdelinger = enkeltSamhandler?.filter { it.samhandlerAvd125 != null }
-    if (samhandlereAvdelinger?.flatMapNotNull { it.samhandlerAvd125?.samhAvd  } != null)
-    {
-        val samhandlerAvdelding = samhandlerMatchingPaaOrganisjonsNavn(samhandlereAvdelinger.flatMapNotNull { it.samhandlerAvd125?.samhAvd }, samhandlerOrgName)?.samhandlerAvdeling
+    if (samhandlereAvdelinger?.flatMapNotNull { it.samhandlerAvd125?.samhAvd } != null) {
+        val samhandlerAvdelding = samhandlerMatchingPaaOrganisjonsNavn(
+            samhandlereAvdelinger.flatMapNotNull { it.samhandlerAvd125?.samhAvd },
+            samhandlerOrgName
+        )?.samhandlerAvdeling
 
         if (samhandlerAvdelding?.idOffTSS != null && (
                     !samhandlerAvdelingIsLegevakt(samhandlerAvdelding) &&
                             !samhandlerAvdelingIsSykehusOrRegionalHelseforetak(samhandlerAvdelding)) &&
-            !samhandlerAvdelingIsAvdNr01(samhandlerAvdelding)) {
-           return TSSident(samhandlerAvdelding.idOffTSS)
+            !samhandlerAvdelingIsAvdNr01(samhandlerAvdelding)
+        ) {
+            return TSSident(samhandlerAvdelding.idOffTSS)
         }
     }
-   return null
+    return null
 }
 
 
-
-fun samhandlerMatchingPaaOrganisjonsNavn(samhandlereAvdelinger: List<XMLSamhAvdPraType>, samhandlerOrgName: String): SamhandlerAvdelingMatch? {
+fun samhandlerMatchingPaaOrganisjonsNavn(
+    samhandlereAvdelinger: List<XMLSamhAvdPraType>,
+    samhandlerOrgName: String
+): SamhandlerAvdelingMatch? {
 
     val aktiveSamhandlereMedNavn = samhandlereAvdelinger
         .filter { samhandlerAvdeling -> samhandlerAvdeling.gyldigAvd == "J" }
@@ -96,9 +118,15 @@ fun samhandlerMatchingPaaOrganisjonsNavn(samhandlereAvdelinger: List<XMLSamhAvdP
 
     return if (aktiveSamhandlereMedNavn.isNotEmpty()) {
         samhandlereAvdelinger.map { samhandlerAvdeling ->
-        SamhandlerAvdelingMatch(samhandlerAvdeling, calculatePercentageStringMatch(samhandlerAvdeling.avdNavn.lowercase(), samhandlerOrgName.lowercase()) * 100)
-    }.maxByOrNull { it.percentageMatch }
-    }else {
+            SamhandlerAvdelingMatch(
+                samhandlerAvdeling,
+                calculatePercentageStringMatch(
+                    samhandlerAvdeling.avdNavn.lowercase(),
+                    samhandlerOrgName.lowercase()
+                ) * 100
+            )
+        }.maxByOrNull { it.percentageMatch }
+    } else {
         null
     }
 
@@ -117,6 +145,7 @@ fun samhandlerAvdelingIsSykehusOrRegionalHelseforetak(samhandlereAvdeling: XMLSa
             samhandlereAvdeling.typeAvd == "SYKE" ||
                     samhandlereAvdeling.typeAvd == "RHFO"
             )
+
 fun samhandlerAvdelingIsAvdNr01(samhandlereAvdeling: XMLSamhAvdPraType): Boolean =
     samhandlereAvdeling.avdNr == "01"
 

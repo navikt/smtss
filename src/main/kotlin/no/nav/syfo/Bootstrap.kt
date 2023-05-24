@@ -13,6 +13,7 @@ import no.nav.syfo.application.ApplicationServer
 import no.nav.syfo.application.ApplicationState
 import no.nav.syfo.application.createApplicationEngine
 import no.nav.syfo.mq.MqTlsUtils
+import no.nav.syfo.mq.connectionFactory
 import no.nav.syfo.redis.EnkeltSamhandlerFromTSSResponsRedis
 import no.nav.syfo.tss.service.TssService
 import org.slf4j.Logger
@@ -43,7 +44,10 @@ fun main() {
 
     val enkeltSamhandlerFromTSSResponsRedis = EnkeltSamhandlerFromTSSResponsRedis(jedisPool, env.redisSecret)
 
-    val tssService = TssService(env, serviceUser, enkeltSamhandlerFromTSSResponsRedis)
+    val connection =
+        connectionFactory(env).createConnection(serviceUser.serviceuserUsername, serviceUser.serviceuserPassword)
+
+    val tssService = TssService(env, enkeltSamhandlerFromTSSResponsRedis, connection)
 
     val jwkProviderAad = JwkProviderBuilder(URL(env.jwkKeysUrl))
         .cached(10, 24, TimeUnit.HOURS)
@@ -57,7 +61,7 @@ fun main() {
         jwkProviderAad,
     )
 
-    val applicationServer = ApplicationServer(applicationEngine, applicationState)
+    val applicationServer = ApplicationServer(applicationEngine, applicationState, connection)
     applicationServer.start()
 
 
