@@ -11,7 +11,7 @@ class EnkeltSamhandlerFromTSSResponsRedis(private var jedisPool: JedisPool, priv
         samhandlerfnr: String,
         enkeltSamhandlerFromTSSRespons: List<XMLSamhandler>?
     ) {
-        val secondsIn24Hours: Long = 86400
+        val secondsIn48Hours: Long = 172800
         var jedis: Jedis? = null
         try {
             jedis = jedisPool.resource
@@ -20,7 +20,7 @@ class EnkeltSamhandlerFromTSSResponsRedis(private var jedisPool: JedisPool, priv
                 JedisEnkeltSamhandlerFromTSSResponsModel(enkeltSamhandlerFromTSSRespons)
             jedis.setex(
                 samhandlerfnr,
-                secondsIn24Hours,
+                secondsIn48Hours,
                 objectMapper.writeValueAsString(jedisEnkeltSamhandlerFromTSSResponsModel)
             )
 
