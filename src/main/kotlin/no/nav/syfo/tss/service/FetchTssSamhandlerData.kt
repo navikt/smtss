@@ -1,8 +1,8 @@
 package no.nav.syfo.tss.service
 
-import  no.nav.helse.tss.samhandler.data.XMLTServicerutiner
-import  no.nav.helse.tss.samhandler.data.XMLTidOFF1
-import  no.nav.helse.tss.samhandler.data.XMLTssSamhandlerData
+import no.nav.helse.tss.samhandler.data.XMLTServicerutiner
+import no.nav.helse.tss.samhandler.data.XMLTidOFF1
+import no.nav.helse.tss.samhandler.data.XMLTssSamhandlerData
 import no.nav.syfo.util.toString
 import no.nav.syfo.util.tssSamhandlerdataInputMarshaller
 import no.nav.syfo.util.tssSamhandlerdataUnmarshaller
@@ -13,8 +13,8 @@ import javax.jms.MessageProducer
 import javax.jms.Session
 import javax.jms.TemporaryQueue
 import javax.jms.TextMessage
-import  no.nav.helse.tss.samhandler.data.XMLSamhandler
-import  no.nav.helse.tss.samhandler.data.XMLSamhandlerIDataB910Type
+import no.nav.helse.tss.samhandler.data.XMLSamhandler
+import no.nav.helse.tss.samhandler.data.XMLSamhandlerIDataB910Type
 import no.nav.syfo.Environment
 import no.nav.syfo.log
 import no.nav.syfo.mq.producerForQueue
@@ -52,35 +52,36 @@ fun fetchTssSamhandlerData(
 
     securelog.info("Request to tss: ${objectMapper.writeValueAsString(tssSamhandlerDatainput)}")
 
-    val session = connection.createSession(Session.CLIENT_ACKNOWLEDGE)
+    connection.createSession(Session.CLIENT_ACKNOWLEDGE).use { session ->
+        val temporaryQueue = session.createTemporaryQueue()
 
-    val tssSamhnadlerInfoProducer = session.producerForQueue("queue:///${environment.tssQueue}?targetClient=1")
+        val tssSamhnadlerInfoProducer = session.producerForQueue("queue:///${environment.tssQueue}?targetClient=1")
 
-
-    val temporaryQueue = session.createTemporaryQueue()
-    try {
-        sendTssSporring(tssSamhnadlerInfoProducer, session, tssSamhandlerDatainput, temporaryQueue)
-        session.createConsumer(temporaryQueue).use { tmpConsumer ->
-            val consumedMessage = tmpConsumer.receive(20000) as TextMessage
-            return findEnkeltSamhandlerFromTSSRespons(
-                tssSamhandlerdataUnmarshaller.unmarshal(
-                    StringReader(
-                        consumedMessage.text
-                    )
-                ) as XMLTssSamhandlerData, requestId
-            ).also {
-                log.info("Fetched enkeltSamhandlerFromTSSRespons from tss")
-                if (!it.isNullOrEmpty()) {
-                    enkeltSamhandlerFromTSSResponsRedis.save(samhandlerfnr, it)
+        try {
+            sendTssSporring(tssSamhnadlerInfoProducer, session, tssSamhandlerDatainput, temporaryQueue)
+            session.createConsumer(temporaryQueue).use { tmpConsumer ->
+                val consumedMessage = tmpConsumer.receive(20000) as TextMessage
+                return findEnkeltSamhandlerFromTSSRespons(
+                    tssSamhandlerdataUnmarshaller.unmarshal(
+                        StringReader(
+                            consumedMessage.text
+                        )
+                    ) as XMLTssSamhandlerData, requestId
+                ).also {
+                    log.info("Fetched enkeltSamhandlerFromTSSRespons from tss")
+                    if (!it.isNullOrEmpty()) {
+                        enkeltSamhandlerFromTSSResponsRedis.save(samhandlerfnr, it)
+                    }
                 }
             }
+        } catch (exception: Exception) {
+            log.error("An error occured while getting data from tss, ${exception.message}")
+            return emptyList()
+        } finally {
+            temporaryQueue.delete()
         }
-    } catch (exception: Exception) {
-        log.error("An error occured while getting data from tss, ${exception.message}")
-        return emptyList()
-    } finally {
-        temporaryQueue.delete()
     }
+
 }
 
 fun sendTssSporring(

@@ -9,7 +9,6 @@ import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import io.prometheus.client.hotspot.DefaultExports
 import java.net.URL
 import java.util.concurrent.TimeUnit
-import javax.jms.Connection
 import no.nav.syfo.application.ApplicationServer
 import no.nav.syfo.application.ApplicationState
 import no.nav.syfo.application.createApplicationEngine
@@ -45,7 +44,7 @@ fun main() {
 
     val enkeltSamhandlerFromTSSResponsRedis = EnkeltSamhandlerFromTSSResponsRedis(jedisPool, env.redisSecret)
 
-    val connection: Connection =
+    val connection =
         connectionFactory(env).createConnection(serviceUser.serviceuserUsername, serviceUser.serviceuserPassword)
 
     val tssService = TssService(env, enkeltSamhandlerFromTSSResponsRedis, connection)

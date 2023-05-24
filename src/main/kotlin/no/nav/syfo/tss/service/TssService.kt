@@ -1,6 +1,7 @@
 package no.nav.syfo.tss.service
 
 import javax.jms.Connection
+
 import no.nav.syfo.log
 import kotlin.math.max
 import no.nav.helse.tss.samhandler.data.XMLSamhAvdPraType
