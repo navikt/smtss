@@ -30,7 +30,7 @@ class TssService(
                 requestId,
                 connection
             )
-            return filterOutTssIdForEmottak(enkeltSamhandler, samhandlerOrgName)
+            return filterOutTssIdForEmottak(enkeltSamhandler, samhandlerOrgName, requestId)
 
         } catch (exception: Exception) {
             log.error("Call to tss throws error for requestId $requestId", exception)
@@ -87,15 +87,16 @@ fun filterOutTssIdForInfotrygd(enkeltSamhandler: List<XMLSamhandler>?, samhandle
     return null
 }
 
-fun filterOutTssIdForEmottak(enkeltSamhandler: List<XMLSamhandler>?, samhandlerOrgName: String): TSSident? {
+fun filterOutTssIdForEmottak(enkeltSamhandler: List<XMLSamhandler>?, samhandlerOrgName: String, requestId: String): TSSident? {
     val samhandlereAvdelinger = enkeltSamhandler?.filter { it.samhandlerAvd125 != null }
     if (samhandlereAvdelinger?.flatMapNotNull { it.samhandlerAvd125?.samhAvd } != null) {
-        val samhandlerAvdelding = samhandlerMatchingPaaOrganisjonsNavn(
+        val samhandlerMatchingPaaOrganisjonsNavn = filtererBortSamhandlderPraksiserPaaProsentMatch(samhandlerMatchingPaaOrganisjonsNavn(
             samhandlereAvdelinger.flatMapNotNull { it.samhandlerAvd125?.samhAvd },
             samhandlerOrgName
-        )?.samhandlerAvdeling
+        ), 70.0, samhandlerOrgName, requestId)
+        val samhandlerAvdelding = samhandlerMatchingPaaOrganisjonsNavn?.samhandlerAvdeling
 
-        if (samhandlerAvdelding?.idOffTSS != null && (
+        if (samhandlerAvdelding?.idOffTSS != null && samhandlerMatchingPaaOrganisjonsNavn.percentageMatch > 70 && (
                     !samhandlerAvdelingIsLegevakt(samhandlerAvdelding) &&
                             !samhandlerAvdelingIsSykehusOrRegionalHelseforetak(samhandlerAvdelding)) &&
             !samhandlerAvdelingIsAvdNr01(samhandlerAvdelding)
@@ -106,6 +107,26 @@ fun filterOutTssIdForEmottak(enkeltSamhandler: List<XMLSamhandler>?, samhandlerO
     return null
 }
 
+fun filtererBortSamhandlderPraksiserPaaProsentMatch(
+    samhandlerAvdelingMatch: SamhandlerAvdelingMatch?,
+    prosentMatch: Double,
+    samhandlerOrgName: String,
+    requestId: String
+): SamhandlerAvdelingMatch? {
+    return if (samhandlerAvdelingMatch != null && samhandlerAvdelingMatch.percentageMatch >= prosentMatch) {
+        log.info(
+            "Beste match ble samhandler praksis: " +
+                    "Navn: ${samhandlerAvdelingMatch.samhandlerAvdeling.avdNavn } " +
+                    "Tssid: ${samhandlerAvdelingMatch.samhandlerAvdeling.idOffTSS} " +
+                    "Samhandler praksis type: ${samhandlerAvdelingMatch.samhandlerAvdeling.typeAvd } " +
+                    "Prosent match:${samhandlerAvdelingMatch.percentageMatch} %, basert på sykmeldingens organisjons navn: $samhandlerOrgName " +
+                    "requestId = $requestId",
+        )
+        samhandlerAvdelingMatch
+    } else {
+        null
+    }
+}
 
 fun samhandlerMatchingPaaOrganisjonsNavn(
     samhandlereAvdelinger: List<XMLSamhAvdPraType>,

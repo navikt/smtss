@@ -17,8 +17,9 @@ internal class TssServiceKtTest {
         )
 
         val samhandlerOrgnavn = "test legesenter"
+        val requestId = "132-23344-213123"
 
-        val tssId = filterOutTssIdForEmottak(enkeltSamhandler, samhandlerOrgnavn)?.tssid
+        val tssId = filterOutTssIdForEmottak(enkeltSamhandler, samhandlerOrgnavn, requestId)?.tssid
 
         assertEquals(expectedTssId, tssId)
 
@@ -34,8 +35,27 @@ internal class TssServiceKtTest {
         )
 
         val samhandlerOrgnavn = "test legesenter"
+        val requestId = "132-23344-213123"
 
-        val tssId = filterOutTssIdForEmottak(enkeltSamhandler, samhandlerOrgnavn)?.tssid
+        val tssId = filterOutTssIdForEmottak(enkeltSamhandler, samhandlerOrgnavn,requestId)?.tssid
+
+        assertEquals(expectedTssId, tssId)
+
+    }
+
+    @Test
+    internal fun `Returns correct tssid when match prosent is 83`() {
+        val expectedTssId = "80000347193"
+
+        val enkeltSamhandler: List<XMLSamhandler>? = objectMapper.readValue(
+            TssServiceKtTest::class.java.getResourceAsStream("/tssavd125null.json")!!.readBytes()
+                .toString(Charsets.UTF_8),
+        )
+
+        val samhandlerOrgnavn = "test legesenterete"
+        val requestId = "132-23344-213123"
+
+        val tssId = filterOutTssIdForEmottak(enkeltSamhandler, samhandlerOrgnavn,requestId)?.tssid
 
         assertEquals(expectedTssId, tssId)
 
