@@ -1,5 +1,7 @@
 package no.nav.syfo.tss.service
 
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import javax.jms.Connection
 
 import no.nav.syfo.log
@@ -68,32 +70,38 @@ fun filterOutTssIdForInfotrygd(enkeltSamhandler: List<XMLSamhandler>?, samhandle
             samhandlerOrgName
         )?.samhandlerAvdeling
 
-        if (samhandlerAvdelding?.idOffTSS != null && (
+        return if (samhandlerAvdelding?.idOffTSS != null && (
                     !samhandlerAvdelingIsLegevakt(samhandlerAvdelding) &&
                             !samhandlerAvdelingIsSykehusOrRegionalHelseforetak(samhandlerAvdelding))
         ) {
-            return TSSident(samhandlerAvdelding.idOffTSS)
+            TSSident(samhandlerAvdelding.idOffTSS)
         } else if (enkeltSamhandler.firstOrNull()?.samhandlerAvd125?.samhAvd?.find {
                 it.avdNr == "01"
             }?.idOffTSS != null) {
 
-            return TSSident(enkeltSamhandler.firstOrNull()?.samhandlerAvd125?.samhAvd?.find {
+            TSSident(enkeltSamhandler.firstOrNull()?.samhandlerAvd125?.samhAvd?.find {
                 it.avdNr == "01"
             }?.idOffTSS!!)
         } else {
-            return null
+            null
         }
     }
     return null
 }
 
-fun filterOutTssIdForEmottak(enkeltSamhandler: List<XMLSamhandler>?, samhandlerOrgName: String, requestId: String): TSSident? {
+fun filterOutTssIdForEmottak(
+    enkeltSamhandler: List<XMLSamhandler>?,
+    samhandlerOrgName: String,
+    requestId: String
+): TSSident? {
     val samhandlereAvdelinger = enkeltSamhandler?.filter { it.samhandlerAvd125 != null }
     if (samhandlereAvdelinger?.flatMapNotNull { it.samhandlerAvd125?.samhAvd } != null) {
-        val samhandlerMatchingPaaOrganisjonsNavn = filtererBortSamhandlderPraksiserPaaProsentMatch(samhandlerMatchingPaaOrganisjonsNavn(
-            samhandlereAvdelinger.flatMapNotNull { it.samhandlerAvd125?.samhAvd },
-            samhandlerOrgName
-        ), 70.0, samhandlerOrgName, requestId)
+        val samhandlerMatchingPaaOrganisjonsNavn = filtererBortSamhandlderPraksiserPaaProsentMatch(
+            samhandlerMatchingPaaOrganisjonsNavn(
+                samhandlereAvdelinger.flatMapNotNull { it.samhandlerAvd125?.samhAvd },
+                samhandlerOrgName
+            ), 70.0, samhandlerOrgName, requestId
+        )
         val samhandlerAvdelding = samhandlerMatchingPaaOrganisjonsNavn?.samhandlerAvdeling
 
         if (samhandlerAvdelding?.idOffTSS != null && samhandlerMatchingPaaOrganisjonsNavn.percentageMatch > 70 && (
@@ -116,9 +124,9 @@ fun filtererBortSamhandlderPraksiserPaaProsentMatch(
     return if (samhandlerAvdelingMatch != null && samhandlerAvdelingMatch.percentageMatch >= prosentMatch) {
         log.info(
             "Beste match ble samhandler praksis: " +
-                    "Navn: ${samhandlerAvdelingMatch.samhandlerAvdeling.avdNavn } " +
+                    "Navn: ${samhandlerAvdelingMatch.samhandlerAvdeling.avdNavn} " +
                     "Tssid: ${samhandlerAvdelingMatch.samhandlerAvdeling.idOffTSS} " +
-                    "Samhandler praksis type: ${samhandlerAvdelingMatch.samhandlerAvdeling.typeAvd } " +
+                    "Samhandler praksis type: ${samhandlerAvdelingMatch.samhandlerAvdeling.typeAvd} " +
                     "Prosent match:${samhandlerAvdelingMatch.percentageMatch} %, basert på sykmeldingens organisjons navn: $samhandlerOrgName " +
                     "requestId = $requestId",
         )
@@ -133,9 +141,18 @@ fun samhandlerMatchingPaaOrganisjonsNavn(
     samhandlerOrgName: String
 ): SamhandlerAvdelingMatch? {
 
+    val dateFormatter = DateTimeFormatter.ofPattern("yyyyMMdd")
+    val dateToday = LocalDate.now()
+
     val aktiveSamhandlereMedNavn = samhandlereAvdelinger
         .filter { samhandlerAvdeling -> samhandlerAvdeling.gyldigAvd == "J" }
         .filter { samhandlerAvdeling -> !samhandlerAvdeling.avdNavn.isNullOrEmpty() }
+        .filter { samhandlerAvdeling -> !samhandlerAvdeling.avdNavn.isNullOrEmpty() }
+        .filter { samhandlerAvdeling -> if(samhandlerAvdeling.datoAvdTom.trim().isNotEmpty()) {
+            LocalDate.parse(samhandlerAvdeling.datoAvdTom, dateFormatter) > dateToday
+        } else
+            samhandlerAvdeling.datoAvdTom.isNullOrEmpty()}
+
 
     return if (aktiveSamhandlereMedNavn.isNotEmpty()) {
         samhandlereAvdelinger.map { samhandlerAvdeling ->

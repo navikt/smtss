@@ -1,10 +1,11 @@
 package no.nav.syfo.tss.service
 
 import com.fasterxml.jackson.module.kotlin.readValue
-import  no.nav.helse.tss.samhandler.data.XMLSamhandler
+import no.nav.helse.tss.samhandler.data.XMLSamhandler
 import no.nav.syfo.objectMapper
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+
 
 internal class TssServiceKtTest {
     @Test
