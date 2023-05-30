@@ -24,7 +24,6 @@ class TssService(
         samhandlerOrgName: String,
         requestId: String
     ): TSSident? {
-        return try {
             val enkeltSamhandler = fetchTssSamhandlerData(
                 samhandlerfnr,
                 environment,
@@ -34,10 +33,6 @@ class TssService(
             )
             return filterOutTssIdForEmottak(enkeltSamhandler, samhandlerOrgName, requestId)
 
-        } catch (exception: Exception) {
-            log.error("Call to tss throws error for requestId $requestId", exception)
-            null
-        }
     }
 
     fun findBestTssInfotrygdId(
@@ -45,7 +40,6 @@ class TssService(
         samhandlerOrgName: String,
         requestId: String
     ): TSSident? {
-        return try {
             val enkeltSamhandler = fetchTssSamhandlerData(
                 samhandlerfnr,
                 environment,
@@ -55,10 +49,6 @@ class TssService(
             )
 
             return filterOutTssIdForInfotrygd(enkeltSamhandler, samhandlerOrgName)
-        } catch (e: Exception) {
-            log.error("Call to tss throws error for requestId $requestId", e)
-            null
-        }
     }
 }
 

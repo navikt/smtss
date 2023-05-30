@@ -56,9 +56,9 @@ fun createApplicationEngine(
                 log.error("Caught exception", cause.message)
                 securelog.error("Caught exception", cause)
                 call.respond(HttpStatusCode.InternalServerError, cause.message ?: "Unknown error")
-                throw cause
+                applicationState.alive = false
+                applicationState.ready = false
             }
         }
         intercept(ApplicationCallPipeline.Monitoring, monitorHttpRequests())
-
     }

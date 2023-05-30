@@ -63,6 +63,4 @@ fun main() {
 
     val applicationServer = ApplicationServer(applicationEngine, applicationState, connection)
     applicationServer.start()
-
-
 }
