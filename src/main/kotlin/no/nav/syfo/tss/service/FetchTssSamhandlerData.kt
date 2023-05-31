@@ -13,6 +13,9 @@ import javax.jms.MessageProducer
 import javax.jms.Session
 import javax.jms.TemporaryQueue
 import javax.jms.TextMessage
+import javax.xml.parsers.SAXParserFactory
+import javax.xml.transform.Source
+import javax.xml.transform.sax.SAXSource
 import no.nav.helse.tss.samhandler.data.XMLSamhandler
 import no.nav.helse.tss.samhandler.data.XMLSamhandlerIDataB910Type
 import no.nav.syfo.Environment
@@ -21,6 +24,7 @@ import no.nav.syfo.mq.producerForQueue
 import no.nav.syfo.objectMapper
 import no.nav.syfo.redis.EnkeltSamhandlerFromTSSResponsRedis
 import no.nav.syfo.securelog
+import org.xml.sax.InputSource
 
 fun fetchTssSamhandlerData(
     samhandlerfnr: String,
@@ -61,12 +65,7 @@ fun fetchTssSamhandlerData(
             sendTssSporring(tssSamhnadlerInfoProducer, session, tssSamhandlerDatainput, temporaryQueue)
             session.createConsumer(temporaryQueue).use { tmpConsumer ->
                 val consumedMessage = tmpConsumer.receive(20000) as TextMessage
-                return findEnkeltSamhandlerFromTSSRespons(
-                    tssSamhandlerdataUnmarshaller.unmarshal(
-                        StringReader(
-                            consumedMessage.text
-                        )
-                    ) as XMLTssSamhandlerData, requestId
+                return findEnkeltSamhandlerFromTSSRespons(safeUnmarshal( consumedMessage.text), requestId
                 ).also {
                     log.info("Fetched enkeltSamhandlerFromTSSRespons from tss")
                     if (!it.isNullOrEmpty()) {
@@ -124,4 +123,17 @@ fun checkPersonNumberIsDnr(personNumber: String): Boolean {
 
 fun validatePersonDNumberRange(personNumberFirstAndSecoundChar: String): Boolean {
     return personNumberFirstAndSecoundChar.toInt() in 41..71
+}
+
+private fun safeUnmarshal(inputMessageText: String): XMLTssSamhandlerData {
+    // Disable XXE
+    val spf: SAXParserFactory = SAXParserFactory.newInstance()
+    spf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true)
+    spf.isNamespaceAware = true
+
+    val xmlSource: Source = SAXSource(
+        spf.newSAXParser().xmlReader,
+        InputSource(StringReader(inputMessageText)),
+    )
+    return tssSamhandlerdataUnmarshaller.unmarshal(xmlSource) as XMLTssSamhandlerData
 }
