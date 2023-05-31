@@ -137,11 +137,10 @@ fun samhandlerMatchingPaaOrganisjonsNavn(
     val aktiveSamhandlereMedNavn = samhandlereAvdelinger
         .filter { samhandlerAvdeling -> samhandlerAvdeling.gyldigAvd == "J" }
         .filter { samhandlerAvdeling -> !samhandlerAvdeling.avdNavn.isNullOrEmpty() }
-        .filter { samhandlerAvdeling -> !samhandlerAvdeling.avdNavn.isNullOrEmpty() }
         .filter { samhandlerAvdeling -> if(samhandlerAvdeling.datoAvdTom.trim().isNotEmpty()) {
             LocalDate.parse(samhandlerAvdeling.datoAvdTom, dateFormatter) > dateToday
         } else
-            samhandlerAvdeling.datoAvdTom.isNullOrEmpty()}
+            samhandlerAvdeling.datoAvdTom.trim().isEmpty()}
 
 
     return if (aktiveSamhandlereMedNavn.isNotEmpty()) {
