@@ -1,16 +1,16 @@
 package no.nav.syfo.redis
 
-import  no.nav.helse.tss.samhandler.data.XMLSamhandler
+import no.nav.helse.tss.samhandler.data.XMLSamhandler
 import no.nav.syfo.log
 import no.nav.syfo.objectMapper
 import redis.clients.jedis.Jedis
 import redis.clients.jedis.JedisPool
 
-class EnkeltSamhandlerFromTSSResponsRedis(private var jedisPool: JedisPool, private val redisSecret: String) {
-    fun save(
-        samhandlerfnr: String,
-        enkeltSamhandlerFromTSSRespons: List<XMLSamhandler>?
-    ) {
+class EnkeltSamhandlerFromTSSResponsRedis(
+    private var jedisPool: JedisPool,
+    private val redisSecret: String
+) {
+    fun save(samhandlerfnr: String, enkeltSamhandlerFromTSSRespons: List<XMLSamhandler>?) {
         val secondsIn48Hours: Long = 172800
         var jedis: Jedis? = null
         try {
@@ -23,7 +23,6 @@ class EnkeltSamhandlerFromTSSResponsRedis(private var jedisPool: JedisPool, priv
                 secondsIn48Hours,
                 objectMapper.writeValueAsString(jedisEnkeltSamhandlerFromTSSResponsModel)
             )
-
         } catch (exception: Exception) {
             log.error("Could not save enkeltSamhandlerFromTSSRespons in Redis", exception)
         } finally {
@@ -45,6 +44,5 @@ class EnkeltSamhandlerFromTSSResponsRedis(private var jedisPool: JedisPool, priv
         } finally {
             jedis?.close()
         }
-
     }
 }

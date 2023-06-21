@@ -10,14 +10,18 @@ class ApplicationServer(
     private val connection: Connection
 ) {
     init {
-        Runtime.getRuntime().addShutdownHook(
-            Thread {
-                this.connection.close()
-                this.applicationState.ready = false
-                this.applicationState.alive = false
-                this.applicationServer.stop(TimeUnit.SECONDS.toMillis(10), TimeUnit.SECONDS.toMillis(10))
-            },
-        )
+        Runtime.getRuntime()
+            .addShutdownHook(
+                Thread {
+                    this.connection.close()
+                    this.applicationState.ready = false
+                    this.applicationState.alive = false
+                    this.applicationServer.stop(
+                        TimeUnit.SECONDS.toMillis(10),
+                        TimeUnit.SECONDS.toMillis(10)
+                    )
+                },
+            )
     }
 
     fun start() {

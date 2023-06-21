@@ -21,16 +21,16 @@ import org.slf4j.LoggerFactory
 import redis.clients.jedis.JedisPool
 import redis.clients.jedis.JedisPoolConfig
 
-
 val log: Logger = LoggerFactory.getLogger("no.nav.syfo.smtss")
 val securelog: Logger = LoggerFactory.getLogger("securelog")
 
-val objectMapper: ObjectMapper = ObjectMapper().apply {
-    registerKotlinModule()
-    registerModule(JavaTimeModule())
-    configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
-    configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-}
+val objectMapper: ObjectMapper =
+    ObjectMapper().apply {
+        registerKotlinModule()
+        registerModule(JavaTimeModule())
+        configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
+        configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+    }
 
 fun main() {
     val env = Environment()
@@ -38,28 +38,34 @@ fun main() {
     val applicationState = ApplicationState()
     val serviceUser = ServiceUser()
 
-    MqTlsUtils.getMqTlsConfig().forEach { key, value -> System.setProperty(key as String, value as String) }
+    MqTlsUtils.getMqTlsConfig().forEach { key, value ->
+        System.setProperty(key as String, value as String)
+    }
 
     val jedisPool = JedisPool(JedisPoolConfig(), env.redisHost, env.redisPort)
 
-    val enkeltSamhandlerFromTSSResponsRedis = EnkeltSamhandlerFromTSSResponsRedis(jedisPool, env.redisSecret)
+    val enkeltSamhandlerFromTSSResponsRedis =
+        EnkeltSamhandlerFromTSSResponsRedis(jedisPool, env.redisSecret)
 
     val connection =
-        connectionFactory(env).createConnection(serviceUser.serviceuserUsername, serviceUser.serviceuserPassword)
+        connectionFactory(env)
+            .createConnection(serviceUser.serviceuserUsername, serviceUser.serviceuserPassword)
 
     val tssService = TssService(env, enkeltSamhandlerFromTSSResponsRedis, connection)
 
-    val jwkProviderAad = JwkProviderBuilder(URL(env.jwkKeysUrl))
-        .cached(10, 24, TimeUnit.HOURS)
-        .rateLimited(10, 1, TimeUnit.MINUTES)
-        .build()
+    val jwkProviderAad =
+        JwkProviderBuilder(URL(env.jwkKeysUrl))
+            .cached(10, 24, TimeUnit.HOURS)
+            .rateLimited(10, 1, TimeUnit.MINUTES)
+            .build()
 
-    val applicationEngine = createApplicationEngine(
-        env,
-        applicationState,
-        tssService,
-        jwkProviderAad,
-    )
+    val applicationEngine =
+        createApplicationEngine(
+            env,
+            applicationState,
+            tssService,
+            jwkProviderAad,
+        )
 
     val applicationServer = ApplicationServer(applicationEngine, applicationState, connection)
     applicationServer.start()

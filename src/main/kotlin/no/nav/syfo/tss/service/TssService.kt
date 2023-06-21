@@ -3,12 +3,11 @@ package no.nav.syfo.tss.service
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import javax.jms.Connection
-
-import no.nav.syfo.log
 import kotlin.math.max
 import no.nav.helse.tss.samhandler.data.XMLSamhAvdPraType
 import no.nav.helse.tss.samhandler.data.XMLSamhandler
 import no.nav.syfo.Environment
+import no.nav.syfo.log
 import no.nav.syfo.redis.EnkeltSamhandlerFromTSSResponsRedis
 import org.apache.commons.text.similarity.LevenshteinDistance
 
@@ -18,21 +17,20 @@ class TssService(
     private val connection: Connection,
 ) {
 
-
     fun findBestTssIdEmottak(
         samhandlerfnr: String,
         samhandlerOrgName: String,
         requestId: String
     ): TSSident? {
-            val enkeltSamhandler = fetchTssSamhandlerData(
+        val enkeltSamhandler =
+            fetchTssSamhandlerData(
                 samhandlerfnr,
                 environment,
                 enkeltSamhandlerFromTSSResponsRedis,
                 requestId,
                 connection
             )
-            return filterOutTssIdForEmottak(enkeltSamhandler, samhandlerOrgName, requestId)
-
+        return filterOutTssIdForEmottak(enkeltSamhandler, samhandlerOrgName, requestId)
     }
 
     fun findBestTssInfotrygdId(
@@ -40,7 +38,8 @@ class TssService(
         samhandlerOrgName: String,
         requestId: String
     ): TSSident? {
-            val enkeltSamhandler = fetchTssSamhandlerData(
+        val enkeltSamhandler =
+            fetchTssSamhandlerData(
                 samhandlerfnr,
                 environment,
                 enkeltSamhandlerFromTSSResponsRedis,
@@ -48,30 +47,46 @@ class TssService(
                 connection
             )
 
-            return filterOutTssIdForInfotrygd(enkeltSamhandler, samhandlerOrgName)
+        return filterOutTssIdForInfotrygd(enkeltSamhandler, samhandlerOrgName)
     }
 }
 
-fun filterOutTssIdForInfotrygd(enkeltSamhandler: List<XMLSamhandler>?, samhandlerOrgName: String): TSSident? {
+fun filterOutTssIdForInfotrygd(
+    enkeltSamhandler: List<XMLSamhandler>?,
+    samhandlerOrgName: String
+): TSSident? {
     val samhandlereAvdelinger = enkeltSamhandler?.filter { it.samhandlerAvd125 != null }
     if (samhandlereAvdelinger?.flatMapNotNull { it.samhandlerAvd125?.samhAvd } != null) {
-        val samhandlerAvdelding = samhandlerMatchingPaaOrganisjonsNavn(
-            samhandlereAvdelinger.flatMapNotNull { it.samhandlerAvd125?.samhAvd },
-            samhandlerOrgName
-        )?.samhandlerAvdeling
+        val samhandlerAvdelding =
+            samhandlerMatchingPaaOrganisjonsNavn(
+                    samhandlereAvdelinger.flatMapNotNull { it.samhandlerAvd125?.samhAvd },
+                    samhandlerOrgName
+                )
+                ?.samhandlerAvdeling
 
-        return if (samhandlerAvdelding?.idOffTSS != null && (
-                    !samhandlerAvdelingIsLegevakt(samhandlerAvdelding) &&
-                            !samhandlerAvdelingIsSykehusOrRegionalHelseforetak(samhandlerAvdelding))
+        return if (
+            samhandlerAvdelding?.idOffTSS != null &&
+                (!samhandlerAvdelingIsLegevakt(samhandlerAvdelding) &&
+                    !samhandlerAvdelingIsSykehusOrRegionalHelseforetak(samhandlerAvdelding))
         ) {
             TSSident(samhandlerAvdelding.idOffTSS)
-        } else if (enkeltSamhandler.firstOrNull()?.samhandlerAvd125?.samhAvd?.find {
-                it.avdNr == "01"
-            }?.idOffTSS != null) {
+        } else if (
+            enkeltSamhandler
+                .firstOrNull()
+                ?.samhandlerAvd125
+                ?.samhAvd
+                ?.find { it.avdNr == "01" }
+                ?.idOffTSS != null
+        ) {
 
-            TSSident(enkeltSamhandler.firstOrNull()?.samhandlerAvd125?.samhAvd?.find {
-                it.avdNr == "01"
-            }?.idOffTSS!!)
+            TSSident(
+                enkeltSamhandler
+                    .firstOrNull()
+                    ?.samhandlerAvd125
+                    ?.samhAvd
+                    ?.find { it.avdNr == "01" }
+                    ?.idOffTSS!!
+            )
         } else {
             null
         }
@@ -86,18 +101,24 @@ fun filterOutTssIdForEmottak(
 ): TSSident? {
     val samhandlereAvdelinger = enkeltSamhandler?.filter { it.samhandlerAvd125 != null }
     if (samhandlereAvdelinger?.flatMapNotNull { it.samhandlerAvd125?.samhAvd } != null) {
-        val samhandlerMatchingPaaOrganisjonsNavn = filtererBortSamhandlderPraksiserPaaProsentMatch(
-            samhandlerMatchingPaaOrganisjonsNavn(
-                samhandlereAvdelinger.flatMapNotNull { it.samhandlerAvd125?.samhAvd },
-                samhandlerOrgName
-            ), 70.0, samhandlerOrgName, requestId
-        )
+        val samhandlerMatchingPaaOrganisjonsNavn =
+            filtererBortSamhandlderPraksiserPaaProsentMatch(
+                samhandlerMatchingPaaOrganisjonsNavn(
+                    samhandlereAvdelinger.flatMapNotNull { it.samhandlerAvd125?.samhAvd },
+                    samhandlerOrgName
+                ),
+                70.0,
+                samhandlerOrgName,
+                requestId
+            )
         val samhandlerAvdelding = samhandlerMatchingPaaOrganisjonsNavn?.samhandlerAvdeling
 
-        if (samhandlerAvdelding?.idOffTSS != null && samhandlerMatchingPaaOrganisjonsNavn.percentageMatch > 70 && (
-                    !samhandlerAvdelingIsLegevakt(samhandlerAvdelding) &&
-                            !samhandlerAvdelingIsSykehusOrRegionalHelseforetak(samhandlerAvdelding)) &&
-            !samhandlerAvdelingIsAvdNr01(samhandlerAvdelding)
+        if (
+            samhandlerAvdelding?.idOffTSS != null &&
+                samhandlerMatchingPaaOrganisjonsNavn.percentageMatch > 70 &&
+                (!samhandlerAvdelingIsLegevakt(samhandlerAvdelding) &&
+                    !samhandlerAvdelingIsSykehusOrRegionalHelseforetak(samhandlerAvdelding)) &&
+                !samhandlerAvdelingIsAvdNr01(samhandlerAvdelding)
         ) {
             return TSSident(samhandlerAvdelding.idOffTSS)
         }
@@ -111,14 +132,16 @@ fun filtererBortSamhandlderPraksiserPaaProsentMatch(
     samhandlerOrgName: String,
     requestId: String
 ): SamhandlerAvdelingMatch? {
-    return if (samhandlerAvdelingMatch != null && samhandlerAvdelingMatch.percentageMatch >= prosentMatch) {
+    return if (
+        samhandlerAvdelingMatch != null && samhandlerAvdelingMatch.percentageMatch >= prosentMatch
+    ) {
         log.info(
             "Beste match ble samhandler praksis: " +
-                    "Navn: ${samhandlerAvdelingMatch.samhandlerAvdeling.avdNavn} " +
-                    "Tssid: ${samhandlerAvdelingMatch.samhandlerAvdeling.idOffTSS} " +
-                    "Samhandler praksis type: ${samhandlerAvdelingMatch.samhandlerAvdeling.typeAvd} " +
-                    "Prosent match:${samhandlerAvdelingMatch.percentageMatch} %, basert på sykmeldingens organisjons navn: $samhandlerOrgName " +
-                    "requestId = $requestId",
+                "Navn: ${samhandlerAvdelingMatch.samhandlerAvdeling.avdNavn} " +
+                "Tssid: ${samhandlerAvdelingMatch.samhandlerAvdeling.idOffTSS} " +
+                "Samhandler praksis type: ${samhandlerAvdelingMatch.samhandlerAvdeling.typeAvd} " +
+                "Prosent match:${samhandlerAvdelingMatch.percentageMatch} %, basert på sykmeldingens organisjons navn: $samhandlerOrgName " +
+                "requestId = $requestId",
         )
         samhandlerAvdelingMatch
     } else {
@@ -134,44 +157,47 @@ fun samhandlerMatchingPaaOrganisjonsNavn(
     val dateFormatter = DateTimeFormatter.ofPattern("yyyyMMdd")
     val dateToday = LocalDate.now()
 
-    val aktiveSamhandlereMedNavn = samhandlereAvdelinger
-        .filter { samhandlerAvdeling -> samhandlerAvdeling.gyldigAvd == "J" }
-        .filter { samhandlerAvdeling -> !samhandlerAvdeling.avdNavn.isNullOrEmpty() }
-        .filter { samhandlerAvdeling -> if(samhandlerAvdeling.datoAvdTom.trim().isNotEmpty()) {
-            LocalDate.parse(samhandlerAvdeling.datoAvdTom, dateFormatter) > dateToday
-        } else
-            samhandlerAvdeling.datoAvdTom.trim().isEmpty()}
-
+    val aktiveSamhandlereMedNavn =
+        samhandlereAvdelinger
+            .filter { samhandlerAvdeling -> samhandlerAvdeling.gyldigAvd == "J" }
+            .filter { samhandlerAvdeling -> !samhandlerAvdeling.avdNavn.isNullOrEmpty() }
+            .filter { samhandlerAvdeling ->
+                if (samhandlerAvdeling.datoAvdTom.trim().isNotEmpty()) {
+                    LocalDate.parse(samhandlerAvdeling.datoAvdTom, dateFormatter) > dateToday
+                } else samhandlerAvdeling.datoAvdTom.trim().isEmpty()
+            }
 
     return if (aktiveSamhandlereMedNavn.isNotEmpty()) {
-        samhandlereAvdelinger.map { samhandlerAvdeling ->
-            SamhandlerAvdelingMatch(
-                samhandlerAvdeling,
-                calculatePercentageStringMatch(
-                    samhandlerAvdeling.avdNavn.lowercase(),
-                    samhandlerOrgName.lowercase()
-                ) * 100
-            )
-        }.maxByOrNull { it.percentageMatch }
+        samhandlereAvdelinger
+            .map { samhandlerAvdeling ->
+                SamhandlerAvdelingMatch(
+                    samhandlerAvdeling,
+                    calculatePercentageStringMatch(
+                        samhandlerAvdeling.avdNavn.lowercase(),
+                        samhandlerOrgName.lowercase()
+                    ) * 100
+                )
+            }
+            .maxByOrNull { it.percentageMatch }
     } else {
         null
     }
-
 }
 
-data class SamhandlerAvdelingMatch(val samhandlerAvdeling: XMLSamhAvdPraType, val percentageMatch: Double)
+data class SamhandlerAvdelingMatch(
+    val samhandlerAvdeling: XMLSamhAvdPraType,
+    val percentageMatch: Double
+)
 
 fun samhandlerAvdelingIsLegevakt(samhandlereAvdeling: XMLSamhAvdPraType): Boolean =
-    !samhandlereAvdeling.typeAvd.isNullOrEmpty() && (
-            samhandlereAvdeling.typeAvd == "LEVA" ||
-                    samhandlereAvdeling.typeAvd == "LEKO"
-            )
+    !samhandlereAvdeling.typeAvd.isNullOrEmpty() &&
+        (samhandlereAvdeling.typeAvd == "LEVA" || samhandlereAvdeling.typeAvd == "LEKO")
 
-fun samhandlerAvdelingIsSykehusOrRegionalHelseforetak(samhandlereAvdeling: XMLSamhAvdPraType): Boolean =
-    !samhandlereAvdeling.typeAvd.isNullOrEmpty() && (
-            samhandlereAvdeling.typeAvd == "SYKE" ||
-                    samhandlereAvdeling.typeAvd == "RHFO"
-            )
+fun samhandlerAvdelingIsSykehusOrRegionalHelseforetak(
+    samhandlereAvdeling: XMLSamhAvdPraType
+): Boolean =
+    !samhandlereAvdeling.typeAvd.isNullOrEmpty() &&
+        (samhandlereAvdeling.typeAvd == "SYKE" || samhandlereAvdeling.typeAvd == "RHFO")
 
 fun samhandlerAvdelingIsAvdNr01(samhandlereAvdeling: XMLSamhAvdPraType): Boolean =
     samhandlereAvdeling.avdNr == "01"
@@ -186,9 +212,6 @@ data class TSSident(
     val tssid: String,
 )
 
-
 inline fun <T, R> Iterable<T>.flatMapNotNull(transform: (T) -> Iterable<R?>?): List<R> = buildList {
-    this@flatMapNotNull.forEach { element ->
-        transform(element)?.forEach { it?.let(::add) }
-    }
+    this@flatMapNotNull.forEach { element -> transform(element)?.forEach { it?.let(::add) } }
 }

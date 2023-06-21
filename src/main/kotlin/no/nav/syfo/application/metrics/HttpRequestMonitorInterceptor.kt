@@ -3,7 +3,6 @@ package no.nav.syfo.application.metrics
 import io.ktor.server.application.ApplicationCall
 import io.ktor.server.request.path
 import io.ktor.util.pipeline.PipelineContext
-import no.nav.syfo.securelog
 
 fun monitorHttpRequests(): suspend PipelineContext<Unit, ApplicationCall>.(Unit) -> Unit {
     return {

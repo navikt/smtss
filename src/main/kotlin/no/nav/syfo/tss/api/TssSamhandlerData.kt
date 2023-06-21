@@ -15,7 +15,6 @@ fun Route.getTssId(
 ) {
     route("/api/v1") {
         get("samhandler/emottak") {
-
             val samhandlerfnr = call.request.headers["samhandlerFnr"]
             val samhandlerOrgName = call.request.headers["samhandlerOrgName"]
             val requestid = call.request.headers["requestId"]
@@ -31,7 +30,9 @@ fun Route.getTssId(
                 call.respond(HttpStatusCode.BadRequest, "Missing requestId in header")
             } else {
                 try {
-                    log.info("Trying to find best tssid for emottak samhandlerOrgName: $samhandlerOrgName and requestid: $requestid")
+                    log.info(
+                        "Trying to find best tssid for emottak samhandlerOrgName: $samhandlerOrgName and requestid: $requestid"
+                    )
                     val tssIdent: TSSident? =
                         tssService.findBestTssIdEmottak(samhandlerfnr, samhandlerOrgName, requestid)
                     if (tssIdent != null) {
@@ -44,8 +45,6 @@ fun Route.getTssId(
                     throw exception
                 }
             }
-
-
         }
         get("samhandler/infotrygd") {
             val samhandlerfnr = call.request.headers["samhandlerFnr"]
@@ -61,9 +60,15 @@ fun Route.getTssId(
                 call.respond(HttpStatusCode.BadRequest, "Missing requestId in header")
             } else {
                 try {
-                    log.info("Trying to find best tssid for infotrygd samhandlerOrgName: $samhandlerOrgName and requestid: $requestid")
+                    log.info(
+                        "Trying to find best tssid for infotrygd samhandlerOrgName: $samhandlerOrgName and requestid: $requestid"
+                    )
                     val tssIdent: TSSident? =
-                        tssService.findBestTssInfotrygdId(samhandlerfnr, samhandlerOrgName, requestid)
+                        tssService.findBestTssInfotrygdId(
+                            samhandlerfnr,
+                            samhandlerOrgName,
+                            requestid
+                        )
                     if (tssIdent != null) {
                         call.respond(HttpStatusCode.OK, tssIdent)
                     } else {

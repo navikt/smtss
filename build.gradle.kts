@@ -20,6 +20,7 @@ val jaxbApiVersion = "2.4.0-b180830.0359"
 val commonsTextVersion = "1.10.0"
 val jedisVersion = "4.4.3"
 val embeddedRedisVersion = "1.0.0"
+val ktfmtVersion = "0.44"
 
 
 tasks.withType<Jar> {
@@ -29,6 +30,8 @@ tasks.withType<Jar> {
 plugins {
     kotlin("jvm") version "1.8.22"
     id("com.github.johnrengelman.shadow") version "8.1.1"
+    id("org.cyclonedx.bom") version "1.7.4"
+    id("com.diffplug.spotless") version "6.19.0"
 }
 
 val githubUser: String by project
@@ -119,6 +122,13 @@ tasks {
     withType<Test> {
         useJUnitPlatform {}
         testLogging.showStandardStreams = true
+    }
+
+    spotless {
+        kotlin { ktfmt(ktfmtVersion).kotlinlangStyle() }
+        check {
+            dependsOn("spotlessApply")
+        }
     }
 
 }

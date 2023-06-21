@@ -22,7 +22,8 @@ fun Application.setupAuth(
             verifier(jwkProviderAadV2, environment.jwtIssuer)
             validate { credentials ->
                 when {
-                    hasAccsess(credentials, environment.clientIdV2) -> JWTPrincipal(credentials.payload)
+                    hasAccsess(credentials, environment.clientIdV2) ->
+                        JWTPrincipal(credentials.payload)
                     else -> unauthorized(credentials)
                 }
             }
