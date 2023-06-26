@@ -33,9 +33,6 @@ internal class EnkeltSamhandlerFromTSSResponsRedisTest {
 
     private val jedisPool = JedisPool(JedisPoolConfig(), "localhost", randomport)
 
-    private val enkeltSamhandlerFromTSSResponsRedis =
-        EnkeltSamhandlerFromTSSResponsRedis(jedisPool, "secret")
-
     @Test
     internal fun `Should cache enkeltSamhandlerFromTSSRespons in redis`() {
         val samhandlerfnr = "1232134124"
@@ -49,10 +46,9 @@ internal class EnkeltSamhandlerFromTSSResponsRedisTest {
                     .toString(Charsets.UTF_8),
             )
 
-        enkeltSamhandlerFromTSSResponsRedis.save(samhandlerfnr, enkeltSamhandlerFromTSSRespons)
+        saveTSSRespons(jedisPool, "secret", samhandlerfnr, enkeltSamhandlerFromTSSRespons)
 
-        val cachedEnkeltSamhandlerFromTSSRespons =
-            enkeltSamhandlerFromTSSResponsRedis.get(samhandlerfnr)
+        val cachedEnkeltSamhandlerFromTSSRespons = getTSSRespons(jedisPool, "secret", samhandlerfnr)
 
         assertEquals(
             enkeltSamhandlerFromTSSRespons?.firstOrNull()?.samhandlerAvd125?.antSamhAvd,

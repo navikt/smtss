@@ -5,37 +5,41 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 group = "no.nav.syfo"
 version = "1.0.0"
 
-val jacksonVersion = "2.15.2"
-val ktorVersion = "2.3.1"
-val logbackVersion = "1.4.8"
-val logstashEncoderVersion = "7.4"
-val prometheusVersion = "0.16.0"
-val smCommonVersion = "1.0.5"
-val kotlinVersion = "1.8.22"
-val junitJupiterVersion = "5.9.3"
-val commonsCodecVersion = "1.15"
-val syfoXmlCodegen = "1.0.3"
-val ibmMqVersion = "9.3.3.0"
-val jaxbApiVersion = "2.4.0-b180830.0359"
-val commonsTextVersion = "1.10.0"
-val jedisVersion = "4.4.3"
-val embeddedRedisVersion = "1.0.0"
-val ktfmtVersion = "0.44"
+val jacksonVersion: String by project
+val ktorVersion: String by project
+val logbackVersion: String by project
+val logstashEncoderVersion: String by project
+val prometheusVersion: String by project
+val smCommonVersion: String by project
+val kotlinVersion: String by project
+val junitJupiterVersion: String by project
+val commonsCodecVersion: String by project
+val syfoXmlCodegen: String by project
+val ibmMqVersion: String by project
+val jaxbApiVersion: String by project
+val commonsTextVersion: String by project
+val jedisVersion: String by project
+val embeddedRedisVersion: String by project
+val ktfmtVersion: String by project
+
+val githubUser: String by project
+val githubPassword: String by project
 
 
-tasks.withType<Jar> {
-    manifest.attributes["Main-Class"] = "no.nav.syfo.BootstrapKt"
+application {
+    mainClass.set("no.nav.syfo.ApplicationKt")
+
+    val isDevelopment: Boolean = project.ext.has("development")
+    applicationDefaultJvmArgs = listOf("-Dio.ktor.development=$isDevelopment")
 }
 
 plugins {
     kotlin("jvm") version "1.8.22"
+    id("io.ktor.plugin") version "2.3.1"
     id("com.github.johnrengelman.shadow") version "8.1.1"
     id("org.cyclonedx.bom") version "1.7.4"
     id("com.diffplug.spotless") version "6.19.0"
 }
-
-val githubUser: String by project
-val githubPassword: String by project
 
 repositories {
     mavenCentral()
@@ -99,6 +103,9 @@ dependencies {
 }
 
 tasks {
+    withType<Jar> {
+        manifest.attributes["Main-Class"] = "no.nav.syfo.ApplicationKt"
+    }
 
     create("printVersion") {
         println(project.version)

@@ -6,14 +6,15 @@ import javax.jms.Connection
 import kotlin.math.max
 import no.nav.helse.tss.samhandler.data.XMLSamhAvdPraType
 import no.nav.helse.tss.samhandler.data.XMLSamhandler
-import no.nav.syfo.Environment
-import no.nav.syfo.log
-import no.nav.syfo.redis.EnkeltSamhandlerFromTSSResponsRedis
+import no.nav.syfo.EnvironmentVariables
+import no.nav.syfo.logger
 import org.apache.commons.text.similarity.LevenshteinDistance
+import redis.clients.jedis.JedisPool
 
 class TssService(
-    private val environment: Environment,
-    private val enkeltSamhandlerFromTSSResponsRedis: EnkeltSamhandlerFromTSSResponsRedis,
+    private val environmentVariables: EnvironmentVariables,
+    private val jedisPool: JedisPool,
+    private val redisSecret: String,
     private val connection: Connection,
 ) {
 
@@ -25,8 +26,9 @@ class TssService(
         val enkeltSamhandler =
             fetchTssSamhandlerData(
                 samhandlerfnr,
-                environment,
-                enkeltSamhandlerFromTSSResponsRedis,
+                environmentVariables,
+                jedisPool,
+                redisSecret,
                 requestId,
                 connection
             )
@@ -41,8 +43,9 @@ class TssService(
         val enkeltSamhandler =
             fetchTssSamhandlerData(
                 samhandlerfnr,
-                environment,
-                enkeltSamhandlerFromTSSResponsRedis,
+                environmentVariables,
+                jedisPool,
+                redisSecret,
                 requestId,
                 connection
             )
@@ -135,7 +138,7 @@ fun filtererBortSamhandlderPraksiserPaaProsentMatch(
     return if (
         samhandlerAvdelingMatch != null && samhandlerAvdelingMatch.percentageMatch >= prosentMatch
     ) {
-        log.info(
+        logger.info(
             "Beste match ble samhandler praksis: " +
                 "Navn: ${samhandlerAvdelingMatch.samhandlerAvdeling.avdNavn} " +
                 "Tssid: ${samhandlerAvdelingMatch.samhandlerAvdeling.idOffTSS} " +
