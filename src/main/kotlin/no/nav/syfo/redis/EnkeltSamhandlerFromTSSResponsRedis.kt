@@ -1,7 +1,7 @@
 package no.nav.syfo.redis
 
 import no.nav.helse.tss.samhandler.data.XMLSamhandler
-import no.nav.syfo.log
+import no.nav.syfo.logger
 import no.nav.syfo.objectMapper
 import redis.clients.jedis.Jedis
 import redis.clients.jedis.JedisPool
@@ -24,7 +24,7 @@ class EnkeltSamhandlerFromTSSResponsRedis(
                 objectMapper.writeValueAsString(jedisEnkeltSamhandlerFromTSSResponsModel)
             )
         } catch (exception: Exception) {
-            log.error("Could not save enkeltSamhandlerFromTSSRespons in Redis", exception)
+            logger.error("Could not save enkeltSamhandlerFromTSSRespons in Redis", exception)
         } finally {
             jedis?.close()
         }
@@ -39,7 +39,7 @@ class EnkeltSamhandlerFromTSSResponsRedis(
                 objectMapper.readValue(it, JedisEnkeltSamhandlerFromTSSResponsModel::class.java)
             }
         } catch (exception: Exception) {
-            log.error("Could not get enkeltSamhandlerFromTSSRespons in Redis", exception)
+            logger.error("Could not get enkeltSamhandlerFromTSSRespons in Redis", exception)
             null
         } finally {
             jedis?.close()

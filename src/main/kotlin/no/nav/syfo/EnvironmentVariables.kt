@@ -2,7 +2,7 @@ package no.nav.syfo
 
 import no.nav.syfo.mq.MqConfig
 
-data class Environment(
+data class EnvironmentVariables(
     val applicationPort: Int = getEnvVar("APPLICATION_PORT", "8080").toInt(),
     val applicationName: String = getEnvVar("NAIS_APP_NAME", "smtss"),
     override val mqHostname: String = getEnvVar("MQ_HOST_NAME"),

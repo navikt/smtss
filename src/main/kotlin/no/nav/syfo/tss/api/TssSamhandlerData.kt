@@ -6,7 +6,7 @@ import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.get
 import io.ktor.server.routing.route
-import no.nav.syfo.log
+import no.nav.syfo.logger
 import no.nav.syfo.tss.service.TSSident
 import no.nav.syfo.tss.service.TssService
 
@@ -20,17 +20,17 @@ fun Route.getTssId(
             val requestid = call.request.headers["requestId"]
 
             if (samhandlerfnr == null) {
-                log.warn("Missing samhandlerFnr in header for requestid $requestid")
+                logger.warn("Missing samhandlerFnr in header for requestid $requestid")
                 call.respond(HttpStatusCode.BadRequest, "Missing samhandlerFnr in header")
             } else if (samhandlerOrgName == null) {
-                log.warn("Missing samhandlerOrgName in header for requestid $requestid")
+                logger.warn("Missing samhandlerOrgName in header for requestid $requestid")
                 call.respond(HttpStatusCode.BadRequest, "Missing samhandlerOrgName in header")
             } else if (requestid == null) {
-                log.warn("Missing requestId in header")
+                logger.warn("Missing requestId in header")
                 call.respond(HttpStatusCode.BadRequest, "Missing requestId in header")
             } else {
                 try {
-                    log.info(
+                    logger.info(
                         "Trying to find best tssid for emottak samhandlerOrgName: $samhandlerOrgName and requestid: $requestid"
                     )
                     val tssIdent: TSSident? =
@@ -56,11 +56,11 @@ fun Route.getTssId(
             } else if (samhandlerOrgName == null) {
                 call.respond(HttpStatusCode.BadRequest, "Missing samhandlerOrgName in header")
             } else if (requestid == null) {
-                log.warn("Missing requestId in header")
+                logger.warn("Missing requestId in header")
                 call.respond(HttpStatusCode.BadRequest, "Missing requestId in header")
             } else {
                 try {
-                    log.info(
+                    logger.info(
                         "Trying to find best tssid for infotrygd samhandlerOrgName: $samhandlerOrgName and requestid: $requestid"
                     )
                     val tssIdent: TSSident? =

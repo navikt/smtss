@@ -14,8 +14,8 @@ import no.nav.helse.tss.samhandler.data.XMLSamhandlerIDataB910Type
 import no.nav.helse.tss.samhandler.data.XMLTServicerutiner
 import no.nav.helse.tss.samhandler.data.XMLTidOFF1
 import no.nav.helse.tss.samhandler.data.XMLTssSamhandlerData
-import no.nav.syfo.Environment
-import no.nav.syfo.log
+import no.nav.syfo.EnvironmentVariables
+import no.nav.syfo.logger
 import no.nav.syfo.mq.producerForQueue
 import no.nav.syfo.objectMapper
 import no.nav.syfo.redis.EnkeltSamhandlerFromTSSResponsRedis
@@ -27,7 +27,7 @@ import org.xml.sax.InputSource
 
 fun fetchTssSamhandlerData(
     samhandlerfnr: String,
-    environment: Environment,
+    environmentVariables: EnvironmentVariables,
     enkeltSamhandlerFromTSSResponsRedis: EnkeltSamhandlerFromTSSResponsRedis,
     requestId: String,
     connection: Connection
@@ -35,7 +35,7 @@ fun fetchTssSamhandlerData(
 
     val fromRedis = enkeltSamhandlerFromTSSResponsRedis.get(samhandlerfnr)
     if (fromRedis != null) {
-        log.info("Fetched enkeltSamhandlerFromTSSRespons from redis")
+        logger.info("Fetched enkeltSamhandlerFromTSSRespons from redis")
         securelog.info(
             "Response from redis for requestId:$requestId : ${objectMapper.writeValueAsString(fromRedis.enkeltSamhandlerFromTSSRespons)}"
         )
@@ -66,7 +66,7 @@ fun fetchTssSamhandlerData(
         val temporaryQueue = session.createTemporaryQueue()
 
         val tssSamhnadlerInfoProducer =
-            session.producerForQueue("queue:///${environment.tssQueue}?targetClient=1")
+            session.producerForQueue("queue:///${environmentVariables.tssQueue}?targetClient=1")
 
         try {
             sendTssSporring(
@@ -82,14 +82,14 @@ fun fetchTssSamhandlerData(
                         requestId
                     )
                     .also {
-                        log.info("Fetched enkeltSamhandlerFromTSSRespons from tss")
+                        logger.info("Fetched enkeltSamhandlerFromTSSRespons from tss")
                         if (!it.isNullOrEmpty()) {
                             enkeltSamhandlerFromTSSResponsRedis.save(samhandlerfnr, it)
                         }
                     }
             }
         } catch (exception: Exception) {
-            log.error("An error occured while getting data from tss, ${exception.message}")
+            logger.error("An error occured while getting data from tss, ${exception.message}")
             throw exception
         } finally {
             temporaryQueue.delete()
