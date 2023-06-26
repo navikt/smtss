@@ -8,12 +8,13 @@ import no.nav.helse.tss.samhandler.data.XMLSamhAvdPraType
 import no.nav.helse.tss.samhandler.data.XMLSamhandler
 import no.nav.syfo.EnvironmentVariables
 import no.nav.syfo.logger
-import no.nav.syfo.redis.EnkeltSamhandlerFromTSSResponsRedis
 import org.apache.commons.text.similarity.LevenshteinDistance
+import redis.clients.jedis.JedisPool
 
 class TssService(
     private val environmentVariables: EnvironmentVariables,
-    private val enkeltSamhandlerFromTSSResponsRedis: EnkeltSamhandlerFromTSSResponsRedis,
+    private val jedisPool: JedisPool,
+    private val redisSecret: String,
     private val connection: Connection,
 ) {
 
@@ -26,7 +27,8 @@ class TssService(
             fetchTssSamhandlerData(
                 samhandlerfnr,
                 environmentVariables,
-                enkeltSamhandlerFromTSSResponsRedis,
+                jedisPool,
+                redisSecret,
                 requestId,
                 connection
             )
@@ -42,7 +44,8 @@ class TssService(
             fetchTssSamhandlerData(
                 samhandlerfnr,
                 environmentVariables,
-                enkeltSamhandlerFromTSSResponsRedis,
+                jedisPool,
+                redisSecret,
                 requestId,
                 connection
             )

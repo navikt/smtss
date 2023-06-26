@@ -29,7 +29,6 @@ import no.nav.syfo.mq.connectionFactory
 import no.nav.syfo.nais.isalive.naisIsAliveRoute
 import no.nav.syfo.nais.isready.naisIsReadyRoute
 import no.nav.syfo.nais.prometheus.naisPrometheusRoute
-import no.nav.syfo.redis.EnkeltSamhandlerFromTSSResponsRedis
 import no.nav.syfo.tss.api.getTssId
 import no.nav.syfo.tss.service.TssService
 import org.slf4j.Logger
@@ -149,15 +148,12 @@ fun Application.module() {
     val jedisPool =
         JedisPool(JedisPoolConfig(), environmentVariables.redisHost, environmentVariables.redisPort)
 
-    val enkeltSamhandlerFromTSSResponsRedis =
-        EnkeltSamhandlerFromTSSResponsRedis(jedisPool, environmentVariables.redisSecret)
-
     val connection =
         connectionFactory(environmentVariables)
             .createConnection(serviceUser.serviceuserUsername, serviceUser.serviceuserPassword)
 
     val tssService =
-        TssService(environmentVariables, enkeltSamhandlerFromTSSResponsRedis, connection)
+        TssService(environmentVariables, jedisPool, environmentVariables.redisSecret, connection)
 
     val jwkProviderAad =
         JwkProviderBuilder(URL(environmentVariables.jwkKeysUrl))

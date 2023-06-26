@@ -18,22 +18,25 @@ import no.nav.syfo.EnvironmentVariables
 import no.nav.syfo.logger
 import no.nav.syfo.mq.producerForQueue
 import no.nav.syfo.objectMapper
-import no.nav.syfo.redis.EnkeltSamhandlerFromTSSResponsRedis
+import no.nav.syfo.redis.getTSSRespons
+import no.nav.syfo.redis.saveTSSRespons
 import no.nav.syfo.securelog
 import no.nav.syfo.util.toString
 import no.nav.syfo.util.tssSamhandlerdataInputMarshaller
 import no.nav.syfo.util.tssSamhandlerdataUnmarshaller
 import org.xml.sax.InputSource
+import redis.clients.jedis.JedisPool
 
 fun fetchTssSamhandlerData(
     samhandlerfnr: String,
     environmentVariables: EnvironmentVariables,
-    enkeltSamhandlerFromTSSResponsRedis: EnkeltSamhandlerFromTSSResponsRedis,
+    jedisPool: JedisPool,
+    redisSecret: String,
     requestId: String,
     connection: Connection
 ): List<XMLSamhandler>? {
 
-    val fromRedis = enkeltSamhandlerFromTSSResponsRedis.get(samhandlerfnr)
+    val fromRedis = getTSSRespons(jedisPool, redisSecret, samhandlerfnr)
     if (fromRedis != null) {
         logger.info("Fetched enkeltSamhandlerFromTSSRespons from redis")
         securelog.info(
@@ -84,7 +87,7 @@ fun fetchTssSamhandlerData(
                     .also {
                         logger.info("Fetched enkeltSamhandlerFromTSSRespons from tss")
                         if (!it.isNullOrEmpty()) {
-                            enkeltSamhandlerFromTSSResponsRedis.save(samhandlerfnr, it)
+                            saveTSSRespons(jedisPool, redisSecret, samhandlerfnr, it)
                         }
                     }
             }
