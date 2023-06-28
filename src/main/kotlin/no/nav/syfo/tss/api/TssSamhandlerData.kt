@@ -52,8 +52,10 @@ fun Route.getTssId(
             val requestid = call.request.headers["requestId"]
 
             if (samhandlerfnr == null) {
+                logger.warn("Missing samhandlerFnr in header")
                 call.respond(HttpStatusCode.BadRequest, "Missing samhandlerFnr in header")
             } else if (samhandlerOrgName == null) {
+                logger.warn("Missing samhandlerOrgName in header")
                 call.respond(HttpStatusCode.BadRequest, "Missing samhandlerOrgName in header")
             } else if (requestid == null) {
                 logger.warn("Missing requestId in header")
