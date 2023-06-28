@@ -21,6 +21,8 @@ val commonsTextVersion: String by project
 val jedisVersion: String by project
 val embeddedRedisVersion: String by project
 val ktfmtVersion: String by project
+val mockkVersion: String by project
+val nimbusdsVersion: String by project
 
 val githubUser: String by project
 val githubPassword: String by project
@@ -100,6 +102,8 @@ dependencies {
 
     testImplementation("org.junit.jupiter:junit-jupiter:$junitJupiterVersion")
     testImplementation("com.github.codemonstur:embedded-redis:$embeddedRedisVersion")
+    testImplementation("io.mockk:mockk:$mockkVersion")
+    testImplementation("com.nimbusds:nimbus-jose-jwt:$nimbusdsVersion")
 }
 
 tasks {
