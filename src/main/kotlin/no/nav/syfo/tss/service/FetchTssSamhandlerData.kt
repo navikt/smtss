@@ -31,12 +31,11 @@ fun fetchTssSamhandlerData(
     samhandlerfnr: String,
     environmentVariables: EnvironmentVariables,
     jedisPool: JedisPool,
-    redisSecret: String,
     requestId: String,
     connection: Connection
 ): List<XMLSamhandler>? {
 
-    val fromRedis = getTSSRespons(jedisPool, redisSecret, samhandlerfnr)
+    val fromRedis = getTSSRespons(jedisPool, samhandlerfnr)
     if (fromRedis != null) {
         logger.info("Fetched enkeltSamhandlerFromTSSRespons from redis")
         securelog.info(
@@ -87,7 +86,7 @@ fun fetchTssSamhandlerData(
                     .also {
                         logger.info("Fetched enkeltSamhandlerFromTSSRespons from tss")
                         if (!it.isNullOrEmpty()) {
-                            saveTSSRespons(jedisPool, redisSecret, samhandlerfnr, it)
+                            saveTSSRespons(jedisPool, samhandlerfnr, it)
                         }
                     }
             }

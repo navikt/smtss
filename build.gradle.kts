@@ -19,11 +19,10 @@ val ibmMqVersion: String by project
 val jaxbApiVersion: String by project
 val commonsTextVersion: String by project
 val jedisVersion: String by project
-val embeddedRedisVersion: String by project
 val ktfmtVersion: String by project
 val mockkVersion: String by project
 val nimbusdsVersion: String by project
-
+val testcontainersVersion = "1.18.3"
 val githubUser: String by project
 val githubPassword: String by project
 
@@ -101,7 +100,7 @@ dependencies {
     }
 
     testImplementation("org.junit.jupiter:junit-jupiter:$junitJupiterVersion")
-    testImplementation("com.github.codemonstur:embedded-redis:$embeddedRedisVersion")
+    testImplementation ("org.testcontainers:testcontainers:$testcontainersVersion")
     testImplementation("io.mockk:mockk:$mockkVersion")
     testImplementation("com.nimbusds:nimbus-jose-jwt:$nimbusdsVersion")
 }

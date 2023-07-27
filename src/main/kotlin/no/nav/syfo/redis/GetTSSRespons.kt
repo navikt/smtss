@@ -7,13 +7,11 @@ import redis.clients.jedis.JedisPool
 
 fun getTSSRespons(
     jedisPool: JedisPool,
-    redisSecret: String,
     samhandlerfnr: String
 ): JedisEnkeltSamhandlerFromTSSResponsModel? {
     var jedis: Jedis? = null
     return try {
         jedis = jedisPool.resource
-        jedis.auth(redisSecret)
         return jedis.get(samhandlerfnr)?.let {
             objectMapper.readValue(it, JedisEnkeltSamhandlerFromTSSResponsModel::class.java)
         }

@@ -8,7 +8,6 @@ import redis.clients.jedis.JedisPool
 
 fun saveTSSRespons(
     jedisPool: JedisPool,
-    redisSecret: String,
     samhandlerfnr: String,
     enkeltSamhandlerFromTSSRespons: List<XMLSamhandler>?
 ) {
@@ -16,7 +15,6 @@ fun saveTSSRespons(
     var jedis: Jedis? = null
     try {
         jedis = jedisPool.resource
-        jedis.auth(redisSecret)
         val jedisEnkeltSamhandlerFromTSSResponsModel =
             JedisEnkeltSamhandlerFromTSSResponsModel(enkeltSamhandlerFromTSSRespons)
         jedis.setex(

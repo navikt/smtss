@@ -14,7 +14,6 @@ import redis.clients.jedis.JedisPool
 class TssService(
     private val environmentVariables: EnvironmentVariables,
     private val jedisPool: JedisPool,
-    private val redisSecret: String,
     private val connection: Connection,
 ) {
 
@@ -28,7 +27,6 @@ class TssService(
                 samhandlerfnr,
                 environmentVariables,
                 jedisPool,
-                redisSecret,
                 requestId,
                 connection
             )
@@ -45,7 +43,6 @@ class TssService(
                 samhandlerfnr,
                 environmentVariables,
                 jedisPool,
-                redisSecret,
                 requestId,
                 connection
             )
