@@ -47,8 +47,6 @@ spec:
           namespace: teamsykefravr
           cluster: prod-gcp
     outbound:
-      rules:
-        - application: smtss-redis
       external:
         - host: mpls03.adeo.no
           ports:
@@ -63,7 +61,6 @@ spec:
   envFrom:
     - secret: smtss-secrets
     - secret: smtss-keystore-pwd
-    - secret: smtss-redis-password
   filesFrom:
     - mountPath: /var/run/keystore
       secret: smtss-keystore

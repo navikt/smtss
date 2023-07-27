@@ -31,10 +31,9 @@ import no.nav.syfo.nais.isready.naisIsReadyRoute
 import no.nav.syfo.nais.prometheus.naisPrometheusRoute
 import no.nav.syfo.tss.api.getTssId
 import no.nav.syfo.tss.service.TssService
+import no.nav.syfo.util.createJedisPool
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import redis.clients.jedis.JedisPool
-import redis.clients.jedis.JedisPoolConfig
 
 val logger: Logger = LoggerFactory.getLogger("no.nav.syfo.smtss")
 val securelog: Logger = LoggerFactory.getLogger("securelog")
@@ -145,15 +144,13 @@ fun Application.module() {
         System.setProperty(key as String, value as String)
     }
 
-    val jedisPool =
-        JedisPool(JedisPoolConfig(), environmentVariables.redisHost, environmentVariables.redisPort)
+    val jedisPool = createJedisPool()
 
     val connection =
         connectionFactory(environmentVariables)
             .createConnection(serviceUser.serviceuserUsername, serviceUser.serviceuserPassword)
 
-    val tssService =
-        TssService(environmentVariables, jedisPool, environmentVariables.redisSecret, connection)
+    val tssService = TssService(environmentVariables, jedisPool, connection)
 
     val jwkProviderAad =
         JwkProviderBuilder(URL(environmentVariables.jwkKeysUrl))

@@ -4,34 +4,29 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import no.nav.helse.tss.samhandler.data.XMLSamhandler
 import no.nav.syfo.objectMapper
 import no.nav.syfo.tss.service.TssServiceKtTest
-import org.junit.jupiter.api.AfterEach
+import org.junit.AfterClass
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.testcontainers.containers.GenericContainer
 import redis.clients.jedis.JedisPool
 import redis.clients.jedis.JedisPoolConfig
-import redis.embedded.RedisServer
 
 internal class EnkeltSamhandlerFromTSSResponsRedisTest {
     private val randomport = (1000..9999).random()
-    private val redisServer =
-        RedisServer.newRedisServer()
-            .port(randomport)
-            .setting("bind 127.0.0.1")
-            .setting("requirepass secret")
-            .build()
+    val redisContainer: GenericContainer<Nothing> = GenericContainer("redis:7.0.12-alpine")
 
-    @BeforeEach
-    fun startRedis() {
-        redisServer.start()
+    init {
+        redisContainer.withExposedPorts(6379)
+        redisContainer.start()
     }
 
-    @AfterEach
+    @AfterClass
     fun stopRedis() {
-        redisServer.stop()
+        redisContainer.stop()
     }
 
-    private val jedisPool = JedisPool(JedisPoolConfig(), "localhost", randomport)
+    val jedisPool =
+        JedisPool(JedisPoolConfig(), redisContainer.host, redisContainer.getMappedPort(6379))
 
     @Test
     internal fun `Should cache enkeltSamhandlerFromTSSRespons in redis`() {
@@ -46,9 +41,9 @@ internal class EnkeltSamhandlerFromTSSResponsRedisTest {
                     .toString(Charsets.UTF_8),
             )
 
-        saveTSSRespons(jedisPool, "secret", samhandlerfnr, enkeltSamhandlerFromTSSRespons)
+        saveTSSRespons(jedisPool, samhandlerfnr, enkeltSamhandlerFromTSSRespons)
 
-        val cachedEnkeltSamhandlerFromTSSRespons = getTSSRespons(jedisPool, "secret", samhandlerfnr)
+        val cachedEnkeltSamhandlerFromTSSRespons = getTSSRespons(jedisPool, samhandlerfnr)
 
         assertEquals(
             enkeltSamhandlerFromTSSRespons?.firstOrNull()?.samhandlerAvd125?.antSamhAvd,
