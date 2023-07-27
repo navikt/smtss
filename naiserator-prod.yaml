@@ -57,6 +57,9 @@ spec:
               protocol: TCP
   secureLogs:
     enabled: true
+  redis:
+    - instance: smtss
+      access: readwrite
   envFrom:
     - secret: smtss-secrets
     - secret: smtss-keystore-pwd
