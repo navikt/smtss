@@ -168,7 +168,7 @@ fun samhandlerMatchingPaaOrganisjonsNavn(
             }
 
     return if (aktiveSamhandlereMedNavn.isNotEmpty()) {
-        samhandlereAvdelinger
+        aktiveSamhandlereMedNavn
             .map { samhandlerAvdeling ->
                 SamhandlerAvdelingMatch(
                     samhandlerAvdeling,

@@ -22,7 +22,7 @@ val jedisVersion: String by project
 val ktfmtVersion: String by project
 val mockkVersion: String by project
 val nimbusdsVersion: String by project
-val testcontainersVersion = "1.18.3"
+val testcontainersVersion: String by project
 val githubUser: String by project
 val githubPassword: String by project
 
