@@ -33,7 +33,7 @@ class TssService(
         return filterOutTssIdForEmottak(enkeltSamhandler, samhandlerOrgName, requestId)
     }
 
-    fun findBestTssInfotrygdId(
+    fun findBestTssIdInfotrygd(
         samhandlerfnr: String,
         samhandlerOrgName: String,
         requestId: String
@@ -49,6 +49,50 @@ class TssService(
 
         return filterOutTssIdForInfotrygd(enkeltSamhandler, samhandlerOrgName)
     }
+
+    fun findBestTssIdArena(
+        samhandlerfnr: String,
+        samhandlerOrgName: String,
+        requestId: String
+    ): TSSident? {
+        val enkeltSamhandler =
+            fetchTssSamhandlerData(
+                samhandlerfnr,
+                environmentVariables,
+                jedisPool,
+                requestId,
+                connection
+            )
+
+        return filterOutTssIdForArena(enkeltSamhandler, samhandlerOrgName)
+    }
+}
+
+fun filterOutTssIdForArena(
+    enkeltSamhandler: List<XMLSamhandler>?,
+    samhandlerOrgName: String
+): TSSident? {
+    val samhandlereAvdelinger = enkeltSamhandler?.filter { it.samhandlerAvd125 != null }
+    if (samhandlereAvdelinger?.flatMapNotNull { it.samhandlerAvd125?.samhAvd } != null) {
+
+        val arenaApprovedSamhandlerAvdelinger =
+            samhandlereAvdelinger.flatMapNotNull { it.samhandlerAvd125?.samhAvd }
+        // TODO filter out types of typeAvd like this: .filter { it.typeAvd != "LEVA" }
+
+        val samhandlerAvdelding =
+            samhandlerMatchingPaaOrganisjonsNavn(
+                    arenaApprovedSamhandlerAvdelinger,
+                    samhandlerOrgName
+                )
+                ?.samhandlerAvdeling
+
+        return if (samhandlerAvdelding?.idOffTSS != null) {
+            TSSident(samhandlerAvdelding.idOffTSS)
+        } else {
+            null
+        }
+    }
+    return null
 }
 
 fun filterOutTssIdForInfotrygd(

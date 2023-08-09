@@ -66,11 +66,43 @@ fun Route.getTssId(
                         "Trying to find best tssid for infotrygd samhandlerOrgName: $samhandlerOrgName and requestid: $requestid"
                     )
                     val tssIdent: TSSident? =
-                        tssService.findBestTssInfotrygdId(
+                        tssService.findBestTssIdInfotrygd(
                             samhandlerfnr,
                             samhandlerOrgName,
                             requestid
                         )
+                    if (tssIdent != null) {
+                        call.respond(HttpStatusCode.OK, tssIdent)
+                    } else {
+                        call.respond(HttpStatusCode.NotFound)
+                    }
+                } catch (exception: Exception) {
+                    call.respond(HttpStatusCode.InternalServerError)
+                    throw exception
+                }
+            }
+        }
+        get("samhandler/arena") {
+            val samhandlerfnr = call.request.headers["samhandlerFnr"]
+            val samhandlerOrgName = call.request.headers["samhandlerOrgName"]
+            val requestid = call.request.headers["requestId"]
+
+            if (samhandlerfnr == null) {
+                logger.warn("Missing samhandlerFnr in header")
+                call.respond(HttpStatusCode.BadRequest, "Missing samhandlerFnr in header")
+            } else if (samhandlerOrgName == null) {
+                logger.warn("Missing samhandlerOrgName in header")
+                call.respond(HttpStatusCode.BadRequest, "Missing samhandlerOrgName in header")
+            } else if (requestid == null) {
+                logger.warn("Missing requestId in header")
+                call.respond(HttpStatusCode.BadRequest, "Missing requestId in header")
+            } else {
+                try {
+                    logger.info(
+                        "Trying to find best tssid for arena samhandlerOrgName: $samhandlerOrgName and requestid: $requestid"
+                    )
+                    val tssIdent: TSSident? =
+                        tssService.findBestTssIdArena(samhandlerfnr, samhandlerOrgName, requestid)
                     if (tssIdent != null) {
                         call.respond(HttpStatusCode.OK, tssIdent)
                     } else {
