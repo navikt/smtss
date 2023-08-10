@@ -23,7 +23,6 @@ val jvmVersion = "17"
 
 
 plugins {
-    id("java")
     id("application")
     kotlin("jvm") version "1.9.0"
     id("com.github.johnrengelman.shadow") version "8.1.1"
@@ -103,11 +102,6 @@ dependencies {
     testImplementation("org.testcontainers:testcontainers:$testcontainersVersion")
     testImplementation("io.mockk:mockk:$mockkVersion")
     testImplementation("com.nimbusds:nimbus-jose-jwt:$nimbusdsVersion")
-}
-
-java {
-    sourceCompatibility = JavaVersion.toVersion(jvmVersion)
-    targetCompatibility = JavaVersion.toVersion(jvmVersion)
 }
 
 
