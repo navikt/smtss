@@ -43,6 +43,7 @@ spec:
         - application: pale-2
         - application: syfosmpapirmottak
         - application: smregistrering-backend
+        - application: syfosmarena
         - application: padm2
           namespace: teamsykefravr
           cluster: prod-gcp
