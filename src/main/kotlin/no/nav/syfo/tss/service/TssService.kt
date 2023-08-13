@@ -28,12 +28,12 @@ class TssService(
                 environmentVariables,
                 jedisPool,
                 requestId,
-                connection
+                connection,
             )
         return filterOutTssIdForEmottak(enkeltSamhandler, samhandlerOrgName, requestId)
     }
 
-    fun findBestTssInfotrygdId(
+    fun findBestTssIdInfotrygd(
         samhandlerfnr: String,
         samhandlerOrgName: String,
         requestId: String
@@ -44,11 +44,87 @@ class TssService(
                 environmentVariables,
                 jedisPool,
                 requestId,
-                connection
+                connection,
             )
 
         return filterOutTssIdForInfotrygd(enkeltSamhandler, samhandlerOrgName)
     }
+
+    fun findBestTssIdArena(
+        samhandlerfnr: String,
+        samhandlerOrgName: String,
+        requestId: String
+    ): TSSident? {
+        val enkeltSamhandler =
+            fetchTssSamhandlerData(
+                samhandlerfnr,
+                environmentVariables,
+                jedisPool,
+                requestId,
+                connection,
+            )
+
+        return filterOutTssIdForArena(enkeltSamhandler, samhandlerOrgName)
+    }
+}
+
+fun filterOutTssIdForArena(
+    enkeltSamhandler: List<XMLSamhandler>?,
+    samhandlerOrgName: String
+): TSSident? {
+    val samhandlereAvdelinger = enkeltSamhandler?.filter { it.samhandlerAvd125 != null }
+    if (samhandlereAvdelinger?.flatMapNotNull { it.samhandlerAvd125?.samhAvd } != null) {
+
+        val arenaApprovedSamhandlerAvdelinger =
+            samhandlereAvdelinger
+                .flatMapNotNull { it.samhandlerAvd125?.samhAvd }
+                .asSequence()
+                .filter { it.typeAvd != "AUDI" }
+                .filter { it.typeAvd != "FRBE" }
+                .filter { it.typeAvd != "HELS" }
+                .filter { it.typeAvd != "JORD" }
+                .filter { it.typeAvd != "KURS" }
+                .filter { it.typeAvd != "LARO" }
+                .filter { it.typeAvd != "LOGO" }
+                .filter { it.typeAvd != "MULT" }
+                .filter { it.typeAvd != "OKSY" }
+                .filter { it.typeAvd != "OPPT" }
+                .filter { it.typeAvd != "ORTO" }
+                .filter { it.typeAvd != "PASI" }
+                .filter { it.typeAvd != "PSNE" }
+                .filter { it.typeAvd != "PSNO" }
+                .filter { it.typeAvd != "PSSP" }
+                .filter { it.typeAvd != "PSUT" }
+                .filter { it.typeAvd != "RHFO" }
+                .filter { it.typeAvd != "KORI" }
+                .filter { it.typeAvd != "SYPL" }
+                .filter { it.typeAvd != "SYKE" }
+                .filter { it.typeAvd != "TAPO" }
+                .filter { it.typeAvd != "TPPR" }
+                .filter { it.typeAvd != "TPUT" }
+                .filter { it.typeAvd != "URRE" }
+                .filter { it.typeAvd != "UTKA" }
+                .filter { it.typeAvd != "KOHS" }
+                .filter { it.typeAvd != "KOMU" }
+                .filter { it.typeAvd != "BIRE" }
+                .filter { it.typeAvd != "BEUT" }
+                .filter { it.typeAvd != "SYPL" }
+                .toList()
+
+        val samhandlerAvdelding =
+            samhandlerMatchingPaaOrganisjonsNavn(
+                    arenaApprovedSamhandlerAvdelinger,
+                    samhandlerOrgName,
+                )
+                ?.samhandlerAvdeling
+
+        return if (samhandlerAvdelding?.idOffTSS != null) {
+            TSSident(samhandlerAvdelding.idOffTSS)
+        } else {
+            null
+        }
+    }
+    return null
 }
 
 fun filterOutTssIdForInfotrygd(
@@ -60,7 +136,7 @@ fun filterOutTssIdForInfotrygd(
         val samhandlerAvdelding =
             samhandlerMatchingPaaOrganisjonsNavn(
                     samhandlereAvdelinger.flatMapNotNull { it.samhandlerAvd125?.samhAvd },
-                    samhandlerOrgName
+                    samhandlerOrgName,
                 )
                 ?.samhandlerAvdeling
 
@@ -85,7 +161,7 @@ fun filterOutTssIdForInfotrygd(
                     ?.samhandlerAvd125
                     ?.samhAvd
                     ?.find { it.avdNr == "01" }
-                    ?.idOffTSS!!
+                    ?.idOffTSS!!,
             )
         } else {
             null
@@ -105,11 +181,11 @@ fun filterOutTssIdForEmottak(
             filtererBortSamhandlderPraksiserPaaProsentMatch(
                 samhandlerMatchingPaaOrganisjonsNavn(
                     samhandlereAvdelinger.flatMapNotNull { it.samhandlerAvd125?.samhAvd },
-                    samhandlerOrgName
+                    samhandlerOrgName,
                 ),
                 70.0,
                 samhandlerOrgName,
-                requestId
+                requestId,
             )
         val samhandlerAvdelding = samhandlerMatchingPaaOrganisjonsNavn?.samhandlerAvdeling
 
@@ -174,8 +250,8 @@ fun samhandlerMatchingPaaOrganisjonsNavn(
                     samhandlerAvdeling,
                     calculatePercentageStringMatch(
                         samhandlerAvdeling.avdNavn.lowercase(),
-                        samhandlerOrgName.lowercase()
-                    ) * 100
+                        samhandlerOrgName.lowercase(),
+                    ) * 100,
                 )
             }
             .maxByOrNull { it.percentageMatch }

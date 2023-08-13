@@ -1,7 +1,3 @@
-import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-import com.github.jengelman.gradle.plugins.shadow.transformers.ServiceFileTransformer
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
 group = "no.nav.syfo"
 version = "1.0.0"
 
@@ -26,19 +22,19 @@ val testcontainersVersion = "1.18.3"
 val jvmVersion = "17"
 
 
+plugins {
+    id("application")
+    kotlin("jvm") version "1.9.0"
+    id("com.github.johnrengelman.shadow") version "8.1.1"
+    id("org.cyclonedx.bom") version "1.7.4"
+    id("com.diffplug.spotless") version "6.20.0"
+}
+
 application {
     mainClass.set("no.nav.syfo.ApplicationKt")
 
     val isDevelopment: Boolean = project.ext.has("development")
     applicationDefaultJvmArgs = listOf("-Dio.ktor.development=$isDevelopment")
-}
-
-plugins {
-    kotlin("jvm") version "1.9.0"
-    id("io.ktor.plugin") version "2.3.3"
-    id("com.github.johnrengelman.shadow") version "8.1.1"
-    id("org.cyclonedx.bom") version "1.7.4"
-    id("com.diffplug.spotless") version "6.20.0"
 }
 
 val githubUser: String by project
@@ -94,47 +90,41 @@ dependencies {
 
     implementation("org.apache.commons:commons-text:$commonsTextVersion")
 
-    implementation ("redis.clients:jedis:$jedisVersion")
+    implementation("redis.clients:jedis:$jedisVersion")
 
 
     testImplementation("io.ktor:ktor-server-test-host:$ktorVersion") {
-        exclude(group = "org.eclipse.jetty") 
+        exclude(group = "org.eclipse.jetty")
     }
 
     testImplementation("org.junit.jupiter:junit-jupiter:$junitJupiterVersion")
-    testImplementation ("org.testcontainers:testcontainers:$testcontainersVersion")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    testImplementation("org.testcontainers:testcontainers:$testcontainersVersion")
     testImplementation("io.mockk:mockk:$mockkVersion")
     testImplementation("com.nimbusds:nimbus-jose-jwt:$nimbusdsVersion")
 }
 
+
 tasks {
-    withType<Jar> {
-        manifest.attributes["Main-Class"] = "no.nav.syfo.ApplicationKt"
-    }
 
-    create("printVersion") {
-        println(project.version)
-    }
-
-    withType<KotlinCompile> {
-        kotlinOptions.jvmTarget = jvmVersion
-    }
-
-    named<KotlinCompile>("compileTestKotlin") {
-        kotlinOptions.jvmTarget = "17"
-    }
-
-    withType<ShadowJar> {
-        transform(ServiceFileTransformer::class.java) {
-            setPath("META-INF/cxf")
-            include("bus-extensions.txt")
+    shadowJar {
+        archiveBaseName.set("app")
+        archiveClassifier.set("")
+        isZip64 = true
+        manifest {
+            attributes(
+                mapOf(
+                    "Main-Class" to "no.nav.syfo.ApplicationKt",
+                ),
+            )
         }
     }
 
-    withType<Test> {
+    test {
         useJUnitPlatform {}
         testLogging.showStandardStreams = true
     }
+
 
     spotless {
         kotlin { ktfmt(ktfmtVersion).kotlinlangStyle() }
