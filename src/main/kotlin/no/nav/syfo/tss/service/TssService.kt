@@ -109,6 +109,7 @@ fun filterOutTssIdForArena(
                 .filter { it.typeAvd != "BIRE" }
                 .filter { it.typeAvd != "BEUT" }
                 .filter { it.typeAvd != "SYPL" }
+                .filter { it.avdNr != "01"}
                 .toList()
 
         val samhandlerAvdelding =
