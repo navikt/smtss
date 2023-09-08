@@ -6,8 +6,8 @@ val ktorVersion = "2.3.2"
 val logbackVersion = "1.4.9"
 val logstashEncoderVersion = "7.4"
 val prometheusVersion = "0.16.0"
-val smCommonVersion = "1.0.12"
-val kotlinVersion = "1.9.0"
+val smCommonVersion = "1.0.14"
+val kotlinVersion = "1.9.10"
 val junitJupiterVersion = "5.10.0"
 val commonsCodecVersion = "1.16.0"
 val syfoXmlCodegen = "1.0.4"
@@ -19,14 +19,13 @@ val ktfmtVersion = "0.44"
 val mockkVersion = "1.13.5"
 val nimbusdsVersion = "9.31"
 val testcontainersVersion = "1.18.3"
-val jvmVersion = "17"
 
 
 plugins {
     id("application")
-    kotlin("jvm") version "1.9.0"
+    kotlin("jvm") version "1.9.10"
     id("com.github.johnrengelman.shadow") version "8.1.1"
-    id("com.diffplug.spotless") version "6.20.0"
+    id("com.diffplug.spotless") version "6.21.0"
 }
 
 application {
