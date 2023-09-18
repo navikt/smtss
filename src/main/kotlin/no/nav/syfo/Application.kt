@@ -47,19 +47,16 @@ val objectMapper: ObjectMapper =
     }
 
 fun main() {
-    val applicationState = ApplicationState()
     val embeddedServer =
         embeddedServer(
             Netty,
             port = EnvironmentVariables().applicationPort,
-        ) {
-            module(applicationState)
-        }
+            module = Application::module,
+        )
     Runtime.getRuntime()
         .addShutdownHook(
             Thread {
                 logger.info("Shutting down application from shutdown hook")
-                applicationState.ready = false
                 embeddedServer.stop(TimeUnit.SECONDS.toMillis(10), TimeUnit.SECONDS.toMillis(10))
             },
         )
@@ -98,7 +95,8 @@ fun Application.configureRouting(
             logger.error("Caught exception ${cause.message}")
             securelog.error("Caught exception", cause)
             call.respond(HttpStatusCode.InternalServerError, cause.message ?: "Unknown error")
-            throw cause
+            applicationState.alive = false
+            applicationState.ready = false
         }
     }
 
@@ -138,7 +136,8 @@ fun unauthorized(credentials: JWTCredential): Principal? {
     return null
 }
 
-fun Application.module(applicationState: ApplicationState) {
+fun Application.module() {
+    val applicationState = ApplicationState()
     val environmentVariables = EnvironmentVariables()
     val serviceUser = ServiceUser()
 
@@ -162,8 +161,6 @@ fun Application.module(applicationState: ApplicationState) {
 
     environment.monitor.subscribe(ApplicationStopped) {
         logger.info("Got ApplicationStopped event from ktor")
-        applicationState.ready = false
-        applicationState.alive = false
         connection?.close()
     }
 
