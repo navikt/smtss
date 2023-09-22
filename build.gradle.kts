@@ -6,7 +6,7 @@ val ktorVersion = "2.3.4"
 val logbackVersion = "1.4.11"
 val logstashEncoderVersion = "7.4"
 val prometheusVersion = "0.16.0"
-val smCommonVersion = "1.0.14"
+val smCommonVersion = "1.0.19"
 val kotlinVersion = "1.9.10"
 val junitJupiterVersion = "5.10.0"
 val commonsCodecVersion = "1.16.0"
@@ -35,17 +35,10 @@ application {
     applicationDefaultJvmArgs = listOf("-Dio.ktor.development=$isDevelopment")
 }
 
-val githubUser: String by project
-val githubPassword: String by project
-
 repositories {
     mavenCentral()
     maven {
-        url = uri("https://maven.pkg.github.com/navikt/syfosm-common")
-        credentials {
-            username = githubUser
-            password = githubPassword
-        }
+        url = uri("https://github-package-registry-mirror.gc.nav.no/cached/maven-release")
     }
 }
 
@@ -64,9 +57,11 @@ dependencies {
     implementation("io.ktor:ktor-server-swagger:$ktorVersion")
 
     implementation("io.ktor:ktor-client-apache:$ktorVersion")
-    // override transient version 1.11 from io.ktor:ktor-client-apache due to security vulnerability
-    // https://devhub.checkmarx.com/cve-details/Cxeb68d52e-5509/
-    implementation("commons-codec:commons-codec:$commonsCodecVersion")
+    constraints {
+        implementation("commons-codec:commons-codec:$commonsCodecVersion") {
+        because("override transient from io.ktor:ktor-client-apache")
+        }
+    }
 
     implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
     implementation("io.ktor:ktor-serialization-jackson:$ktorVersion")
@@ -120,7 +115,11 @@ tasks {
 
     test {
         useJUnitPlatform {}
-        testLogging.showStandardStreams = true
+        testLogging {
+            events("skipped", "failed")
+            showStackTraces = true
+            exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+        }
     }
 
 
