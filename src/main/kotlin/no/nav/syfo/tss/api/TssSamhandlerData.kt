@@ -106,7 +106,9 @@ fun Route.getTssId(
                     if (tssIdent != null) {
                         call.respond(HttpStatusCode.OK, tssIdent)
                     } else {
-                        call.respond(HttpStatusCode.NotFound)
+                        call.respond(HttpStatusCode.NotFound).also {
+                            logger.info("Did not find tssIdent for requestid: $requestid")
+                        }
                     }
                 } catch (exception: Exception) {
                     call.respond(HttpStatusCode.InternalServerError)

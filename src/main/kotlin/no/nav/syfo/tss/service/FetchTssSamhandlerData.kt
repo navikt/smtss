@@ -62,7 +62,7 @@ fun fetchTssSamhandlerData(
                 }
         }
 
-    securelog.info("Request to tss: ${objectMapper.writeValueAsString(tssSamhandlerDatainput)}")
+    securelog.info("Request to tss for requestId:$requestId requsesttss: ${objectMapper.writeValueAsString(tssSamhandlerDatainput)}")
 
     connection.createSession(Session.CLIENT_ACKNOWLEDGE).use { session ->
         val temporaryQueue = session.createTemporaryQueue()
