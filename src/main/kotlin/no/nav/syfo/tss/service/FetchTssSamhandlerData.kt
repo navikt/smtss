@@ -37,7 +37,7 @@ fun fetchTssSamhandlerData(
 
     val fromRedis = getTSSRespons(jedisPool, samhandlerfnr)
     if (fromRedis != null) {
-        logger.info("Fetched enkeltSamhandlerFromTSSRespons from redis")
+        logger.info("Fetched enkeltSamhandlerFromTSSRespons from redis for requestId: $requestId")
         securelog.info(
             "Response from redis for requestId:$requestId : ${objectMapper.writeValueAsString(fromRedis.enkeltSamhandlerFromTSSRespons)}"
         )
@@ -62,7 +62,9 @@ fun fetchTssSamhandlerData(
                 }
         }
 
-    securelog.info("Request to tss for requestId:$requestId requsesttss: ${objectMapper.writeValueAsString(tssSamhandlerDatainput)}")
+    securelog.info(
+        "Request to tss for requestId:$requestId requsesttss: ${objectMapper.writeValueAsString(tssSamhandlerDatainput)}"
+    )
 
     connection.createSession(Session.CLIENT_ACKNOWLEDGE).use { session ->
         val temporaryQueue = session.createTemporaryQueue()
@@ -84,14 +86,18 @@ fun fetchTssSamhandlerData(
                         requestId
                     )
                     .also {
-                        logger.info("Fetched enkeltSamhandlerFromTSSRespons from tss")
+                        logger.info(
+                            "Fetched enkeltSamhandlerFromTSSRespons from tss for requestId: $requestId"
+                        )
                         if (!it.isNullOrEmpty()) {
                             saveTSSRespons(jedisPool, samhandlerfnr, it)
                         }
                     }
             }
         } catch (exception: Exception) {
-            logger.error("An error occured while getting data from tss, ${exception.message}")
+            logger.error(
+                "An error occured while getting data from tss requestId: $requestId error message:, ${exception.message}"
+            )
             throw exception
         } finally {
             temporaryQueue.delete()
