@@ -19,7 +19,7 @@ val ktfmtVersion = "0.44"
 val mockkVersion = "1.13.8"
 val nimbusdsVersion = "9.36"
 val testcontainersVersion = "1.19.1"
-
+val jsonVersion = "20231013"
 
 plugins {
     id("application")
@@ -73,6 +73,11 @@ dependencies {
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion")
 
     implementation("com.ibm.mq:com.ibm.mq.allclient:$ibmMqVersion")
+    constraints {
+        implementation("org.json:json:$jsonVersion") {
+            because("override transient from com.ibm.mq:com.ibm.mq.allclient")
+        }
+    }
 
     implementation("no.nav.helse.xml:tss-samhandler-data:$syfoXmlCodegen")
 
