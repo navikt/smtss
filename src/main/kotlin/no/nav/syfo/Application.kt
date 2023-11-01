@@ -20,8 +20,8 @@ import io.ktor.server.plugins.swagger.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.prometheus.client.hotspot.DefaultExports
-import java.net.URL
-import java.util.concurrent.TimeUnit
+import java.net.URI
+import java.time.Duration
 import net.logstash.logback.argument.StructuredArguments
 import no.nav.syfo.metrics.monitorHttpRequests
 import no.nav.syfo.mq.MqTlsUtils
@@ -57,7 +57,10 @@ fun main() {
         .addShutdownHook(
             Thread {
                 logger.info("Shutting down application from shutdown hook")
-                embeddedServer.stop(TimeUnit.SECONDS.toMillis(10), TimeUnit.SECONDS.toMillis(10))
+                embeddedServer.stop(
+                    Duration.ofSeconds(10).toMillis(),
+                    Duration.ofSeconds(10).toMillis()
+                )
             },
         )
     embeddedServer.start(true)
@@ -154,9 +157,8 @@ fun Application.module() {
     val tssService = TssService(environmentVariables, jedisPool, connection)
 
     val jwkProviderAad =
-        JwkProviderBuilder(URL(environmentVariables.jwkKeysUrl))
-            .cached(10, 24, TimeUnit.HOURS)
-            .rateLimited(10, 1, TimeUnit.MINUTES)
+        JwkProviderBuilder(URI.create(environmentVariables.jwkKeysUrl).toURL())
+            .cached(10, Duration.ofHours(24))
             .build()
 
     environment.monitor.subscribe(ApplicationStopped) {
