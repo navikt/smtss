@@ -17,7 +17,7 @@ val commonsTextVersion = "1.11.0"
 val jedisVersion = "5.0.2"
 val ktfmtVersion = "0.44"
 val mockkVersion = "1.13.8"
-val nimbusdsVersion = "9.37"
+val nimbusdsVersion = "9.37.1"
 val testcontainersVersion = "1.19.1"
 val jsonVersion = "20231013"
 
