@@ -1,7 +1,7 @@
 group = "no.nav.syfo"
 version = "1.0.0"
 
-val jacksonVersion = "2.15.3"
+val jacksonVersion = "2.16.0"
 val ktorVersion = "2.3.6"
 val logbackVersion = "1.4.11"
 val logstashEncoderVersion = "7.4"
@@ -18,7 +18,7 @@ val jedisVersion = "5.0.2"
 val ktfmtVersion = "0.44"
 val mockkVersion = "1.13.8"
 val nimbusdsVersion = "9.37.1"
-val testcontainersVersion = "1.19.1"
+val testcontainersVersion = "1.19.2"
 val jsonVersion = "20231013"
 
 plugins {
