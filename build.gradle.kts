@@ -3,7 +3,7 @@ version = "1.0.0"
 
 val jacksonVersion = "2.16.0"
 val ktorVersion = "2.3.6"
-val logbackVersion = "1.4.12"
+val logbackVersion = "1.4.14"
 val logstashEncoderVersion = "7.4"
 val prometheusVersion = "0.16.0"
 val smCommonVersion = "2.0.6"
@@ -17,7 +17,7 @@ val commonsTextVersion = "1.11.0"
 val jedisVersion = "5.1.0"
 val ktfmtVersion = "0.44"
 val mockkVersion = "1.13.8"
-val nimbusdsVersion = "9.37.1"
+val nimbusdsVersion = "9.37.2"
 val testcontainersVersion = "1.19.3"
 val jsonVersion = "20231013"
 
@@ -25,7 +25,7 @@ plugins {
     id("application")
     kotlin("jvm") version "1.9.21"
     id("com.github.johnrengelman.shadow") version "8.1.1"
-    id("com.diffplug.spotless") version "6.23.2"
+    id("com.diffplug.spotless") version "6.23.3"
 }
 
 application {
