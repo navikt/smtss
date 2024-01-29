@@ -16,16 +16,16 @@ val jaxbApiVersion = "2.4.0-b180830.0359"
 val commonsTextVersion = "1.11.0"
 val jedisVersion = "5.1.0"
 val ktfmtVersion = "0.44"
-val mockkVersion = "1.13.8"
+val mockkVersion = "1.13.9"
 val nimbusdsVersion = "9.37.3"
-val testcontainersVersion = "1.19.3"
+val testcontainersVersion = "1.19.4"
 val jsonVersion = "20231013"
 
 plugins {
     id("application")
     kotlin("jvm") version "1.9.22"
     id("com.github.johnrengelman.shadow") version "8.1.1"
-    id("com.diffplug.spotless") version "6.23.3"
+    id("com.diffplug.spotless") version "6.25.0"
 }
 
 application {
