@@ -2,13 +2,13 @@ group = "no.nav.syfo"
 version = "1.0.0"
 
 val jacksonVersion = "2.16.1"
-val ktorVersion = "2.3.7"
+val ktorVersion = "2.3.8"
 val logbackVersion = "1.4.14"
 val logstashEncoderVersion = "7.4"
 val prometheusVersion = "0.16.0"
 val smCommonVersion = "2.0.8"
 val kotlinVersion = "1.9.22"
-val junitJupiterVersion = "5.10.1"
+val junitJupiterVersion = "5.10.2"
 val commonsCodecVersion = "1.16.0"
 val syfoXmlCodegen = "2.0.1"
 val ibmMqVersion = "9.3.4.1"
@@ -16,16 +16,16 @@ val jaxbApiVersion = "2.4.0-b180830.0359"
 val commonsTextVersion = "1.11.0"
 val jedisVersion = "5.1.0"
 val ktfmtVersion = "0.44"
-val mockkVersion = "1.13.8"
+val mockkVersion = "1.13.9"
 val nimbusdsVersion = "9.37.3"
-val testcontainersVersion = "1.19.3"
+val testcontainersVersion = "1.19.4"
 val jsonVersion = "20231013"
 
 plugins {
     id("application")
     kotlin("jvm") version "1.9.22"
     id("com.github.johnrengelman.shadow") version "8.1.1"
-    id("com.diffplug.spotless") version "6.23.3"
+    id("com.diffplug.spotless") version "6.25.0"
 }
 
 application {
