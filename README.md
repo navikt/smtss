@@ -13,7 +13,7 @@ Application that's try to find best tssid match from tss, based on given paramet
 
 #### Requirements
 
-* JDK 17
+* JDK 21
 
 ## FlowChart
 This the high level flow of the application

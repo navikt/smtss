@@ -20,6 +20,7 @@ val mockkVersion = "1.13.9"
 val nimbusdsVersion = "9.37.3"
 val testcontainersVersion = "1.19.4"
 val jsonVersion = "20231013"
+val java_version = JavaVersion.VERSION_21
 
 plugins {
     id("application")
@@ -104,6 +105,14 @@ dependencies {
 
 
 tasks {
+
+    compileKotlin {
+        kotlinOptions.jvmTarget = java_version.toString()
+    }
+    compileTestKotlin {
+        kotlinOptions.jvmTarget = java_version.toString()
+    }
+
 
     shadowJar {
         archiveBaseName.set("app")

@@ -39,7 +39,7 @@ fun fetchTssSamhandlerData(
     if (fromRedis != null) {
         logger.info("Fetched enkeltSamhandlerFromTSSRespons from redis for requestId: $requestId")
         securelog.info(
-            "Response from redis for requestId:$requestId : ${objectMapper.writeValueAsString(fromRedis.enkeltSamhandlerFromTSSRespons)}"
+            "Response from redis for requestId: $requestId : ${objectMapper.writeValueAsString(fromRedis.enkeltSamhandlerFromTSSRespons)}"
         )
         return fromRedis.enkeltSamhandlerFromTSSRespons
     }
@@ -63,7 +63,7 @@ fun fetchTssSamhandlerData(
         }
 
     securelog.info(
-        "Request to tss for requestId:$requestId requsesttss: ${objectMapper.writeValueAsString(tssSamhandlerDatainput)}"
+        "Request to tss for requestId: $requestId requsesttss: ${objectMapper.writeValueAsString(tssSamhandlerDatainput)}"
     )
 
     connection.createSession(Session.CLIENT_ACKNOWLEDGE).use { session ->
