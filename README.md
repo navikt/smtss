@@ -44,7 +44,7 @@ gradlew.bat shadowJar
 You can create a PR: example https://github.com/navikt/smtss/pull/14
 That's updates the naiserator files [dev](naiserator-dev.yaml) and [prod](naiserator-prod.yaml)
 with the following:
-Remember to replace, $yourapplication, $yournamespace, $yourcluster with real values
+Remember to replace, $yourapplication, $yournamespace and $yourcluster with real values
 ``` 
   accessPolicy:
     inbound:
