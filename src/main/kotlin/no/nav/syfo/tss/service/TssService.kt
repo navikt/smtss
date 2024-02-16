@@ -166,7 +166,8 @@ fun filterOutTssIdForArena(
                 arenaApprovedSamhandlerAvdelinger,
                 samhandlerOrgName,
             )
-        val max = samhandlerAvdelding.maxOf { it.percentageMatch }
+        val max = samhandlerAvdelding.maxOfOrNull { it.percentageMatch }
+        if(max == null) return null
         val samhanldingNameMatch =
             samhandlerAvdelding.filter { it.percentageMatch >= max }.map { it.samhandlerAvdeling }
 
@@ -268,7 +269,7 @@ fun filterOutTssIdForEmottak(
                     aktiveSamhandlereMedNavn,
                     samhandlerOrgName,
                 )
-                .maxBy { it.percentageMatch }
+                .maxByOrNull { it.percentageMatch }
 
         return filtererBortSamhandlderPraksiserPaaProsentMatch(
                 samhandlereWithNameMath,
