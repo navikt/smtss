@@ -8,6 +8,8 @@ import no.nav.helse.tss.samhandler.data.XMLSamhAvdPraType
 import no.nav.helse.tss.samhandler.data.XMLSamhandler
 import no.nav.syfo.EnvironmentVariables
 import no.nav.syfo.logger
+import no.nav.syfo.objectMapper
+import no.nav.syfo.securelog
 import org.apache.commons.text.similarity.LevenshteinDistance
 import redis.clients.jedis.JedisPool
 
@@ -16,11 +18,11 @@ class TssService(
     private val jedisPool: JedisPool,
     private val connection: Connection,
 ) {
-
     fun findBestTssIdEmottak(
         samhandlerfnr: String,
         samhandlerOrgName: String,
-        requestId: String
+        requestId: String,
+        orgnummer: String?,
     ): TSSident? {
         val enkeltSamhandler =
             fetchTssSamhandlerData(
@@ -30,7 +32,10 @@ class TssService(
                 requestId,
                 connection,
             )
-        return filterOutTssIdForEmottak(enkeltSamhandler, samhandlerOrgName, requestId)
+        val tssId =
+            filterOutTssIdForEmottak(enkeltSamhandler, samhandlerOrgName, requestId, orgnummer)
+        logTssId("emottak", tssId, samhandlerfnr, requestId, samhandlerOrgName, enkeltSamhandler)
+        return tssId
     }
 
     fun findBestTssIdInfotrygd(
@@ -46,14 +51,16 @@ class TssService(
                 requestId,
                 connection,
             )
-
-        return filterOutTssIdForInfotrygd(enkeltSamhandler, samhandlerOrgName)
+        val tssId = filterOutTssIdForInfotrygd(enkeltSamhandler, samhandlerOrgName)
+        logTssId("infotrygd", tssId, samhandlerfnr, requestId, samhandlerOrgName, enkeltSamhandler)
+        return tssId
     }
 
     fun findBestTssIdArena(
         samhandlerfnr: String,
         samhandlerOrgName: String,
-        requestId: String
+        requestId: String,
+        orgnummer: String?,
     ): TSSident? {
         val enkeltSamhandler =
             fetchTssSamhandlerData(
@@ -64,65 +71,118 @@ class TssService(
                 connection,
             )
 
-        return filterOutTssIdForArena(enkeltSamhandler, samhandlerOrgName)
+        val tssId = filterOutTssIdForArena(enkeltSamhandler, samhandlerOrgName, orgnummer)
+        logTssId("arena", tssId, samhandlerfnr, requestId, samhandlerOrgName, enkeltSamhandler)
+        return tssId
+    }
+
+    private fun logTssId(
+        forSystem: String,
+        tssId: TSSident?,
+        samhandlerfnr: String,
+        requestId: String,
+        samhandlerOrgName: String,
+        enkeltSamhandler: List<XMLSamhandler>?
+    ) {
+        if (tssId != null) {
+            securelog.info(
+                "Did find tssId: $tssId for $forSystem: fnr: $samhandlerfnr, requestId: $requestId, orgname: $samhandlerOrgName, from this data: ${
+                    objectMapper.writeValueAsString(
+                        enkeltSamhandler,
+                    )
+                }",
+            )
+        } else {
+            securelog.info(
+                "Did not find tssId for $forSystem: fnr: $samhandlerfnr, requestId: $requestId, orgname: $samhandlerOrgName, from this data: ${
+                    objectMapper.writeValueAsString(
+                        enkeltSamhandler,
+                    )
+                }",
+            )
+        }
     }
 }
 
 fun filterOutTssIdForArena(
     enkeltSamhandler: List<XMLSamhandler>?,
-    samhandlerOrgName: String
+    samhandlerOrgName: String,
+    samhandlerOrgnummer: String?,
 ): TSSident? {
     val samhandlereAvdelinger = enkeltSamhandler?.filter { it.samhandlerAvd125 != null }
     if (samhandlereAvdelinger?.flatMapNotNull { it.samhandlerAvd125?.samhAvd } != null) {
-
+        val dissallowedTypes =
+            listOf(
+                "AUDI",
+                "FRBE",
+                "HELS",
+                "JORD",
+                "KURS",
+                "LARO",
+                "LOGO",
+                "MULT",
+                "OKSY",
+                "OPPT",
+                "ORTO",
+                "PASI",
+                "PSNE",
+                "PSNO",
+                "PSSP",
+                "PSUT",
+                "RHFO",
+                "KORI",
+                "SYPL",
+                "SYKE",
+                "TAPO",
+                "TPPR",
+                "TPUT",
+                "URRE",
+                "UTKA",
+                "KOHS",
+                "KOMU",
+                "BIRE",
+                "BEUT",
+                "SYPL",
+            )
         val arenaApprovedSamhandlerAvdelinger =
             samhandlereAvdelinger
                 .flatMapNotNull { it.samhandlerAvd125?.samhAvd }
                 .asSequence()
-                .filter { it.typeAvd != "AUDI" }
-                .filter { it.typeAvd != "FRBE" }
-                .filter { it.typeAvd != "HELS" }
-                .filter { it.typeAvd != "JORD" }
-                .filter { it.typeAvd != "KURS" }
-                .filter { it.typeAvd != "LARO" }
-                .filter { it.typeAvd != "LOGO" }
-                .filter { it.typeAvd != "MULT" }
-                .filter { it.typeAvd != "OKSY" }
-                .filter { it.typeAvd != "OPPT" }
-                .filter { it.typeAvd != "ORTO" }
-                .filter { it.typeAvd != "PASI" }
-                .filter { it.typeAvd != "PSNE" }
-                .filter { it.typeAvd != "PSNO" }
-                .filter { it.typeAvd != "PSSP" }
-                .filter { it.typeAvd != "PSUT" }
-                .filter { it.typeAvd != "RHFO" }
-                .filter { it.typeAvd != "KORI" }
-                .filter { it.typeAvd != "SYPL" }
-                .filter { it.typeAvd != "SYKE" }
-                .filter { it.typeAvd != "TAPO" }
-                .filter { it.typeAvd != "TPPR" }
-                .filter { it.typeAvd != "TPUT" }
-                .filter { it.typeAvd != "URRE" }
-                .filter { it.typeAvd != "UTKA" }
-                .filter { it.typeAvd != "KOHS" }
-                .filter { it.typeAvd != "KOMU" }
-                .filter { it.typeAvd != "BIRE" }
-                .filter { it.typeAvd != "BEUT" }
-                .filter { it.typeAvd != "SYPL" }
+                .filterNot { it.typeAvd in dissallowedTypes }
                 .filter { it.avdNr != "01" }
                 .toList()
 
+        if (samhandlerOrgnummer != null) {
+            val samhandlerOrgnummerMatch =
+                arenaApprovedSamhandlerAvdelinger.filter { it.offNrAvd == samhandlerOrgnummer }
+            val tssId = tryGetTssId(samhandlerOrgnummerMatch)
+            if (tssId != null) {
+                return tssId
+            }
+        }
+
         val samhandlerAvdelding =
             samhandlerMatchingPaaOrganisjonsNavn(
-                    arenaApprovedSamhandlerAvdelinger,
-                    samhandlerOrgName,
-                )
-                ?.samhandlerAvdeling
+                arenaApprovedSamhandlerAvdelinger,
+                samhandlerOrgName,
+            )
+        val max = samhandlerAvdelding.maxOf { it.percentageMatch }
+        val samhanldingNameMatch =
+            samhandlerAvdelding.filter { it.percentageMatch >= max }.map { it.samhandlerAvdeling }
 
-        return if (samhandlerAvdelding?.idOffTSS != null) {
-            TSSident(samhandlerAvdelding.idOffTSS)
+        return tryGetTssId(samhanldingNameMatch)
+    }
+    return null
+}
+
+private fun tryGetTssId(samhandlerAvdeling: List<XMLSamhAvdPraType>): TSSident? {
+    if (samhandlerAvdeling.isNotEmpty()) {
+        val samhandlerUtenLegevakt =
+            samhandlerAvdeling.firstOrNull { !samhandlerAvdelingIsLegevakt(it) }
+        return if (samhandlerUtenLegevakt != null) {
+            TSSident(samhandlerUtenLegevakt.idOffTSS)
         } else {
-            null
+            TSSident(samhandlerAvdeling.first().idOffTSS)
         }
     }
     return null
@@ -139,14 +199,16 @@ fun filterOutTssIdForInfotrygd(
                     samhandlereAvdelinger.flatMapNotNull { it.samhandlerAvd125?.samhAvd },
                     samhandlerOrgName,
                 )
-                ?.samhandlerAvdeling
+                .filter {
+                    it.samhandlerAvdeling.idOffTSS != null &&
+                        !samhandlerAvdelingIsLegevakt(it.samhandlerAvdeling) &&
+                        !samhandlerAvdelingIsSykehusOrRegionalHelseforetak(
+                            it.samhandlerAvdeling,
+                        )
+                }
 
-        return if (
-            samhandlerAvdelding?.idOffTSS != null &&
-                (!samhandlerAvdelingIsLegevakt(samhandlerAvdelding) &&
-                    !samhandlerAvdelingIsSykehusOrRegionalHelseforetak(samhandlerAvdelding))
-        ) {
-            TSSident(samhandlerAvdelding.idOffTSS)
+        return if (samhandlerAvdelding.isNotEmpty()) {
+            TSSident(samhandlerAvdelding.maxBy { it.percentageMatch }.samhandlerAvdeling.idOffTSS)
         } else if (
             enkeltSamhandler
                 .firstOrNull()
@@ -155,7 +217,6 @@ fun filterOutTssIdForInfotrygd(
                 ?.find { it.avdNr == "01" }
                 ?.idOffTSS != null
         ) {
-
             TSSident(
                 enkeltSamhandler
                     .firstOrNull()
@@ -174,31 +235,48 @@ fun filterOutTssIdForInfotrygd(
 fun filterOutTssIdForEmottak(
     enkeltSamhandler: List<XMLSamhandler>?,
     samhandlerOrgName: String,
-    requestId: String
+    requestId: String,
+    orgnummer: String?,
 ): TSSident? {
-    val samhandlereAvdelinger = enkeltSamhandler?.filter { it.samhandlerAvd125 != null }
-    if (samhandlereAvdelinger?.flatMapNotNull { it.samhandlerAvd125?.samhAvd } != null) {
-        val samhandlerMatchingPaaOrganisjonsNavn =
-            filtererBortSamhandlderPraksiserPaaProsentMatch(
-                samhandlerMatchingPaaOrganisjonsNavn(
-                    samhandlereAvdelinger.flatMapNotNull { it.samhandlerAvd125?.samhAvd },
+    val samhandlereAvdelinger =
+        enkeltSamhandler?.flatMapNotNull { it.samhandlerAvd125?.samhAvd } ?: emptyList()
+    if (samhandlereAvdelinger.isNotEmpty()) {
+        val aktiveSamhandlereMedNavn =
+            getAktiveSamhandlere(samhandlereAvdelinger).filter {
+                it.idOffTSS != null &&
+                    !samhandlerAvdelingIsLegevakt(it) &&
+                    !samhandlerAvdelingIsSykehusOrRegionalHelseforetak(
+                        it,
+                    ) &&
+                    !samhandlerAvdelingIsAvdNr01(it)
+            }
+
+        if (orgnummer != null) {
+            logger.info("Trying to get tssId from orgnummer $orgnummer and $requestId")
+            val samhandlerFromOrgnummer =
+                aktiveSamhandlereMedNavn.firstOrNull { it.offNrAvd == orgnummer }
+            if (samhandlerFromOrgnummer != null) {
+                securelog.info(
+                    "Found tssId for orgunnmer: $orgnummer and requestId: $requestId, tssId: ${samhandlerFromOrgnummer.idOffTSS}"
+                )
+                return TSSident(samhandlerFromOrgnummer.idOffTSS)
+            }
+        }
+
+        val samhandlereWithNameMath =
+            getSamhandlereWithNameMatch(
+                    aktiveSamhandlereMedNavn,
                     samhandlerOrgName,
-                ),
+                )
+                .maxBy { it.percentageMatch }
+
+        return filtererBortSamhandlderPraksiserPaaProsentMatch(
+                samhandlereWithNameMath,
                 70.0,
                 samhandlerOrgName,
                 requestId,
             )
-        val samhandlerAvdelding = samhandlerMatchingPaaOrganisjonsNavn?.samhandlerAvdeling
-
-        if (
-            samhandlerAvdelding?.idOffTSS != null &&
-                samhandlerMatchingPaaOrganisjonsNavn.percentageMatch > 70 &&
-                (!samhandlerAvdelingIsLegevakt(samhandlerAvdelding) &&
-                    !samhandlerAvdelingIsSykehusOrRegionalHelseforetak(samhandlerAvdelding)) &&
-                !samhandlerAvdelingIsAvdNr01(samhandlerAvdelding)
-        ) {
-            return TSSident(samhandlerAvdelding.idOffTSS)
-        }
+            ?.let { TSSident(it.samhandlerAvdeling.idOffTSS) }
     }
     return null
 }
@@ -226,11 +304,9 @@ fun filtererBortSamhandlderPraksiserPaaProsentMatch(
     }
 }
 
-fun samhandlerMatchingPaaOrganisjonsNavn(
+fun getAktiveSamhandlere(
     samhandlereAvdelinger: List<XMLSamhAvdPraType>,
-    samhandlerOrgName: String
-): SamhandlerAvdelingMatch? {
-
+): List<XMLSamhAvdPraType> {
     val dateFormatter = DateTimeFormatter.ofPattern("yyyyMMdd")
     val dateToday = LocalDate.now()
 
@@ -244,20 +320,29 @@ fun samhandlerMatchingPaaOrganisjonsNavn(
                 } else samhandlerAvdeling.datoAvdTom.trim().isEmpty()
             }
 
-    return if (aktiveSamhandlereMedNavn.isNotEmpty()) {
-        aktiveSamhandlereMedNavn
-            .map { samhandlerAvdeling ->
-                SamhandlerAvdelingMatch(
-                    samhandlerAvdeling,
-                    calculatePercentageStringMatch(
-                        samhandlerAvdeling.avdNavn.lowercase(),
-                        samhandlerOrgName.lowercase(),
-                    ) * 100,
-                )
-            }
-            .maxByOrNull { it.percentageMatch }
-    } else {
-        null
+    return aktiveSamhandlereMedNavn
+}
+
+fun samhandlerMatchingPaaOrganisjonsNavn(
+    samhandlereAvdelinger: List<XMLSamhAvdPraType>,
+    samhandlerOrgName: String
+): List<SamhandlerAvdelingMatch> {
+    val aktiveSamhandlereMedNavn = getAktiveSamhandlere(samhandlereAvdelinger)
+    return getSamhandlereWithNameMatch(aktiveSamhandlereMedNavn, samhandlerOrgName)
+}
+
+private fun getSamhandlereWithNameMatch(
+    aktiveSamhandlereMedNavn: List<XMLSamhAvdPraType>,
+    samhandlerOrgName: String
+): List<SamhandlerAvdelingMatch> {
+    return aktiveSamhandlereMedNavn.map { samhandlerAvdeling ->
+        SamhandlerAvdelingMatch(
+            samhandlerAvdeling,
+            calculatePercentageStringMatch(
+                samhandlerAvdeling.avdNavn.lowercase(),
+                samhandlerOrgName.lowercase(),
+            ) * 100,
+        )
     }
 }
 

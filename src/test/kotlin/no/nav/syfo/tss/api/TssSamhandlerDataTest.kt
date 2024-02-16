@@ -46,7 +46,7 @@ internal class TssSamhandlerDataTest {
         }
     private val tssService =
         mockk<TssService> {
-            coEvery { findBestTssIdEmottak(any(), any(), any()) } returns
+            coEvery { findBestTssIdEmottak(any(), any(), any(), any()) } returns
                 TSSident(tssid = "232313311")
         }
 
