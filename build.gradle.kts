@@ -14,11 +14,11 @@ val syfoXmlCodegen = "2.0.1"
 val ibmMqVersion = "9.3.4.1"
 val jaxbApiVersion = "2.4.0-b180830.0359"
 val commonsTextVersion = "1.11.0"
-val jedisVersion = "5.1.0"
+val jedisVersion = "5.1.1"
 val ktfmtVersion = "0.44"
 val mockkVersion = "1.13.9"
 val nimbusdsVersion = "9.37.3"
-val testcontainersVersion = "1.19.5"
+val testcontainersVersion = "1.19.6"
 val jsonVersion = "20240205"
 
 plugins {
