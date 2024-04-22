@@ -1,0 +1,138 @@
+[
+  {
+    "samhandler110": {
+      "antSamh": "0",
+      "samhandler": []
+    },
+    "alternativId111": {
+      "antSamhId": "2",
+      "samhId": [
+        {
+          "idAlternativ": "1232134124",
+          "kodeAltIdentType": "FNR",
+          "beskrAltIdentType": "Norsk fødselsnummer",
+          "datoIdentFom": "20051020",
+          "datoIdentTom": " ",
+          "gyldigIdent": "J",
+          "kilde": "HPR",
+          "brukerId": "INITLOAD",
+          "tidReg": "200510201034"
+        },
+        {
+          "idAlternativ": "00132131456",
+          "kodeAltIdentType": "HPR",
+          "beskrAltIdentType": "HPR-nummer",
+          "datoIdentFom": "20041101",
+          "datoIdentTom": " ",
+          "gyldigIdent": "J",
+          "kilde": "HPR",
+          "brukerId": "INITLOAD",
+          "tidReg": "200510201034"
+        }
+      ]
+    },
+    "samhandlerFag120": {
+      "antSamhFag": "1",
+      "samhFag": [
+        {
+          "kodeFagOmrade": "1",
+          "beskrFagOmrade": "Allmennmedisin",
+          "datoFagFom": "20170301",
+          "datoFagTom": "20441123",
+          "gyldigFag": "J",
+          "kilde": "HPR",
+          "brukerId": "AJOURHLD",
+          "tidReg": "201806220511"
+        }
+      ]
+    },
+    "samhandlerAvd125": {
+      "antSamhAvd": "4",
+      "samhAvd": [
+        {
+          "avdNr": "01",
+          "avdNavn": " ",
+          "typeAvd": " ",
+          "beskrTypeAvd": " ",
+          "datoAvdFom": "20041101",
+          "datoAvdTom": " ",
+          "gyldigAvd": "J",
+          "idOffTSS": "80000244334",
+          "offNrAvd": " ",
+          "kilde": "HPR",
+          "brukerId": "INITLOAD",
+          "tidReg": "200510201037"
+        },
+        {
+          "avdNr": "02",
+          "avdNavn": "første legesenter",
+          "typeAvd": "FATU",
+          "beskrTypeAvd": "Turnuslege fastlønnet",
+          "datoAvdFom": "19900101",
+          "datoAvdTom": "20990731",
+          "gyldigAvd": "J",
+          "idOffTSS": "80000347193",
+          "offNrAvd": "123",
+          "kilde": "FKR",
+          "brukerId": "S108609",
+          "tidReg": "201106061157"
+        },
+        {
+          "avdNr": "03",
+          "avdNavn": "TEST LEGESENTER AS",
+          "typeAvd": "LEVA",
+          "beskrTypeAvd": "Legevakt",
+          "datoAvdFom": "20230101",
+          "datoAvdTom": " ",
+          "gyldigAvd": "J",
+          "idOffTSS": "80000347194",
+          "offNrAvd": "1234",
+          "kilde": "FKR",
+          "brukerId": "S108609",
+          "tidReg": "201106061157"
+        },
+        {
+          "avdNr": "04",
+          "avdNavn": "TEST LEGESENTER AS",
+          "typeAvd": "FALE",
+          "beskrTypeAvd": "Fastlege",
+          "datoAvdFom": "20230101",
+          "datoAvdTom": " ",
+          "gyldigAvd": "J",
+          "idOffTSS": "80000347195",
+          "offNrAvd": "1234",
+          "kilde": "FKR",
+          "brukerId": "S108609",
+          "tidReg": "200510201037"
+        }
+      ]
+    },
+    "konto140": {
+      "antKonto": "0",
+      "konto": []
+    },
+    "kontakter150": {
+      "antKontakt": "0",
+      "enKontakt": []
+    },
+    "autorisasjon170": {
+      "antAutorInfo": "0",
+      "autorisasjon": []
+    },
+    "relasjoner180": {
+      "antSamhRelasjon": "0",
+      "samhRelasjon": []
+    },
+    "avtaler190": {
+      "antAvtaler": "0",
+      "avtaler": []
+    }
+  },
+  {
+    "samhandlerFag120": null,
+    "samhandlerAvd125": null,
+    "adresse130": null,
+    "konto140": null,
+    "kontakter150": null
+  }
+]
