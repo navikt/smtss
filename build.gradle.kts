@@ -16,6 +16,7 @@ val jaxbApiVersion = "2.4.0-b180830.0359"
 val commonsTextVersion = "1.12.0"
 val jedisVersion = "5.1.3"
 val ktfmtVersion = "0.44"
+val java_version = JavaVersion.VERSION_21
 val mockkVersion = "1.13.11"
 val nimbusdsVersion = "9.39.3"
 val testcontainersVersion = "1.19.8"
@@ -104,6 +105,14 @@ dependencies {
 
 
 tasks {
+
+    compileKotlin {
+        kotlinOptions.jvmTarget = java_version.toString()
+    }
+    compileTestKotlin {
+        kotlinOptions.jvmTarget = java_version.toString()
+    }
+
 
     shadowJar {
         archiveBaseName.set("app")
