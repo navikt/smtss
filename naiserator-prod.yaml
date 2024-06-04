@@ -26,12 +26,20 @@ spec:
   prometheus:
     enabled: true
     path: /internal/prometheus
+  observability:
+    autoInstrumentation:
+      enabled: true
+      runtime: java
+    logging:
+      destinations:
+        - id: loki
+        - id: elastic
   resources:
     limits:
-      memory: 1Gi
+      memory: 3Gi
     requests:
       cpu: 200m
-      memory: 768Mi
+      memory: 900Mi
   azure:
     application:
       enabled: true
