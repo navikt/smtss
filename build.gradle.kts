@@ -20,7 +20,7 @@ val java_version = JavaVersion.VERSION_21
 val mockkVersion = "1.13.11"
 val nimbusdsVersion = "9.39.3"
 val testcontainersVersion = "1.19.8"
-val jsonVersion = 20240303"
+val jsonVersion = "20240303"
 
 plugins {
     id("application")
