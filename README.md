@@ -11,9 +11,20 @@ Application that's try to find best tssid match from tss, based on given paramet
 * MQ
 
 
-#### Requirements
-
+### Prerequisites
 * JDK 17
+Make sure you have the Java JDK 17 installed
+You can check which version you have installed using this command:
+``` bash
+java -version
+```
+
+* Docker
+Make sure you have docker installed
+You can check which version you have installed using this command:
+``` bash
+docker --version
+```
 
 ## FlowChart
 This the high level flow of the application
