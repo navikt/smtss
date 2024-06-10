@@ -11,18 +11,14 @@ import org.testcontainers.containers.GenericContainer
 import redis.clients.jedis.JedisPool
 import redis.clients.jedis.JedisPoolConfig
 
+val redisContainer: GenericContainer<Nothing> = GenericContainer("redis:7.0.12-alpine")
+
+
 internal class EnkeltSamhandlerFromTSSResponsRedisTest {
-    private val randomport = (1000..9999).random()
-    val redisContainer: GenericContainer<Nothing> = GenericContainer("redis:7.0.12-alpine")
 
     init {
         redisContainer.withExposedPorts(6379)
         redisContainer.start()
-    }
-
-    @AfterClass
-    fun stopRedis() {
-        redisContainer.stop()
     }
 
     val jedisPool =
@@ -51,7 +47,15 @@ internal class EnkeltSamhandlerFromTSSResponsRedisTest {
                 ?.enkeltSamhandlerFromTSSRespons
                 ?.firstOrNull()
                 ?.samhandlerAvd125
-                ?.antSamhAvd
+                ?.antSamhAvd,
         )
+    }
+
+    companion object {
+        @JvmStatic
+        @AfterClass
+        fun stopRedis() {
+            redisContainer.stop()
+        }
     }
 }
