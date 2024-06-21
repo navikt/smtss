@@ -13,6 +13,7 @@ Application that's try to find best tssid match from tss, based on given paramet
 
 ### Prerequisites
 * JDK 17
+
 Make sure you have the Java JDK 17 installed
 You can check which version you have installed using this command:
 ``` bash
@@ -20,6 +21,7 @@ java -version
 ```
 
 * Docker
+
 Make sure you have docker installed
 You can check which version you have installed using this command:
 ``` bash
@@ -30,13 +32,9 @@ docker --version
 This the high level flow of the application
 ```mermaid
   graph LR
-      EPJ --- eMottak
-      eMottak --- id1([SYFOSMMOTTAK.INPUT])
-      id1([SYFOSMMOTTAK.INPUT]) --> syfosmmottak
-      syfosmmottak --- smtss
-      syfosmmottak --- eMottak-subscription
       smtss --- tss
       smtss --- azure_ad
+      smtss --- redis
 ```
 
 ## Getting started
