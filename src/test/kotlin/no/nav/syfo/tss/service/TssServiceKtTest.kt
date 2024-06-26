@@ -52,6 +52,7 @@ internal class TssServiceKtTest {
 
         assertEquals(expectedTssId, tssId)
     }
+
     @Test
     internal fun `Returns legekontor if same name as legevakt with orgnummer`() {
         val expectedTssId = "80000347195"
@@ -160,6 +161,88 @@ internal class TssServiceKtTest {
         val samhandlerOrgnavn = "test legesenter"
 
         val tssId = filterOutTssIdForArena(enkeltSamhandler, samhandlerOrgnavn, orgnummer)?.tssid
+
+        assertEquals(expectedTssId, tssId)
+    }
+
+    @Test
+    internal fun `need orgnummer if samhandlerOrgnavn not match avdNavn with more than 70percent`() {
+        val expectedTssId = "123"
+        val orgnummer = "99999"
+        val enkeltSamhandler: List<XMLSamhandler>? =
+            objectMapper.readValue(
+                TssServiceKtTest::class
+                    .java
+                    .getResourceAsStream("/tssIdavdNavnUliksamhandlerOrgnavn.json")!!
+                    .readBytes()
+                    .toString(Charsets.UTF_8),
+            )
+
+        val samhandlerOrgnavn = "TestNorge Helsesenter"
+        val requestId = "99e47ec6-49db-4887-baca-4edf6215f2cb"
+
+        val tssId =
+            filterOutTssIdForEmottak(enkeltSamhandler, samhandlerOrgnavn, requestId, orgnummer)
+                ?.tssid
+
+        assertEquals(expectedTssId, tssId)
+    }
+
+    @Test
+    internal fun `samhandlerOrgnavn not match avdNavn with more than 70percent and orgnummer is null`() {
+        val orgnummer = null
+        val enkeltSamhandler: List<XMLSamhandler>? =
+            objectMapper.readValue(
+                TssServiceKtTest::class
+                    .java
+                    .getResourceAsStream("/tssIdavdNavnUliksamhandlerOrgnavn.json")!!
+                    .readBytes()
+                    .toString(Charsets.UTF_8),
+            )
+
+        val samhandlerOrgnavn = "TestNorge Helsesenter"
+        val requestId = "99e47ec6-49db-4887-baca-4edf6215f2cb"
+
+        val tssId =
+            filterOutTssIdForEmottak(enkeltSamhandler, samhandlerOrgnavn, requestId, orgnummer)
+                ?.tssid
+        // dette gjør at vi trenger orgnummer dersom navnet ikke stemmer med over 70% match
+        assertEquals(null, tssId)
+    }
+
+    @Test
+    internal fun `returns correct tssid infotrygd if samhandlerOrgnummer is null`() {
+        val expectedTssId = "123"
+        val enkeltSamhandler: List<XMLSamhandler>? =
+            objectMapper.readValue(
+                TssServiceKtTest::class
+                    .java
+                    .getResourceAsStream("/tssIdavdNavnUliksamhandlerOrgnavn.json")!!
+                    .readBytes()
+                    .toString(Charsets.UTF_8),
+            )
+
+        val samhandlerOrgnavn = "TestNorge Helsesenter"
+
+        val tssId = filterOutTssIdForInfotrygd(enkeltSamhandler, samhandlerOrgnavn)?.tssid
+
+        assertEquals(expectedTssId, tssId)
+    }
+
+    @Test
+    internal fun `returns correct tssid arena if samhandlerOrgnummer is null`() {
+        val expectedTssId = "123"
+        val enkeltSamhandler: List<XMLSamhandler>? =
+            objectMapper.readValue(
+                TssServiceKtTest::class
+                    .java
+                    .getResourceAsStream("/tssIdavdNavnUliksamhandlerOrgnavn.json")!!
+                    .readBytes()
+                    .toString(Charsets.UTF_8),
+            )
+
+        val samhandlerOrgnavn = "TestNorge Helsesenter"
+        val tssId = filterOutTssIdForInfotrygd(enkeltSamhandler, samhandlerOrgnavn)?.tssid
 
         assertEquals(expectedTssId, tssId)
     }

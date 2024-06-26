@@ -1,0 +1,63 @@
+[
+  {
+    "samhandler110": {
+      "antSamh": "1",
+      "samhandler": [
+      ]
+    },
+    "alternativId111": {
+      "antSamhId": "2",
+      "samhId": [
+      ]
+    },
+    "samhandlerFag120": null,
+    "samhandlerAvd125": {
+      "antSamhAvd": "5",
+      "samhAvd": [
+        {
+          "avdNr": "01",
+          "avdNavn": " ",
+          "typeAvd": " ",
+          "beskrTypeAvd": " ",
+          "datoAvdFom": "",
+          "datoAvdTom": " ",
+          "gyldigAvd": "J",
+          "idOffTSS": "11111",
+          "offNrAvd": " ",
+          "kilde": "HPR",
+          "brukerId": "",
+          "tidReg": ""
+        },
+        {
+          "avdNr": "06",
+          "avdNavn": "Legetjenester i TestNorge",
+          "typeAvd": "FALO",
+          "beskrTypeAvd": "",
+          "datoAvdFom": "20210712",
+          "datoAvdTom": " ",
+          "gyldigAvd": "J",
+          "idOffTSS": "123",
+          "offNrAvd": "99999",
+          "kilde": "",
+          "brukerId": "",
+          "tidReg": ""
+        }
+      ]
+    },
+    "adresse130": {
+      "antAdresse": "4",
+      "adresseSamh": [
+      ]
+    },
+    "konto140": {
+      "antKonto": "4",
+      "konto": [
+      ]
+    },
+    "kontakter150": {
+      "antKontakt": "7",
+      "enKontakt": [
+      ]
+    }
+  }
+]
