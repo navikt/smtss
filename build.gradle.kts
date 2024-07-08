@@ -1,7 +1,7 @@
 group = "no.nav.syfo"
 version = "1.0.0"
 
-val jacksonVersion = "2.17.1"
+val jacksonVersion = "2.17.2"
 val ktorVersion = "2.3.12"
 val logbackVersion = "1.5.6"
 val logstashEncoderVersion = "7.4"
