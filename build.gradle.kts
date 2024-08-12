@@ -7,7 +7,7 @@ val logbackVersion = "1.5.6"
 val logstashEncoderVersion = "8.0"
 val prometheusVersion = "0.16.0"
 val smCommonVersion = "2.0.8"
-val kotlinVersion = "2.0.0"
+val kotlinVersion = "2.0.10"
 val junitJupiterVersion = "5.10.3"
 val commonsCodecVersion = "1.17.1"
 val syfoXmlCodegen = "2.0.1"
@@ -23,7 +23,7 @@ val jsonVersion = "20240303"
 
 plugins {
     id("application")
-    kotlin("jvm") version "2.0.0"
+    kotlin("jvm") version "2.0.10"
     id("com.github.johnrengelman.shadow") version "8.1.1"
     id("com.diffplug.spotless") version "6.25.0"
 }
