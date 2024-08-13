@@ -19,6 +19,7 @@ val mockkVersion = "1.13.12"
 val nimbusdsVersion = "9.40"
 val testcontainersVersion = "1.20.1"
 val jsonVersion = "20240303"
+val commonsCompressVersion = "1.27.0"
 
 plugins {
     id("application")
@@ -95,6 +96,11 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter:$junitJupiterVersion")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     testImplementation("org.testcontainers:testcontainers:$testcontainersVersion")
+    constraints {
+        implementation("org.apache.commons:commons-compress:$commonsCompressVersion") {
+            because("Due to vulnerabilities, see CVE-2024-26308")
+        }
+    }
     testImplementation("io.mockk:mockk:$mockkVersion")
     testImplementation("com.nimbusds:nimbus-jose-jwt:$nimbusdsVersion")
 }
