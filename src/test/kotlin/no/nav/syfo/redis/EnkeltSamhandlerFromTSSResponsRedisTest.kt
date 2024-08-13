@@ -13,7 +13,6 @@ import redis.clients.jedis.JedisPoolConfig
 
 val redisContainer: GenericContainer<Nothing> = GenericContainer("redis:7.0.12-alpine")
 
-
 internal class EnkeltSamhandlerFromTSSResponsRedisTest {
 
     init {

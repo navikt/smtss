@@ -6,7 +6,6 @@ val ktorVersion = "2.3.12"
 val logbackVersion = "1.5.6"
 val logstashEncoderVersion = "8.0"
 val prometheusVersion = "0.16.0"
-val smCommonVersion = "2.0.8"
 val kotlinVersion = "2.0.10"
 val junitJupiterVersion = "5.10.3"
 val commonsCodecVersion = "1.17.1"
@@ -81,8 +80,6 @@ dependencies {
 
     implementation("no.nav.helse.xml:tss-samhandler-data:$syfoXmlCodegen")
 
-    implementation("no.nav.helse:syfosm-common-mq:$smCommonVersion")
-    implementation("no.nav.helse:syfosm-common-networking:$smCommonVersion")
 
     implementation("javax.xml.bind:jaxb-api:$jaxbApiVersion")
 
