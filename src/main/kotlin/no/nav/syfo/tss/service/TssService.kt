@@ -1,8 +1,8 @@
 package no.nav.syfo.tss.service
 
+import jakarta.jms.Connection
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-import javax.jms.Connection
 import kotlin.math.max
 import no.nav.helse.tss.samhandler.data.XMLSamhAvdPraType
 import no.nav.helse.tss.samhandler.data.XMLSamhandler

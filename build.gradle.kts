@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 group = "no.nav.syfo"
 version = "1.0.0"
 
@@ -18,13 +20,13 @@ val ktfmtVersion = "0.44"
 val mockkVersion = "1.13.12"
 val nimbusdsVersion = "9.40"
 val testcontainersVersion = "1.20.1"
-val jsonVersion = "20240303"
 val commonsCompressVersion = "1.27.0"
+val javaVersion = JvmTarget.JVM_21
 
 plugins {
     id("application")
     kotlin("jvm") version "2.0.10"
-    id("com.github.johnrengelman.shadow") version "8.1.1"
+    id("com.gradleup.shadow") version "8.3.0"
     id("com.diffplug.spotless") version "6.25.0"
 }
 
@@ -59,7 +61,7 @@ dependencies {
     implementation("io.ktor:ktor-client-apache:$ktorVersion")
     constraints {
         implementation("commons-codec:commons-codec:$commonsCodecVersion") {
-        because("override transient from io.ktor:ktor-client-apache")
+            because("override transient from io.ktor:ktor-client-apache")
         }
     }
 
@@ -72,12 +74,7 @@ dependencies {
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion")
 
-    implementation("com.ibm.mq:com.ibm.mq.allclient:$ibmMqVersion")
-    constraints {
-        implementation("org.json:json:$jsonVersion") {
-            because("override transient from com.ibm.mq:com.ibm.mq.allclient")
-        }
-    }
+    implementation("com.ibm.mq:com.ibm.mq.jakarta.client:$ibmMqVersion")
 
     implementation("no.nav.helse.xml:tss-samhandler-data:$syfoXmlCodegen")
 
@@ -105,6 +102,11 @@ dependencies {
     testImplementation("com.nimbusds:nimbus-jose-jwt:$nimbusdsVersion")
 }
 
+kotlin {
+    compilerOptions {
+        jvmTarget = javaVersion
+    }
+}
 
 tasks {
 
