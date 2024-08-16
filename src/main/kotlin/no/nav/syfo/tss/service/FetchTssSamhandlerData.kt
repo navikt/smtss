@@ -1,11 +1,11 @@
 package no.nav.syfo.tss.service
 
+import jakarta.jms.Connection
+import jakarta.jms.MessageProducer
+import jakarta.jms.Session
+import jakarta.jms.TemporaryQueue
+import jakarta.jms.TextMessage
 import java.io.StringReader
-import javax.jms.Connection
-import javax.jms.MessageProducer
-import javax.jms.Session
-import javax.jms.TemporaryQueue
-import javax.jms.TextMessage
 import javax.xml.parsers.SAXParserFactory
 import javax.xml.transform.Source
 import javax.xml.transform.sax.SAXSource
