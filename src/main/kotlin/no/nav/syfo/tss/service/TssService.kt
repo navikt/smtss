@@ -257,7 +257,7 @@ fun filterOutTssIdForEmottak(
             val samhandlerFromOrgnummer =
                 aktiveSamhandlereMedNavn.firstOrNull { it.offNrAvd == orgnummer }
             if (samhandlerFromOrgnummer != null) {
-                securelog.info(
+                logger.info(
                     "Found tssId for orgunnmer: $orgnummer and requestId: $requestId, tssId: ${samhandlerFromOrgnummer.idOffTSS}"
                 )
                 return TSSident(samhandlerFromOrgnummer.idOffTSS)

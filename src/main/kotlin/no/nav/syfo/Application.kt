@@ -124,7 +124,6 @@ fun Application.setupAuth(
 
 fun hasAccsess(credentials: JWTCredential, clientId: String): Boolean {
     val appid: String = credentials.payload.getClaim("azp").asString()
-    securelog.info("authorization attempt for $appid")
     return credentials.payload.audience.contains(clientId)
 }
 
