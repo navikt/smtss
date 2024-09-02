@@ -15,7 +15,6 @@ import no.nav.helse.tss.samhandler.data.XMLTServicerutiner
 import no.nav.helse.tss.samhandler.data.XMLTidOFF1
 import no.nav.helse.tss.samhandler.data.XMLTssSamhandlerData
 import no.nav.syfo.EnvironmentVariables
-import no.nav.syfo.helpers.log
 import no.nav.syfo.logger
 import no.nav.syfo.mq.producerForQueue
 import no.nav.syfo.objectMapper
@@ -162,10 +161,10 @@ private fun safeUnmarshal(inputMessageText: String, id: String): XMLTssSamhandle
     try {
         return xmlTssSamhandlerData(inputMessageText)
     } catch (ex: Exception) {
-        log.warn("Error parsing response for $id", ex)
+        logger.warn("Error parsing response for $id", ex)
         securelog.warn("error parsing this $inputMessageText for: $id")
     }
-    log.info("trying again with valid xml, for: $id")
+    logger.info("trying again with valid xml, for: $id")
     val validXML = stripNonValidXMLCharacters(inputMessageText)
     return xmlTssSamhandlerData(validXML)
 }
