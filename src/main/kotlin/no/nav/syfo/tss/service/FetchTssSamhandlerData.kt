@@ -77,9 +77,20 @@ fun fetchTssSamhandlerData(
                 temporaryQueue
             )
             session.createConsumer(temporaryQueue).use { tmpConsumer ->
-                val consumedMessage = tmpConsumer.receive(20000) as TextMessage
+                val consumedMessage = tmpConsumer.receive(20000)
+
+                val inputMessageText =
+                    when (consumedMessage) {
+                        is TextMessage -> consumedMessage.text
+                        else ->
+                            throw RuntimeException(
+                                "Incoming message needs to be a byte message or text message, JMS type:" +
+                                    consumedMessage.jmsType,
+                            )
+                    }
+
                 return findEnkeltSamhandlerFromTSSRespons(
-                        safeUnmarshal(consumedMessage.text),
+                        safeUnmarshal(inputMessageText, requestId),
                         requestId
                     )
                     .also {
@@ -145,7 +156,30 @@ fun validatePersonDNumberRange(personNumberFirstAndSecoundChar: String): Boolean
     return personNumberFirstAndSecoundChar.toInt() in 41..71
 }
 
-private fun safeUnmarshal(inputMessageText: String): XMLTssSamhandlerData {
+private fun safeUnmarshal(inputMessageText: String, id: String): XMLTssSamhandlerData {
+    // Disable XXE
+    try {
+        return xmlTssSamhandlerData(inputMessageText)
+    } catch (ex: Exception) {
+        logger.warn("Error parsing response for $id", ex)
+        securelog.warn("error parsing this $inputMessageText for: $id")
+    }
+    logger.info("trying again with valid xml, for: $id")
+    val validXML = stripNonValidXMLCharacters(inputMessageText)
+    return xmlTssSamhandlerData(validXML)
+}
+
+private fun stripNonValidXMLCharacters(tssString: String): String {
+    val out = StringBuffer(tssString)
+    for (i in 0 until out.length) {
+        if (out[i].code == 0x1a) {
+            out.setCharAt(i, '-')
+        }
+    }
+    return out.toString()
+}
+
+private fun xmlTssSamhandlerData(inputMessageText: String): XMLTssSamhandlerData {
     // Disable XXE
     val spf: SAXParserFactory = SAXParserFactory.newInstance()
     spf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true)
