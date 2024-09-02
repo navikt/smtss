@@ -170,8 +170,8 @@ private fun safeUnmarshal(inputMessageText: String, id: String): XMLTssSamhandle
     return xmlTssSamhandlerData(validXML)
 }
 
-private fun stripNonValidXMLCharacters(infotrygdString: String): String {
-    val out = StringBuffer(infotrygdString)
+private fun stripNonValidXMLCharacters(tssString: String): String {
+    val out = StringBuffer(tssString)
     for (i in 0 until out.length) {
         if (out[i].code == 0x1a) {
             out.setCharAt(i, '-')
