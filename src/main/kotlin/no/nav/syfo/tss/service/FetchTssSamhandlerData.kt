@@ -15,6 +15,7 @@ import no.nav.helse.tss.samhandler.data.XMLTServicerutiner
 import no.nav.helse.tss.samhandler.data.XMLTidOFF1
 import no.nav.helse.tss.samhandler.data.XMLTssSamhandlerData
 import no.nav.syfo.EnvironmentVariables
+import no.nav.syfo.helpers.log
 import no.nav.syfo.logger
 import no.nav.syfo.mq.producerForQueue
 import no.nav.syfo.objectMapper
@@ -77,9 +78,20 @@ fun fetchTssSamhandlerData(
                 temporaryQueue
             )
             session.createConsumer(temporaryQueue).use { tmpConsumer ->
-                val consumedMessage = tmpConsumer.receive(20000) as TextMessage
+                val consumedMessage = tmpConsumer.receive(20000)
+
+                val inputMessageText =
+                    when (consumedMessage) {
+                        is TextMessage -> consumedMessage.text
+                        else ->
+                            throw RuntimeException(
+                                "Incoming message needs to be a byte message or text message, JMS type:" +
+                                    consumedMessage.jmsType,
+                            )
+                    }
+
                 return findEnkeltSamhandlerFromTSSRespons(
-                        safeUnmarshal(consumedMessage.text),
+                        safeUnmarshal(inputMessageText, requestId),
                         requestId
                     )
                     .also {
@@ -145,7 +157,30 @@ fun validatePersonDNumberRange(personNumberFirstAndSecoundChar: String): Boolean
     return personNumberFirstAndSecoundChar.toInt() in 41..71
 }
 
-private fun safeUnmarshal(inputMessageText: String): XMLTssSamhandlerData {
+private fun safeUnmarshal(inputMessageText: String, id: String): XMLTssSamhandlerData {
+    // Disable XXE
+    try {
+        return xmlTssSamhandlerData(inputMessageText)
+    } catch (ex: Exception) {
+        log.warn("Error parsing response for $id", ex)
+        securelog.warn("error parsing this $inputMessageText for: $id")
+    }
+    log.info("trying again with valid xml, for: $id")
+    val validXML = stripNonValidXMLCharacters(inputMessageText)
+    return xmlTssSamhandlerData(validXML)
+}
+
+private fun stripNonValidXMLCharacters(infotrygdString: String): String {
+    val out = StringBuffer(infotrygdString)
+    for (i in 0 until out.length) {
+        if (out[i].code == 0x1a) {
+            out.setCharAt(i, '-')
+        }
+    }
+    return out.toString()
+}
+
+private fun xmlTssSamhandlerData(inputMessageText: String): XMLTssSamhandlerData {
     // Disable XXE
     val spf: SAXParserFactory = SAXParserFactory.newInstance()
     spf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true)
