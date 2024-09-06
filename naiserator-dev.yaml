@@ -67,10 +67,6 @@ spec:
       access: readwrite
   envFrom:
     - secret: smtss-secrets
-    - secret: smtss-keystore-pwd
-  filesFrom:
-    - mountPath: /var/run/keystore
-      secret: smtss-keystore
   env:
     - name: MQ_HOST_NAME
       value: b27apvl221.preprod.local
@@ -82,5 +78,3 @@ spec:
       value: Q1_SMTSS
     - name: MQ_TSS_SAMHANDLER_SERVICE_QUEUE
       value: QA.Q1_415.AS10_SAMHANDLER_SERVICE
-    - name: MQ_KEYSTORE_PATH
-      value: /var/run/keystore/smtss-keystore.jks
