@@ -67,10 +67,6 @@ spec:
       access: readwrite
   envFrom:
     - secret: smtss-secrets
-    - secret: smtss-keystore-pwd
-  filesFrom:
-    - mountPath: /var/run/keystore
-      secret: smtss-keystore
   env:
     - name: MQ_HOST_NAME
       value: mpls03.adeo.no
@@ -82,5 +78,3 @@ spec:
       value: P_SMTSS
     - name: MQ_TSS_SAMHANDLER_SERVICE_QUEUE
       value: QA.P415.AS10_SAMHANDLER_SERVICE
-    - name: MQ_KEYSTORE_PATH
-      value: /var/run/keystore/smtss-keystore.jks
