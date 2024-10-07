@@ -9,7 +9,7 @@ val logbackVersion = "1.5.8"
 val logstashEncoderVersion = "8.0"
 val prometheusVersion = "0.16.0"
 val kotlinVersion = "2.0.20"
-val junitJupiterVersion = "5.11.1"
+val junitJupiterVersion = "5.11.2"
 val commonsCodecVersion = "1.17.1"
 val syfoXmlCodegen = "2.0.1"
 val ibmMqVersion = "9.4.0.5"
@@ -18,15 +18,15 @@ val commonsTextVersion = "1.12.0"
 val jedisVersion = "5.2.0"
 val ktfmtVersion = "0.44"
 val mockkVersion = "1.13.12"
-val nimbusdsVersion = "9.41.1"
-val testcontainersVersion = "1.20.1"
+val nimbusdsVersion = "9.41.2"
+val testcontainersVersion = "1.20.2"
 val commonsCompressVersion = "1.27.1"
 val javaVersion = JvmTarget.JVM_21
 
 plugins {
     id("application")
     kotlin("jvm") version "2.0.20"
-    id("com.gradleup.shadow") version "8.3.2"
+    id("com.gradleup.shadow") version "8.3.3"
     id("com.diffplug.spotless") version "6.25.0"
 }
 
