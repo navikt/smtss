@@ -8,6 +8,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import com.nimbusds.jose.jwk.JWKSet
 import com.nimbusds.jose.jwk.RSAKey
+import io.ktor.client.request.*
 import io.ktor.http.*
 import io.ktor.serialization.jackson.*
 import io.ktor.server.application.*
@@ -55,45 +56,45 @@ internal class TssSamhandlerDataTest {
     @Test
     internal fun `Should return ok status`() {
 
-        with(TestApplicationEngine()) {
-            start()
+        testApplication {
+            application {
+                setupAuth(
+                    environmentVariables,
+                    jwkProvider,
+                )
+                routing { getTssId(tssService) }
 
-            application.setupAuth(
-                environmentVariables,
-                jwkProvider,
-            )
-            application.routing { getTssId(tssService) }
-
-            application.install(ContentNegotiation) {
-                jackson {
-                    registerKotlinModule()
-                    registerModule(JavaTimeModule())
-                    configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
+                install(ContentNegotiation) {
+                    jackson {
+                        registerKotlinModule()
+                        registerModule(JavaTimeModule())
+                        configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
+                    }
+                }
+                install(StatusPages) {
+                    exception<Throwable> { call, cause ->
+                        call.respond(
+                            HttpStatusCode.InternalServerError,
+                            cause.message ?: "Unknown error",
+                        )
+                        logger.error("Caught exception", cause)
+                        throw cause
+                    }
                 }
             }
-            application.install(StatusPages) {
-                exception<Throwable> { call, cause ->
-                    call.respond(
-                        HttpStatusCode.InternalServerError,
-                        cause.message ?: "Unknown error",
-                    )
-                    logger.error("Caught exception", cause)
-                    throw cause
+            val response =
+                client.get("/api/v1/samhandler/emottak") {
+                    headers {
+                        append("Accept", "application/json")
+                        append("Content-Type", "application/json")
+                        append("samhandlerFnr", "2313123123")
+                        append("samhandlerOrgName", "Norsk Arbeidshelse – Østfold &amp; Akershus")
+                        append("requestId", "1")
+                        append(HttpHeaders.Authorization, "Bearer ${generateJWT("2", "clientId")}")
+                    }
                 }
-            }
 
-            with(
-                handleRequest(HttpMethod.Get, "/api/v1/samhandler/emottak") {
-                    addHeader("Accept", "application/json")
-                    addHeader("Content-Type", "application/json")
-                    addHeader("samhandlerFnr", "2313123123")
-                    addHeader("samhandlerOrgName", "Norsk Arbeidshelse – Østfold &amp; Akershus")
-                    addHeader("requestId", "1")
-                    addHeader(HttpHeaders.Authorization, "Bearer ${generateJWT("2", "clientId")}")
-                },
-            ) {
-                Assertions.assertEquals(HttpStatusCode.OK, response.status())
-            }
+            Assertions.assertEquals(HttpStatusCode.OK, response.status)
         }
     }
 
