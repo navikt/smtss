@@ -127,7 +127,7 @@ fun hasAccsess(credentials: JWTCredential, clientId: String): Boolean {
     return credentials.payload.audience.contains(clientId)
 }
 
-fun unauthorized(credentials: JWTCredential): Principal? {
+fun unauthorized(credentials: JWTCredential): Unit? {
     logger.error(
         "Auth: Unexpected audience for jwt {}, {}",
         StructuredArguments.keyValue("issuer", credentials.payload.issuer),
@@ -159,7 +159,7 @@ fun Application.module() {
             .rateLimited(10, 1, TimeUnit.MINUTES)
             .build()
 
-    environment.monitor.subscribe(ApplicationStopped) {
+    monitor.subscribe(ApplicationStopped) {
         logger.info("Got ApplicationStopped event from ktor")
         connection?.close()
     }
