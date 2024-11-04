@@ -3,8 +3,8 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 group = "no.nav.syfo"
 version = "1.0.0"
 
-val jacksonVersion = "2.18.0"
-val ktorVersion = "3.0.0"
+val jacksonVersion = "2.18.1"
+val ktorVersion = "3.0.1"
 val logbackVersion = "1.5.12"
 val logstashEncoderVersion = "8.0"
 val prometheusVersion = "0.16.0"
@@ -18,7 +18,7 @@ val commonsTextVersion = "1.12.0"
 val jedisVersion = "5.2.0"
 val ktfmtVersion = "0.44"
 val mockkVersion = "1.13.13"
-val nimbusdsVersion = "9.42"
+val nimbusdsVersion = "9.45"
 val testcontainersVersion = "1.20.3"
 val commonsCompressVersion = "1.27.1"
 val javaVersion = JvmTarget.JVM_21
@@ -26,7 +26,7 @@ val javaVersion = JvmTarget.JVM_21
 plugins {
     id("application")
     kotlin("jvm") version "2.0.21"
-    id("com.gradleup.shadow") version "8.3.3"
+    id("com.gradleup.shadow") version "8.3.5"
     id("com.diffplug.spotless") version "6.25.0"
 }
 
