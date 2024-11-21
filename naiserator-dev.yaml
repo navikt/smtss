@@ -52,6 +52,7 @@ spec:
         - application: syfosmpapirmottak
         - application: smregistrering-backend
         - application: syfosmarena
+        - application: syk-dig-backend
         - application: padm2
           namespace: teamsykefravr
           cluster: dev-gcp
