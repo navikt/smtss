@@ -21,6 +21,7 @@ val mockkVersion = "1.13.13"
 val nimbusdsVersion = "9.47"
 val testcontainersVersion = "1.20.3"
 val commonsCompressVersion = "1.27.1"
+val nettyVersion = "4.1.115.Final"
 val javaVersion = JvmTarget.JVM_21
 
 plugins {
@@ -52,6 +53,9 @@ dependencies {
     implementation("io.prometheus:simpleclient_common:$prometheusVersion")
 
     implementation("io.ktor:ktor-server-netty:$ktorVersion")
+    constraints { 
+         implementation("io.netty:netty-common:$nettyVersion") 
+     }
     implementation("io.ktor:ktor-server-content-negotiation:$ktorVersion")
     implementation("io.ktor:ktor-server-status-pages:$ktorVersion")
     implementation("io.ktor:ktor-server-auth:$ktorVersion")
