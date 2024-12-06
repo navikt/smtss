@@ -70,7 +70,7 @@ class TexasClient(
     suspend fun introspection(identityProvider: String, token: String): TexasIntrospectionResponse {
         val texasIntrospection = TexasIntrospectionRequest(identityProvider, token)
 
-        val response = httpClient.post("$introspectionEndpointURL/") { setBody(texasIntrospection) }
+        val response = httpClient.post(introspectionEndpointURL) { setBody(texasIntrospection) }
 
         logger.info("Texas introspection responded with statuscode: ${response.status}")
 
