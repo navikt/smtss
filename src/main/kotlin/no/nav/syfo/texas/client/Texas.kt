@@ -14,8 +14,11 @@ import io.ktor.client.plugins.HttpRequestRetry
 import io.ktor.client.plugins.HttpResponseValidator
 import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.client.request.header
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
+import io.ktor.http.ContentType
+import io.ktor.http.HttpHeaders
 import io.ktor.network.sockets.SocketTimeoutException
 import io.ktor.serialization.jackson.jackson
 import no.nav.syfo.logger
@@ -70,7 +73,10 @@ class TexasClient(
     suspend fun introspection(identityProvider: String, token: String): TexasIntrospectionResponse {
         val texasIntrospection = TexasIntrospectionRequest(identityProvider, token)
 
-        val response = httpClient.post(introspectionEndpointURL) { setBody(texasIntrospection) }
+        val response = httpClient.post(introspectionEndpointURL) {
+            header(HttpHeaders.ContentType, ContentType.Application.Json)
+            setBody(texasIntrospection)
+        }
 
         logger.info("Texas introspection responded with statuscode: ${response.status}")
 
