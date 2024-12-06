@@ -1,19 +1,22 @@
 package no.nav.syfo.tss.api
 
 import io.ktor.http.HttpStatusCode
-import io.ktor.server.application.call
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.get
 import io.ktor.server.routing.route
 import no.nav.syfo.logger
+import no.nav.syfo.texas.auth.TexasAuth
+import no.nav.syfo.texas.client.TexasClient
 import no.nav.syfo.tss.service.TSSident
 import no.nav.syfo.tss.service.TssService
 
 fun Route.getTssId(
     tssService: TssService,
+    texasClient: TexasClient,
 ) {
     route("/api/v1") {
+        install(TexasAuth) { client = texasClient }
         get("samhandler/emottak") {
             val samhandlerfnr = call.request.headers["samhandlerFnr"]
             val samhandlerOrgName = call.request.headers["samhandlerOrgName"]

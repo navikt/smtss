@@ -8,7 +8,6 @@ import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import io.ktor.http.*
 import io.ktor.serialization.jackson.*
 import io.ktor.server.application.*
-import io.ktor.server.auth.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import io.ktor.server.plugins.contentnegotiation.*
@@ -24,7 +23,6 @@ import no.nav.syfo.mq.connectionFactory
 import no.nav.syfo.nais.isalive.naisIsAliveRoute
 import no.nav.syfo.nais.isready.naisIsReadyRoute
 import no.nav.syfo.nais.prometheus.naisPrometheusRoute
-import no.nav.syfo.texas.auth.TexasAuth
 import no.nav.syfo.texas.client.TexasClient
 import no.nav.syfo.tss.api.getTssId
 import no.nav.syfo.tss.service.TssService
@@ -65,13 +63,11 @@ fun Application.configureRouting(
     tssService: TssService,
     texasClient: TexasClient
 ) {
-    setupAuth(texasClient = texasClient)
-
     routing {
         naisIsAliveRoute(applicationState)
         naisIsReadyRoute(applicationState)
         naisPrometheusRoute()
-        authenticate("TexasAuth") { getTssId(tssService) }
+        getTssId(tssService, texasClient)
         swaggerUI(path = "swagger", swaggerFile = "openapi/documentation.yaml")
     }
 
@@ -94,10 +90,6 @@ fun Application.configureRouting(
     }
 
     intercept(ApplicationCallPipeline.Monitoring, monitorHttpRequests())
-}
-
-fun Application.setupAuth(texasClient: TexasClient) {
-    install(TexasAuth) { client = texasClient }
 }
 
 fun Application.module() {

@@ -27,7 +27,6 @@ import java.time.LocalDateTime
 import java.time.ZoneId
 import java.util.*
 import no.nav.syfo.logger
-import no.nav.syfo.setupAuth
 import no.nav.syfo.texas.client.TexasClient
 import no.nav.syfo.texas.client.TexasIntrospectionResponse
 import no.nav.syfo.tss.service.TSSident
@@ -59,8 +58,7 @@ internal class TssSamhandlerDataTest {
 
         testApplication {
             application {
-                setupAuth(texasClient)
-                routing { getTssId(tssService) }
+                routing { getTssId(tssService, texasClient) }
 
                 install(ContentNegotiation) {
                     jackson {
