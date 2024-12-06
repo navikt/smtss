@@ -1,5 +1,8 @@
 package no.nav.syfo.texas.client
 
+import com.fasterxml.jackson.annotation.JsonAnyGetter
+import com.fasterxml.jackson.annotation.JsonAnySetter
+import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.SerializationFeature
@@ -80,7 +83,6 @@ class TexasClient(
         }
 
         logger.info("Texas introspection responded with statuscode: ${response.status}")
-        logger.info("Texas introspection responded with body: ${response.bodyAsText()}")
 
         return response.body<TexasIntrospectionResponse>()
     }
@@ -93,7 +95,9 @@ data class TexasIntrospectionRequest(
 
 data class TexasIntrospectionResponse(
     val active: Boolean,
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     val error: String?,
+    @JsonAnySetter @get:JsonAnyGetter
     val other: Map<String, Any?> = mutableMapOf(),
 )
 
