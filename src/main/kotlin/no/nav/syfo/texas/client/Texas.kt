@@ -17,6 +17,7 @@ import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.request.header
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
+import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.network.sockets.SocketTimeoutException
@@ -79,6 +80,7 @@ class TexasClient(
         }
 
         logger.info("Texas introspection responded with statuscode: ${response.status}")
+        logger.info("Texas introspection responded with body: ${response.bodyAsText()}")
 
         return response.body<TexasIntrospectionResponse>()
     }
