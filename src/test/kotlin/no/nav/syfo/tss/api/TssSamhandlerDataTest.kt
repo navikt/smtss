@@ -1,6 +1,5 @@
 package no.nav.syfo.tss.api
 
-import com.auth0.jwk.JwkProviderBuilder
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
 import com.fasterxml.jackson.databind.SerializationFeature
@@ -27,9 +26,9 @@ import java.text.ParseException
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.util.*
-import no.nav.syfo.EnvironmentVariables
 import no.nav.syfo.logger
-import no.nav.syfo.setupAuth
+import no.nav.syfo.texas.client.TexasClient
+import no.nav.syfo.texas.client.TexasIntrospectionResponse
 import no.nav.syfo.tss.service.TSSident
 import no.nav.syfo.tss.service.TssService
 import org.junit.jupiter.api.Assertions
@@ -37,18 +36,19 @@ import org.junit.jupiter.api.Test
 
 internal class TssSamhandlerDataTest {
 
-    private val path = "src/test/resources/jwkset.json"
-    private val uri = Paths.get(path).toUri().toURL()
-    private val jwkProvider = JwkProviderBuilder(uri).build()
-    private val environmentVariables =
-        mockk<EnvironmentVariables> {
-            coEvery { clientIdV2 } returns "clientId"
-            coEvery { jwtIssuer } returns "https://sts.issuer.net/myid"
-        }
     private val tssService =
         mockk<TssService> {
             coEvery { findBestTssIdEmottak(any(), any(), any(), any()) } returns
                 TSSident(tssid = "232313311")
+        }
+    private val texasClient =
+        mockk<TexasClient> {
+            coEvery { introspection(any(), any()) } returns
+                TexasIntrospectionResponse(
+                    active = true,
+                    error = "",
+                    other = mutableMapOf("azp_name" to "sadasd")
+                )
         }
 
     private val keyId = "localhost-signer"
@@ -58,11 +58,7 @@ internal class TssSamhandlerDataTest {
 
         testApplication {
             application {
-                setupAuth(
-                    environmentVariables,
-                    jwkProvider,
-                )
-                routing { getTssId(tssService) }
+                routing { getTssId(tssService, texasClient) }
 
                 install(ContentNegotiation) {
                     jackson {

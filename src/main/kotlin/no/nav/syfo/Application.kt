@@ -1,7 +1,5 @@
 package no.nav.syfo
 
-import com.auth0.jwk.JwkProvider
-import com.auth0.jwk.JwkProviderBuilder
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
@@ -10,8 +8,6 @@ import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import io.ktor.http.*
 import io.ktor.serialization.jackson.*
 import io.ktor.server.application.*
-import io.ktor.server.auth.*
-import io.ktor.server.auth.jwt.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import io.ktor.server.plugins.contentnegotiation.*
@@ -20,16 +16,14 @@ import io.ktor.server.plugins.swagger.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.prometheus.client.hotspot.DefaultExports
-import java.net.URI
-import java.time.Duration
 import java.util.concurrent.TimeUnit
-import net.logstash.logback.argument.StructuredArguments
 import no.nav.syfo.metrics.monitorHttpRequests
 import no.nav.syfo.mq.MqTlsUtils
 import no.nav.syfo.mq.connectionFactory
 import no.nav.syfo.nais.isalive.naisIsAliveRoute
 import no.nav.syfo.nais.isready.naisIsReadyRoute
 import no.nav.syfo.nais.prometheus.naisPrometheusRoute
+import no.nav.syfo.texas.client.TexasClient
 import no.nav.syfo.tss.api.getTssId
 import no.nav.syfo.tss.service.TssService
 import no.nav.syfo.util.createJedisPool
@@ -66,20 +60,14 @@ fun main() {
 
 fun Application.configureRouting(
     applicationState: ApplicationState,
-    environmentVariables: EnvironmentVariables,
     tssService: TssService,
-    jwkProviderAadV2: JwkProvider,
+    texasClient: TexasClient
 ) {
-    setupAuth(
-        environmentVariables = environmentVariables,
-        jwkProviderAadV2 = jwkProviderAadV2,
-    )
-
     routing {
         naisIsAliveRoute(applicationState)
         naisIsReadyRoute(applicationState)
         naisPrometheusRoute()
-        authenticate("servicebrukerAAD") { getTssId(tssService) }
+        getTssId(tssService, texasClient)
         swaggerUI(path = "swagger", swaggerFile = "openapi/documentation.yaml")
     }
 
@@ -104,38 +92,6 @@ fun Application.configureRouting(
     intercept(ApplicationCallPipeline.Monitoring, monitorHttpRequests())
 }
 
-fun Application.setupAuth(
-    environmentVariables: EnvironmentVariables,
-    jwkProviderAadV2: JwkProvider,
-) {
-    install(Authentication) {
-        jwt(name = "servicebrukerAAD") {
-            verifier(jwkProviderAadV2, environmentVariables.jwtIssuer)
-            validate { credentials ->
-                when {
-                    hasAccsess(credentials, environmentVariables.clientIdV2) ->
-                        JWTPrincipal(credentials.payload)
-                    else -> unauthorized(credentials)
-                }
-            }
-        }
-    }
-}
-
-fun hasAccsess(credentials: JWTCredential, clientId: String): Boolean {
-    val appid: String = credentials.payload.getClaim("azp").asString()
-    return credentials.payload.audience.contains(clientId)
-}
-
-fun unauthorized(credentials: JWTCredential): Unit? {
-    logger.error(
-        "Auth: Unexpected audience for jwt {}, {}",
-        StructuredArguments.keyValue("issuer", credentials.payload.issuer),
-        StructuredArguments.keyValue("audience", credentials.payload.audience),
-    )
-    return null
-}
-
 fun Application.module() {
     val applicationState = ApplicationState()
     val environmentVariables = EnvironmentVariables()
@@ -152,12 +108,7 @@ fun Application.module() {
             .createConnection(serviceUser.serviceuserUsername, serviceUser.serviceuserPassword)
 
     val tssService = TssService(environmentVariables, jedisPool, connection)
-
-    val jwkProviderAad =
-        JwkProviderBuilder(URI.create(environmentVariables.jwkKeysUrl).toURL())
-            .cached(10, Duration.ofHours(24))
-            .rateLimited(10, 1, TimeUnit.MINUTES)
-            .build()
+    val texasClient = TexasClient(environmentVariables.texasIntrospectionEndpoint)
 
     monitor.subscribe(ApplicationStopped) {
         logger.info("Got ApplicationStopped event from ktor")
@@ -166,9 +117,8 @@ fun Application.module() {
 
     configureRouting(
         applicationState = applicationState,
-        environmentVariables = environmentVariables,
-        jwkProviderAadV2 = jwkProviderAad,
         tssService = tssService,
+        texasClient = texasClient,
     )
 
     connection.start()

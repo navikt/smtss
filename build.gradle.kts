@@ -62,6 +62,7 @@ dependencies {
     implementation("io.ktor:ktor-server-auth-jwt:$ktorVersion")
     implementation("io.ktor:ktor-server-swagger:$ktorVersion")
 
+    implementation("io.ktor:ktor-client-core:$ktorVersion")
     implementation("io.ktor:ktor-client-apache:$ktorVersion")
     constraints {
         implementation("commons-codec:commons-codec:$commonsCodecVersion") {
