@@ -7,6 +7,7 @@ import io.ktor.server.request.authorization
 import io.ktor.server.response.respond
 import no.nav.syfo.logger
 import no.nav.syfo.metrics.AUTH_AZP_NAME
+import no.nav.syfo.securelog
 import no.nav.syfo.texas.client.TexasClient
 
 class AuthPluginConfiguration(
@@ -46,7 +47,7 @@ val TexasAuth =
                     return@onCall
                 }
 
-                logger.info("authenticated - claims='${introspectResponse.other}'")
+                securelog.info("authenticated - claims='${introspectResponse.other}'")
 
                 if (introspectResponse.other["azp_name"]?.toString() != null) {
                     val azpName: String = introspectResponse.other["azp_name"].toString()
