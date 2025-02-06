@@ -1,5 +1,6 @@
 package no.nav.syfo.tss.service
 
+import io.valkey.JedisPool
 import jakarta.jms.Connection
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -11,7 +12,6 @@ import no.nav.syfo.logger
 import no.nav.syfo.objectMapper
 import no.nav.syfo.securelog
 import org.apache.commons.text.similarity.LevenshteinDistance
-import redis.clients.jedis.JedisPool
 
 class TssService(
     private val environmentVariables: EnvironmentVariables,
@@ -367,7 +367,7 @@ fun samhandlerAvdelingIsAvdNr01(samhandlereAvdeling: XMLSamhAvdPraType): Boolean
 
 fun calculatePercentageStringMatch(str1: String?, str2: String): Double {
     val maxDistance = max(str1?.length!!, str2.length).toDouble()
-    val distance = LevenshteinDistance().apply(str2, str1).toDouble()
+    val distance = LevenshteinDistance.getDefaultInstance().apply(str2, str1).toDouble()
     return (maxDistance - distance) / maxDistance
 }
 

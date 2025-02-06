@@ -1,0 +1,30 @@
+package no.nav.syfo.util
+
+import io.valkey.DefaultJedisClientConfig
+import io.valkey.HostAndPort
+import io.valkey.JedisPool
+import io.valkey.JedisPoolConfig
+import java.net.URI
+import no.nav.syfo.getEnvVar
+
+class ValkeyConfig(
+    valkeyUri: URI = URI(getEnvVar("VALKEY_URI_SMTSS")),
+    val valkeyUsername: String = getEnvVar("VALKEY_USERNAME_SMTSS"),
+    val valkeyPassword: String = getEnvVar("VALKEY_PASSWORD_SMTSS"),
+    val ssl: Boolean = true
+) {
+    val host: String = valkeyUri.host
+    val port: Int = valkeyUri.port
+}
+
+fun createJedisPool(valkeyConfig: ValkeyConfig = ValkeyConfig()): JedisPool {
+    return JedisPool(
+        JedisPoolConfig(),
+        HostAndPort(valkeyConfig.host, valkeyConfig.port),
+        DefaultJedisClientConfig.builder()
+            .ssl(valkeyConfig.ssl)
+            .user(valkeyConfig.valkeyUsername)
+            .password(valkeyConfig.valkeyPassword)
+            .build()
+    )
+}

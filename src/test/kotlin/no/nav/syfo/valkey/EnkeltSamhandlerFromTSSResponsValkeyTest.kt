@@ -1,6 +1,8 @@
-package no.nav.syfo.redis
+package no.nav.syfo.valkey
 
 import com.fasterxml.jackson.module.kotlin.readValue
+import io.valkey.JedisPool
+import io.valkey.JedisPoolConfig
 import no.nav.helse.tss.samhandler.data.XMLSamhandler
 import no.nav.syfo.objectMapper
 import no.nav.syfo.tss.service.TssServiceKtTest
@@ -8,23 +10,21 @@ import org.junit.AfterClass
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.testcontainers.containers.GenericContainer
-import redis.clients.jedis.JedisPool
-import redis.clients.jedis.JedisPoolConfig
 
-val redisContainer: GenericContainer<Nothing> = GenericContainer("redis:7.0.12-alpine")
+val valkeyContainer: GenericContainer<Nothing> = GenericContainer("valkey/valkey:8.0.2-alpine")
 
-internal class EnkeltSamhandlerFromTSSResponsRedisTest {
+internal class EnkeltSamhandlerFromTSSResponsValkeyTest {
 
     init {
-        redisContainer.withExposedPorts(6379)
-        redisContainer.start()
+        valkeyContainer.withExposedPorts(6379)
+        valkeyContainer.start()
     }
 
     val jedisPool =
-        JedisPool(JedisPoolConfig(), redisContainer.host, redisContainer.getMappedPort(6379))
+        JedisPool(JedisPoolConfig(), valkeyContainer.host, valkeyContainer.getMappedPort(6379))
 
     @Test
-    internal fun `Should cache enkeltSamhandlerFromTSSRespons in redis`() {
+    internal fun `Should cache enkeltSamhandlerFromTSSRespons in valkey`() {
         val samhandlerfnr = "1232134124"
 
         val enkeltSamhandlerFromTSSRespons: List<XMLSamhandler>? =
@@ -53,8 +53,8 @@ internal class EnkeltSamhandlerFromTSSResponsRedisTest {
     companion object {
         @JvmStatic
         @AfterClass
-        fun stopRedis() {
-            redisContainer.stop()
+        fun stopValkey() {
+            valkeyContainer.stop()
         }
     }
 }

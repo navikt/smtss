@@ -1,9 +1,9 @@
-package no.nav.syfo.redis
+package no.nav.syfo.valkey
 
+import io.valkey.Jedis
+import io.valkey.JedisPool
 import no.nav.syfo.logger
 import no.nav.syfo.objectMapper
-import redis.clients.jedis.Jedis
-import redis.clients.jedis.JedisPool
 
 fun getTSSRespons(
     jedisPool: JedisPool,
@@ -16,7 +16,7 @@ fun getTSSRespons(
             objectMapper.readValue(it, JedisEnkeltSamhandlerFromTSSResponsModel::class.java)
         }
     } catch (exception: Exception) {
-        logger.error("Could not get enkeltSamhandlerFromTSSRespons in Redis", exception)
+        logger.error("Could not get enkeltSamhandlerFromTSSRespons in valkey", exception)
         null
     } finally {
         jedis?.close()

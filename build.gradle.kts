@@ -15,7 +15,7 @@ val syfoXmlCodegen = "2.0.1"
 val ibmMqVersion = "9.4.1.1"
 val jaxbApiVersion = "2.4.0-b180830.0359"
 val commonsTextVersion = "1.13.0"
-val jedisVersion = "5.2.0"
+val valkeyVersion = "5.3.0"
 val ktfmtVersion = "0.44"
 val mockkVersion = "1.13.16"
 val nimbusdsVersion = "10.0.1"
@@ -88,8 +88,7 @@ dependencies {
 
     implementation("org.apache.commons:commons-text:$commonsTextVersion")
 
-    implementation("redis.clients:jedis:$jedisVersion")
-
+    implementation("io.valkey:valkey-java:$valkeyVersion")
 
     testImplementation("io.ktor:ktor-server-test-host:$ktorVersion") {
         exclude(group = "org.eclipse.jetty")
