@@ -22,6 +22,8 @@ fun saveTSSRespons(
             secondsIn48Hours,
             objectMapper.writeValueAsString(jedisEnkeltSamhandlerFromTSSResponsModel),
         )
+        logger.info("Saved enkeltSamhandlerFromTSSRespons in valkey")
+
     } catch (exception: Exception) {
         logger.error("Could not save enkeltSamhandlerFromTSSRespons in valkey", exception)
     } finally {
