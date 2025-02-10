@@ -1,5 +1,6 @@
 package no.nav.syfo.tss.service
 
+import io.valkey.JedisPool
 import jakarta.jms.Connection
 import jakarta.jms.MessageProducer
 import jakarta.jms.Session
@@ -18,14 +19,13 @@ import no.nav.syfo.EnvironmentVariables
 import no.nav.syfo.logger
 import no.nav.syfo.mq.producerForQueue
 import no.nav.syfo.objectMapper
-import no.nav.syfo.redis.getTSSRespons
-import no.nav.syfo.redis.saveTSSRespons
 import no.nav.syfo.securelog
 import no.nav.syfo.util.toString
 import no.nav.syfo.util.tssSamhandlerdataInputMarshaller
 import no.nav.syfo.util.tssSamhandlerdataUnmarshaller
+import no.nav.syfo.valkey.getTSSRespons
+import no.nav.syfo.valkey.saveTSSRespons
 import org.xml.sax.InputSource
-import redis.clients.jedis.JedisPool
 
 fun fetchTssSamhandlerData(
     samhandlerfnr: String,
@@ -35,10 +35,10 @@ fun fetchTssSamhandlerData(
     connection: Connection
 ): List<XMLSamhandler>? {
 
-    val fromRedis = getTSSRespons(jedisPool, samhandlerfnr)
-    if (fromRedis != null) {
-        logger.info("Fetched enkeltSamhandlerFromTSSRespons from redis for requestId: $requestId")
-        return fromRedis.enkeltSamhandlerFromTSSRespons
+    val fromValkey = getTSSRespons(jedisPool, samhandlerfnr)
+    if (fromValkey != null) {
+        logger.info("Fetched enkeltSamhandlerFromTSSRespons from valkey for requestId: $requestId")
+        return fromValkey.enkeltSamhandlerFromTSSRespons
     }
     val tssSamhandlerDatainput =
         XMLTssSamhandlerData().apply {

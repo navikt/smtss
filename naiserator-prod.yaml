@@ -65,7 +65,7 @@ spec:
             - port: 1414
   secureLogs:
     enabled: true
-  redis:
+  valkey:
     - instance: smtss
       access: readwrite
   envFrom:

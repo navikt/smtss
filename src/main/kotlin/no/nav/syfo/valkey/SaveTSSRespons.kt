@@ -1,10 +1,10 @@
-package no.nav.syfo.redis
+package no.nav.syfo.valkey
 
+import io.valkey.Jedis
+import io.valkey.JedisPool
 import no.nav.helse.tss.samhandler.data.XMLSamhandler
 import no.nav.syfo.logger
 import no.nav.syfo.objectMapper
-import redis.clients.jedis.Jedis
-import redis.clients.jedis.JedisPool
 
 fun saveTSSRespons(
     jedisPool: JedisPool,
@@ -22,8 +22,10 @@ fun saveTSSRespons(
             secondsIn48Hours,
             objectMapper.writeValueAsString(jedisEnkeltSamhandlerFromTSSResponsModel),
         )
+        logger.info("Saved enkeltSamhandlerFromTSSRespons in valkey")
+
     } catch (exception: Exception) {
-        logger.error("Could not save enkeltSamhandlerFromTSSRespons in Redis", exception)
+        logger.error("Could not save enkeltSamhandlerFromTSSRespons in valkey", exception)
     } finally {
         jedis?.close()
     }

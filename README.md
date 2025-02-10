@@ -34,7 +34,7 @@ This the high level flow of the application
   graph LR
       smtss --- tss
       smtss --- azure_ad
-      smtss --- redis
+      smtss --- valkey
 ```
 
 ## Getting started
