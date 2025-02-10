@@ -21,7 +21,7 @@ val mockkVersion = "1.13.16"
 val nimbusdsVersion = "10.0.1"
 val testcontainersVersion = "1.20.4"
 val commonsCompressVersion = "1.27.1"
-val nettyVersion = "4.1.117.Final"
+val nettyVersion = "4.1.118.Final"
 val javaVersion = JvmTarget.JVM_21
 
 plugins {
