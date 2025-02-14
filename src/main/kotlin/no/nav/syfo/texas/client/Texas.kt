@@ -30,7 +30,7 @@ class TexasClient(
     private val introspectionEndpointURL: String,
 ) {
 
-    val config: HttpClientConfig<ApacheEngineConfig>.() -> Unit = {
+    private val config: HttpClientConfig<ApacheEngineConfig>.() -> Unit = {
         install(ContentNegotiation) {
             jackson {
                 registerKotlinModule()
@@ -71,7 +71,7 @@ class TexasClient(
         }
     }
 
-    val httpClient = HttpClient(Apache, config)
+    private val httpClient = HttpClient(Apache, config)
 
     suspend fun introspection(identityProvider: String, token: String): TexasIntrospectionResponse {
         val texasIntrospection = TexasIntrospectionRequest(identityProvider, token)

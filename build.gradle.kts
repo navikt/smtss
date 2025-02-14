@@ -27,7 +27,7 @@ val testcontainersVersion = "1.20.4"
 
 ///Due to vulnerabilities
 val commonsCompressVersion = "1.27.1"
-val nettyVersion = "4.1.118.Final"
+val nettyhandlerVersion = "4.1.118.Final"
 
 plugins {
     id("application")
@@ -59,7 +59,7 @@ dependencies {
 
     implementation("io.ktor:ktor-server-netty:$ktorVersion")
     constraints { 
-         implementation("io.netty:netty-common:$nettyVersion") 
+         implementation("io.netty:netty-handler:$nettyhandlerVersion")
      }
     implementation("io.ktor:ktor-server-content-negotiation:$ktorVersion")
     implementation("io.ktor:ktor-server-status-pages:$ktorVersion")
@@ -88,16 +88,13 @@ dependencies {
 
     implementation("no.nav.helse.xml:tss-samhandler-data:$syfoXmlCodegen")
 
-
     implementation("javax.xml.bind:jaxb-api:$jaxbApiVersion")
 
     implementation("org.apache.commons:commons-text:$commonsTextVersion")
 
     implementation("io.valkey:valkey-java:$valkeyVersion")
 
-    testImplementation("io.ktor:ktor-server-test-host:$ktorVersion") {
-        exclude(group = "org.eclipse.jetty")
-    }
+    testImplementation("io.ktor:ktor-server-test-host:$ktorVersion")
 
     testImplementation("org.junit.jupiter:junit-jupiter:$junitJupiterVersion")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
