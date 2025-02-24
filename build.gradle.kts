@@ -7,12 +7,12 @@ val javaVersion = JvmTarget.JVM_21
 
 
 val jacksonVersion = "2.18.2"
-val ktorVersion = "3.1.0"
+val ktorVersion = "3.1.1"
 val logbackVersion = "1.5.16"
 val logstashEncoderVersion = "8.0"
 val prometheusVersion = "0.16.0"
 val kotlinVersion = "2.1.10"
-val junitJupiterVersion = "5.11.4"
+val junitJupiterVersion = "5.12.0"
 val commonsCodecVersion = "1.18.0"
 val syfoXmlCodegen = "2.0.1"
 val ibmMqVersion = "9.4.1.1"
@@ -22,7 +22,7 @@ val valkeyVersion = "5.3.0"
 val ktfmtVersion = "0.44"
 val mockkVersion = "1.13.16"
 val nimbusdsVersion = "10.0.1"
-val testcontainersVersion = "1.20.4"
+val testcontainersVersion = "1.20.5"
 
 
 ///Due to vulnerabilities
