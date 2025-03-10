@@ -22,7 +22,7 @@ val valkeyVersion = "5.3.0"
 val ktfmtVersion = "0.44"
 val mockkVersion = "1.13.17"
 val nimbusdsVersion = "10.0.2"
-val testcontainersVersion = "1.20.5"
+val testcontainersVersion = "1.20.6"
 
 
 ///Due to vulnerabilities
