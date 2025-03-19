@@ -52,7 +52,6 @@ spec:
         - application: syfosmmottak
         - application: pale-2
         - application: syfosmpapirmottak
-        - application: smregistrering-backend
         - application: syfosmarena
         - application: syk-dig-backend
         - application: padm2
