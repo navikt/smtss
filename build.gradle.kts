@@ -7,9 +7,9 @@ val javaVersion = JvmTarget.JVM_21
 
 
 val jacksonVersion = "2.18.3"
-val ktorVersion = "3.1.1"
+val ktorVersion = "3.1.2"
 val logbackVersion = "1.5.18"
-val logstashEncoderVersion = "8.0"
+val logstashEncoderVersion = "8.1"
 val prometheusVersion = "0.16.0"
 val kotlinVersion = "2.1.20"
 val junitJupiterVersion = "5.12.1"
@@ -21,13 +21,13 @@ val commonsTextVersion = "1.13.0"
 val valkeyVersion = "5.3.0"
 val ktfmtVersion = "0.44"
 val mockkVersion = "1.13.17"
-val nimbusdsVersion = "10.0.2"
+val nimbusdsVersion = "10.1"
 val testcontainersVersion = "1.20.6"
 
 
 ///Due to vulnerabilities
 val commonsCompressVersion = "1.27.1"
-val nettyhandlerVersion = "4.1.119.Final"
+val nettyhandlerVersion = "4.2.0.Final"
 
 plugins {
     id("application")
