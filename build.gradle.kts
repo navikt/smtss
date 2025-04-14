@@ -7,33 +7,33 @@ val javaVersion = JvmTarget.JVM_21
 
 
 val jacksonVersion = "2.18.3"
-val ktorVersion = "3.1.1"
+val ktorVersion = "3.1.2"
 val logbackVersion = "1.5.18"
-val logstashEncoderVersion = "8.0"
+val logstashEncoderVersion = "8.1"
 val prometheusVersion = "0.16.0"
 val kotlinVersion = "2.1.20"
-val junitJupiterVersion = "5.12.1"
+val junitJupiterVersion = "5.12.2"
 val commonsCodecVersion = "1.18.0"
 val syfoXmlCodegen = "2.0.1"
 val ibmMqVersion = "9.4.2.0"
 val jaxbApiVersion = "2.4.0-b180830.0359"
-val commonsTextVersion = "1.13.0"
+val commonsTextVersion = "1.13.1"
 val valkeyVersion = "5.3.0"
 val ktfmtVersion = "0.44"
-val mockkVersion = "1.13.17"
-val nimbusdsVersion = "10.0.2"
+val mockkVersion = "1.14.0"
+val nimbusdsVersion = "10.2"
 val testcontainersVersion = "1.20.6"
 
 
 ///Due to vulnerabilities
 val commonsCompressVersion = "1.27.1"
-val nettyhandlerVersion = "4.1.119.Final"
+val nettyhandlerVersion = "4.2.0.Final"
 
 plugins {
     id("application")
     kotlin("jvm") version "2.1.20"
     id("com.gradleup.shadow") version "8.3.6"
-    id("com.diffplug.spotless") version "7.0.2"
+    id("com.diffplug.spotless") version "7.0.3"
 }
 
 application {
