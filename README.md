@@ -42,11 +42,11 @@ This the high level flow of the application
 #### Compile and package application
 To build locally and run the integration tests you can simply run
 ``` shell
-./gradlew shadowJar
+./gradlew installDist
 ```
 or on windows
 ``` shell
-gradlew.bat shadowJar
+gradlew.bat installDist
 ```
 
 ### Add new application to consume api (only NAV applications is supported)

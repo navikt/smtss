@@ -32,7 +32,6 @@ val nettyhandlerVersion = "4.2.3.Final"
 plugins {
     id("application")
     kotlin("jvm") version "2.2.0"
-    id("com.gradleup.shadow") version "9.0.0"
     id("com.diffplug.spotless") version "7.2.1"
 }
 
@@ -116,18 +115,6 @@ kotlin {
 
 tasks {
 
-    shadowJar {
-        archiveBaseName.set("app")
-        archiveClassifier.set("")
-        isZip64 = true
-        manifest {
-            attributes(
-                mapOf(
-                    "Main-Class" to "no.nav.syfo.ApplicationKt",
-                ),
-            )
-        }
-    }
 
     test {
         useJUnitPlatform {}
