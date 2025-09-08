@@ -6,32 +6,32 @@ version = "1.0.0"
 val javaVersion = JvmTarget.JVM_21
 
 
-val jacksonVersion = "2.19.2"
-val ktorVersion = "3.2.2"
+val jacksonVersion = "2.20.0"
+val ktorVersion = "3.2.3"
 val logbackVersion = "1.5.18"
 val logstashEncoderVersion = "8.1"
 val prometheusVersion = "0.16.0"
-val kotlinVersion = "2.2.0"
+val kotlinVersion = "2.2.10"
 val junitJupiterVersion = "5.13.4"
 val commonsCodecVersion = "1.19.0"
 val syfoXmlCodegen = "2.0.1"
-val ibmMqVersion = "9.4.3.0"
+val ibmMqVersion = "9.4.3.1"
 val jaxbApiVersion = "2.4.0-b180830.0359"
 val commonsTextVersion = "1.14.0"
 val valkeyVersion = "5.4.0"
 val ktfmtVersion = "0.44"
 val mockkVersion = "1.14.5"
-val nimbusdsVersion = "10.4"
+val nimbusdsVersion = "10.5"
 val testcontainersVersion = "1.21.3"
 
 
 ///Due to vulnerabilities
-val commonsCompressVersion = "1.27.1"
-val nettyhandlerVersion = "4.2.3.Final"
+val commonsCompressVersion = "1.28.0"
+val nettyhandlerVersion = "4.2.6.Final"
 
 plugins {
     id("application")
-    kotlin("jvm") version "2.2.0"
+    kotlin("jvm") version "2.2.10"
     id("com.diffplug.spotless") version "7.2.1"
 }
 
