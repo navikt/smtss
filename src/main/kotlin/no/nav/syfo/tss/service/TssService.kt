@@ -56,6 +56,20 @@ class TssService(
         return tssId
     }
 
+    fun getSamhandlerInst(
+        samhandlerId: String,
+        requestId: String,
+        samhandlerIdType: String,
+    ): List<XMLSamhandler>? {
+        return fetchTssSamhandlerInst(
+            connection,
+            environmentVariables,
+            samhandlerId,
+            requestId,
+            samhandlerIdType
+        )
+    }
+
     fun findBestTssIdArena(
         samhandlerfnr: String,
         samhandlerOrgName: String,

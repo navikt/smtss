@@ -27,6 +27,46 @@ import no.nav.syfo.valkey.getTSSRespons
 import no.nav.syfo.valkey.saveTSSRespons
 import org.xml.sax.InputSource
 
+fun fetchTssSamhandlerInst(
+    connection: Connection,
+    environmentVariables: EnvironmentVariables,
+    samhandlerID: String,
+    requestId: String,
+    samhandlerIDType: String
+): List<XMLSamhandler>? {
+    val tssSamhandlerDatainput =
+        XMLTssSamhandlerData().apply {
+            tssInputData =
+                XMLTssSamhandlerData.TssInputData().apply {
+                    tssServiceRutine =
+                        XMLTServicerutiner().apply {
+                            samhandlerIDataB910 =
+                                XMLSamhandlerIDataB910Type().apply {
+                                    ofFid =
+                                        XMLTidOFF1().apply {
+                                            idOff = samhandlerID
+                                            kodeIdType = samhandlerIDType
+                                        }
+                                    historikk = "N"
+                                }
+                        }
+                }
+        }
+
+    val samhandler =
+        getSamhandlere(
+            connection,
+            environmentVariables,
+            tssSamhandlerDatainput,
+            requestId,
+        )
+    securelog.info(
+        "got request to tss for requestId:$requestId: ${objectMapper.writeValueAsString(tssSamhandlerDatainput)}"
+    )
+
+    return samhandler
+}
+
 fun fetchTssSamhandlerData(
     samhandlerfnr: String,
     environmentVariables: EnvironmentVariables,
@@ -63,6 +103,25 @@ fun fetchTssSamhandlerData(
         "Request to tss for requestId:$requestId requsesttss: ${objectMapper.writeValueAsString(tssSamhandlerDatainput)}"
     )
 
+    val samhandlers =
+        getSamhandlere(
+            connection,
+            environmentVariables,
+            tssSamhandlerDatainput,
+            requestId,
+        )
+    if (!samhandlers.isNullOrEmpty()) {
+        saveTSSRespons(jedisPool, samhandlerfnr, samhandlers)
+    }
+    return samhandlers
+}
+
+private fun getSamhandlere(
+    connection: Connection,
+    environmentVariables: EnvironmentVariables,
+    tssSamhandlerDatainput: XMLTssSamhandlerData,
+    requestId: String,
+): List<XMLSamhandler>? =
     connection.createSession(Session.CLIENT_ACKNOWLEDGE).use { session ->
         val temporaryQueue = session.createTemporaryQueue()
 
@@ -74,7 +133,7 @@ fun fetchTssSamhandlerData(
                 tssSamhnadlerInfoProducer,
                 session,
                 tssSamhandlerDatainput,
-                temporaryQueue
+                temporaryQueue,
             )
             session.createConsumer(temporaryQueue).use { tmpConsumer ->
                 val consumedMessage = tmpConsumer.receive(20000)
@@ -91,27 +150,23 @@ fun fetchTssSamhandlerData(
 
                 return findEnkeltSamhandlerFromTSSRespons(
                         safeUnmarshal(inputMessageText, requestId),
-                        requestId
+                        requestId,
                     )
                     .also {
                         logger.info(
-                            "Fetched enkeltSamhandlerFromTSSRespons from tss for requestId: $requestId"
+                            "Fetched enkeltSamhandlerFromTSSRespons from tss for requestId: $requestId",
                         )
-                        if (!it.isNullOrEmpty()) {
-                            saveTSSRespons(jedisPool, samhandlerfnr, it)
-                        }
                     }
             }
         } catch (exception: Exception) {
             logger.error(
-                "An error occured while getting data from tss requestId: $requestId error message:, ${exception.message}"
+                "An error occured while getting data from tss requestId: $requestId error message:, ${exception.message}",
             )
             throw exception
         } finally {
             temporaryQueue.delete()
         }
     }
-}
 
 fun sendTssSporring(
     producer: MessageProducer,
