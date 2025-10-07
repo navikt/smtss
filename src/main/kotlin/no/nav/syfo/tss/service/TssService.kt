@@ -90,6 +90,19 @@ class TssService(
         return tssId
     }
 
+    fun findAllSamhandler(
+        samhandlerfnr: String,
+        requestId: String,
+    ): List<XMLSamhandler>? {
+        return fetchTssSamhandlerData(
+            samhandlerfnr,
+            environmentVariables,
+            jedisPool,
+            requestId,
+            connection,
+        )
+    }
+
     private fun logTssId(
         forSystem: String,
         tssId: TSSident?,

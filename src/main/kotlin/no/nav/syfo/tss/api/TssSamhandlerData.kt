@@ -146,16 +146,46 @@ fun Route.getTssId(
                 }
             }
         }
+        get("samhandler/all") {
+            val samhandlerfnr = call.request.headers["samhandlerFnr"]
+            val requestid = call.request.headers["requestId"]
+            if (samhandlerfnr == null) {
+                logger.warn("Missing samhandlerFnr in header")
+                call.respond(HttpStatusCode.BadRequest, "Missing samhandlerFnr in header")
+            } else if (requestid == null) {
+                logger.warn("Missing requestId in header")
+                call.respond(HttpStatusCode.BadRequest, "Missing requestId in header")
+            } else {
+                try {
+                    val samhandlere =
+                        tssService.findAllSamhandler(
+                            samhandlerfnr,
+                            requestid,
+                        )
+                    if (samhandlere != null) {
+                        call.respond(HttpStatusCode.OK, samhandlere)
+                    } else {
+                        call.respond(HttpStatusCode.NotFound).also {
+                            logger.info("Did not find tssIdent for requestid: $requestid")
+                        }
+                    }
+                } catch (exception: Exception) {
+                    call.respond(HttpStatusCode.InternalServerError)
+                    throw exception
+                }
+            }
+        }
+
         get("samhandler/inst") {
             val requestid = call.request.headers["requestId"]
-            val orgnummer = call.request.headers["samhandlerOrgnummer"]
+            val samhandlerId = call.request.headers["samhandlerId"]
             val samhandlerIdType = call.request.headers["samhandlerIdType"]
-            if (orgnummer == null) {
-                logger.warn("Missing samhandler orgnummer in header")
-                call.respond(HttpStatusCode.BadRequest, "Missing samhandlerFnr in header")
+            if (samhandlerId == null) {
+                logger.warn("Missing samhandler samhandlerId in header")
+                call.respond(HttpStatusCode.BadRequest, "Missing samhandlerId in header")
             } else if (samhandlerIdType == null) {
-                logger.warn("Missing samhandlerOrgName in header")
-                call.respond(HttpStatusCode.BadRequest, "Missing samhandlerOrgName in header")
+                logger.warn("Missing samhandlerIdType in header")
+                call.respond(HttpStatusCode.BadRequest, "Missing samhandlerIdType in header")
             } else if (requestid == null) {
                 logger.warn("Missing requestId in header")
                 call.respond(HttpStatusCode.BadRequest, "Missing requestId in header")
@@ -166,7 +196,7 @@ fun Route.getTssId(
                     )
                     val xmlSamhandlere: List<XMLSamhandler>? =
                         tssService.getSamhandlerInst(
-                            orgnummer,
+                            samhandlerId,
                             requestid,
                             samhandlerIdType,
                         )
