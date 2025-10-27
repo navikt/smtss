@@ -6,7 +6,7 @@ import io.valkey.JedisPoolConfig
 import no.nav.helse.tss.samhandler.data.XMLSamhandler
 import no.nav.syfo.objectMapper
 import no.nav.syfo.tss.service.TssServiceKtTest
-import org.junit.AfterClass
+import org.junit.AfterAll
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.testcontainers.containers.GenericContainer
@@ -52,7 +52,7 @@ internal class EnkeltSamhandlerFromTSSResponsValkeyTest {
 
     companion object {
         @JvmStatic
-        @AfterClass
+        @AfterAll
         fun stopValkey() {
             valkeyContainer.stop()
         }
