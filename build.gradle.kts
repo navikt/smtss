@@ -6,13 +6,13 @@ version = "1.0.0"
 val javaVersion = JvmTarget.JVM_21
 
 
-val jacksonVersion = "2.20.0"
+val jacksonVersion = "2.20.1"
 val ktorVersion = "3.3.1"
 val logbackVersion = "1.5.20"
 val logstashEncoderVersion = "9.0"
 val prometheusVersion = "0.16.0"
 val kotlinVersion = "2.2.21"
-val junitJupiterVersion = "6.0.0"
+val junitJupiterVersion = "6.0.1"
 val commonsCodecVersion = "1.19.0"
 val syfoXmlCodegen = "2.0.1"
 val ibmMqVersion = "9.4.4.0"
