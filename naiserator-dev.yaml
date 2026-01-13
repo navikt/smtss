@@ -60,12 +60,13 @@ spec:
           namespace: teamsykefravr
           cluster: dev-gcp
     outbound:
+      rules:
+        - application: logging
+          namespace: nais-system
       external:
         - host: b27apvl221.preprod.local
           ports:
             - port: 1413
-  secureLogs:
-    enabled: true
   valkey:
     - instance: smtss
       access: readwrite
