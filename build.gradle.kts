@@ -6,14 +6,13 @@ version = "1.0.0"
 val javaVersion = JvmTarget.JVM_21
 
 
-val jacksonVersion = "2.20.1"
-val ktorVersion = "3.3.2"
+val jacksonVersion = "2.20.2"
+val ktorVersion = "3.4.0"
 val logbackVersion = "1.5.21"
 val logstashEncoderVersion = "9.0"
 val prometheusVersion = "0.16.0"
 val kotlinVersion = "2.2.21"
 val junitJupiterVersion = "6.0.1"
-val commonsCodecVersion = "1.20.0"
 val syfoXmlCodegen = "2.0.1"
 val ibmMqVersion = "9.4.4.0"
 val jaxbApiVersion = "2.4.0-b180830.0359"
@@ -27,7 +26,6 @@ val testcontainersVersion = "2.0.2"
 
 ///Due to vulnerabilities
 val commonsCompressVersion = "1.28.0"
-val nettyhandlerVersion = "4.2.7.Final"
 
 plugins {
     id("application")
@@ -57,9 +55,6 @@ dependencies {
     implementation("io.prometheus:simpleclient_common:$prometheusVersion")
 
     implementation("io.ktor:ktor-server-netty:$ktorVersion")
-    constraints { 
-         implementation("io.netty:netty-handler:$nettyhandlerVersion")
-     }
     implementation("io.ktor:ktor-server-content-negotiation:$ktorVersion")
     implementation("io.ktor:ktor-server-status-pages:$ktorVersion")
     implementation("io.ktor:ktor-server-auth:$ktorVersion")
@@ -68,12 +63,6 @@ dependencies {
 
     implementation("io.ktor:ktor-client-core:$ktorVersion")
     implementation("io.ktor:ktor-client-apache:$ktorVersion")
-    constraints {
-        implementation("commons-codec:commons-codec:$commonsCodecVersion") {
-            because("override transient from io.ktor:ktor-client-apache")
-        }
-    }
-
     implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
     implementation("io.ktor:ktor-serialization-jackson:$ktorVersion")
 
