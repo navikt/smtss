@@ -51,12 +51,16 @@ spec:
     inbound:
       rules:
         - application: syfosmmottak
+        - application: syfosminfotrygd
         - application: pale-2
         - application: syfosmpapirmottak
         - application: syfosmarena
         - application: syk-dig-backend
         - application: padm2
           namespace: teamsykefravr
+          cluster: prod-gcp
+        - application: infotoast
+          namespace: tsm
           cluster: prod-gcp
     outbound:
       rules:

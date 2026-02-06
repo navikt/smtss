@@ -1,3 +1,4 @@
+# nonk8s
 apiVersion: "nais.io/v1alpha1"
 kind: "Application"
 metadata:
@@ -51,12 +52,16 @@ spec:
     inbound:
       rules:
         - application: syfosmmottak
+        - application: syfosminfotrygd
         - application: pale-2
         - application: syfosmpapirmottak
         - application: syfosmarena
         - application: syk-dig-backend
         - application: padm2
           namespace: teamsykefravr
+          cluster: dev-gcp
+        - application: infotoast
+          namespace: tsm
           cluster: dev-gcp
     outbound:
       rules:
