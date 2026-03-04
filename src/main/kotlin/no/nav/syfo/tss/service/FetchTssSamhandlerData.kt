@@ -142,11 +142,13 @@ private fun getSamhandlere(
                 val inputMessageText =
                     when (consumedMessage) {
                         is TextMessage -> consumedMessage.text
-                        else ->
+                        else -> {
+                            securelog.error("could not process mq message it is type ${consumedMessage.javaClass.simpleName}, ${objectMapper.writeValueAsString(consumedMessage)}")
                             throw RuntimeException(
                                 "Incoming message needs to be a byte message or text message, JMS type:" +
                                     consumedMessage.jmsType,
                             )
+                        }
                     }
 
                 return findEnkeltSamhandlerFromTSSRespons(
