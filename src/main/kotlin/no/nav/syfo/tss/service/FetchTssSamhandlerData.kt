@@ -1,5 +1,6 @@
 package no.nav.syfo.tss.service
 
+import io.ktor.util.logging.error
 import io.valkey.JedisPool
 import jakarta.jms.Connection
 import jakarta.jms.MessageProducer
@@ -159,6 +160,7 @@ private fun getSamhandlere(
                     }
             }
         } catch (exception: Exception) {
+            securelog.error(exception)
             logger.error(
                 "An error occured while getting data from tss requestId: $requestId error message:, ${exception.message}",
             )
