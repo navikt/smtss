@@ -137,7 +137,7 @@ private fun getSamhandlere(
                 temporaryQueue,
             )
             session.createConsumer(temporaryQueue).use { tmpConsumer ->
-                val consumedMessage = tmpConsumer.receive(20000)
+                val consumedMessage = tmpConsumer.receive(20000) ?: throw RuntimeException("No response from TSS within 20 seconds for requestId: $requestId")
 
                 val inputMessageText =
                     when (consumedMessage) {
