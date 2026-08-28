@@ -2,14 +2,11 @@ package no.nav.syfo.tss.api
 
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
-import com.fasterxml.jackson.databind.SerializationFeature
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import com.nimbusds.jose.jwk.JWKSet
 import com.nimbusds.jose.jwk.RSAKey
 import io.ktor.client.request.*
 import io.ktor.http.*
-import io.ktor.serialization.jackson.*
+import io.ktor.serialization.jackson3.jackson
 import io.ktor.server.application.*
 import io.ktor.server.plugins.contentnegotiation.*
 import io.ktor.server.plugins.statuspages.*
@@ -47,7 +44,7 @@ internal class TssSamhandlerDataTest {
                 TexasIntrospectionResponse(
                     active = true,
                     error = "",
-                    other = mutableMapOf("azp_name" to "sadasd")
+                    other = mutableMapOf("azp_name" to "sadasd"),
                 )
         }
 
@@ -60,13 +57,7 @@ internal class TssSamhandlerDataTest {
             application {
                 routing { getTssId(tssService, texasClient) }
 
-                install(ContentNegotiation) {
-                    jackson {
-                        registerKotlinModule()
-                        registerModule(JavaTimeModule())
-                        configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
-                    }
-                }
+                install(ContentNegotiation) { jackson {} }
                 install(StatusPages) {
                     exception<Throwable> { call, cause ->
                         call.respond(
@@ -127,10 +118,7 @@ internal class TssSamhandlerDataTest {
         return getJWKSet().getKeyByKeyId(keyId) as RSAKey
     }
 
-    data class Claim(
-        val name: String,
-        val value: String,
-    )
+    data class Claim(val name: String, val value: String)
 
     private fun getJWKSet(): JWKSet {
         try {

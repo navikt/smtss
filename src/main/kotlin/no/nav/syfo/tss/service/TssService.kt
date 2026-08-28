@@ -8,8 +8,8 @@ import kotlin.math.max
 import no.nav.helse.tss.samhandler.data.XMLSamhAvdPraType
 import no.nav.helse.tss.samhandler.data.XMLSamhandler
 import no.nav.syfo.EnvironmentVariables
+import no.nav.syfo.jsonMapper
 import no.nav.syfo.logger
-import no.nav.syfo.objectMapper
 import no.nav.syfo.securelog
 import org.apache.commons.text.similarity.LevenshteinDistance
 
@@ -41,7 +41,7 @@ class TssService(
     fun findBestTssIdInfotrygd(
         samhandlerfnr: String,
         samhandlerOrgName: String,
-        requestId: String
+        requestId: String,
     ): TSSident? {
         val enkeltSamhandler =
             fetchTssSamhandlerData(
@@ -66,7 +66,7 @@ class TssService(
             environmentVariables,
             samhandlerId,
             requestId,
-            samhandlerIdType
+            samhandlerIdType,
         )
     }
 
@@ -90,10 +90,7 @@ class TssService(
         return tssId
     }
 
-    fun findAllSamhandler(
-        samhandlerfnr: String,
-        requestId: String,
-    ): List<XMLSamhandler>? {
+    fun findAllSamhandler(samhandlerfnr: String, requestId: String): List<XMLSamhandler>? {
         return fetchTssSamhandlerData(
             samhandlerfnr,
             environmentVariables,
@@ -109,23 +106,23 @@ class TssService(
         samhandlerfnr: String,
         requestId: String,
         samhandlerOrgName: String,
-        enkeltSamhandler: List<XMLSamhandler>?
+        enkeltSamhandler: List<XMLSamhandler>?,
     ) {
         if (tssId != null) {
             securelog.info(
                 "Did find tssId: $tssId for $forSystem: fnr: $samhandlerfnr, requestId: $requestId, orgname: $samhandlerOrgName, from this data: ${
-                    objectMapper.writeValueAsString(
-                        enkeltSamhandler,
+                    jsonMapper.writeValueAsString(
+                        enkeltSamhandler
                     )
-                }",
+                }"
             )
         } else {
             securelog.info(
                 "Did not find tssId for $forSystem: fnr: $samhandlerfnr, requestId: $requestId, orgname: $samhandlerOrgName, from this data: ${
-                    objectMapper.writeValueAsString(
-                        enkeltSamhandler,
+                    jsonMapper.writeValueAsString(
+                        enkeltSamhandler
                     )
-                }",
+                }"
             )
         }
     }
@@ -218,7 +215,7 @@ private fun tryGetTssId(samhandlerAvdeling: List<XMLSamhAvdPraType>): TSSident? 
 
 fun filterOutTssIdForInfotrygd(
     enkeltSamhandler: List<XMLSamhandler>?,
-    samhandlerOrgName: String
+    samhandlerOrgName: String,
 ): TSSident? {
     val samhandlereAvdelinger = enkeltSamhandler?.filter { it.samhandlerAvd125 != null }
     if (samhandlereAvdelinger?.flatMapNotNull { it.samhandlerAvd125?.samhAvd } != null) {
@@ -230,9 +227,7 @@ fun filterOutTssIdForInfotrygd(
                 .filter {
                     it.samhandlerAvdeling.idOffTSS != null &&
                         !samhandlerAvdelingIsLegevakt(it.samhandlerAvdeling) &&
-                        !samhandlerAvdelingIsSykehusOrRegionalHelseforetak(
-                            it.samhandlerAvdeling,
-                        )
+                        !samhandlerAvdelingIsSykehusOrRegionalHelseforetak(it.samhandlerAvdeling)
                 }
 
         return if (samhandlerAvdelding.isNotEmpty()) {
@@ -251,7 +246,7 @@ fun filterOutTssIdForInfotrygd(
                     ?.samhandlerAvd125
                     ?.samhAvd
                     ?.find { it.avdNr == "01" }
-                    ?.idOffTSS!!,
+                    ?.idOffTSS!!
             )
         } else {
             null
@@ -273,9 +268,7 @@ fun filterOutTssIdForEmottak(
             getAktiveSamhandlere(samhandlereAvdelinger).filter {
                 it.idOffTSS != null &&
                     !samhandlerAvdelingIsLegevakt(it) &&
-                    !samhandlerAvdelingIsSykehusOrRegionalHelseforetak(
-                        it,
-                    ) &&
+                    !samhandlerAvdelingIsSykehusOrRegionalHelseforetak(it) &&
                     !samhandlerAvdelingIsAvdNr01(it)
             }
 
@@ -292,11 +285,9 @@ fun filterOutTssIdForEmottak(
         }
 
         val samhandlereWithNameMath =
-            getSamhandlereWithNameMatch(
-                    aktiveSamhandlereMedNavn,
-                    samhandlerOrgName,
-                )
-                .maxByOrNull { it.percentageMatch }
+            getSamhandlereWithNameMatch(aktiveSamhandlereMedNavn, samhandlerOrgName).maxByOrNull {
+                it.percentageMatch
+            }
 
         return filtererBortSamhandlderPraksiserPaaProsentMatch(
                 samhandlereWithNameMath,
@@ -313,7 +304,7 @@ fun filtererBortSamhandlderPraksiserPaaProsentMatch(
     samhandlerAvdelingMatch: SamhandlerAvdelingMatch?,
     prosentMatch: Double,
     samhandlerOrgName: String,
-    requestId: String
+    requestId: String,
 ): SamhandlerAvdelingMatch? {
     return if (
         samhandlerAvdelingMatch != null && samhandlerAvdelingMatch.percentageMatch >= prosentMatch
@@ -324,7 +315,7 @@ fun filtererBortSamhandlderPraksiserPaaProsentMatch(
                 "Tssid: ${samhandlerAvdelingMatch.samhandlerAvdeling.idOffTSS} " +
                 "Samhandler praksis type: ${samhandlerAvdelingMatch.samhandlerAvdeling.typeAvd} " +
                 "Prosent match:${samhandlerAvdelingMatch.percentageMatch} %, basert på sykmeldingens organisjons navn: $samhandlerOrgName " +
-                "requestId = $requestId",
+                "requestId = $requestId"
         )
         samhandlerAvdelingMatch
     } else {
@@ -332,9 +323,7 @@ fun filtererBortSamhandlderPraksiserPaaProsentMatch(
     }
 }
 
-fun getAktiveSamhandlere(
-    samhandlereAvdelinger: List<XMLSamhAvdPraType>,
-): List<XMLSamhAvdPraType> {
+fun getAktiveSamhandlere(samhandlereAvdelinger: List<XMLSamhAvdPraType>): List<XMLSamhAvdPraType> {
     val dateFormatter = DateTimeFormatter.ofPattern("yyyyMMdd")
     val dateToday = LocalDate.now()
 
@@ -353,7 +342,7 @@ fun getAktiveSamhandlere(
 
 fun samhandlerMatchingPaaOrganisjonsNavn(
     samhandlereAvdelinger: List<XMLSamhAvdPraType>,
-    samhandlerOrgName: String
+    samhandlerOrgName: String,
 ): List<SamhandlerAvdelingMatch> {
     val aktiveSamhandlereMedNavn = getAktiveSamhandlere(samhandlereAvdelinger)
     return getSamhandlereWithNameMatch(aktiveSamhandlereMedNavn, samhandlerOrgName)
@@ -361,7 +350,7 @@ fun samhandlerMatchingPaaOrganisjonsNavn(
 
 private fun getSamhandlereWithNameMatch(
     aktiveSamhandlereMedNavn: List<XMLSamhAvdPraType>,
-    samhandlerOrgName: String
+    samhandlerOrgName: String,
 ): List<SamhandlerAvdelingMatch> {
     return aktiveSamhandlereMedNavn.map { samhandlerAvdeling ->
         SamhandlerAvdelingMatch(
@@ -376,7 +365,7 @@ private fun getSamhandlereWithNameMatch(
 
 data class SamhandlerAvdelingMatch(
     val samhandlerAvdeling: XMLSamhAvdPraType,
-    val percentageMatch: Double
+    val percentageMatch: Double,
 )
 
 fun samhandlerAvdelingIsLegevakt(samhandlereAvdeling: XMLSamhAvdPraType): Boolean =
@@ -398,9 +387,7 @@ fun calculatePercentageStringMatch(str1: String?, str2: String): Double {
     return (maxDistance - distance) / maxDistance
 }
 
-data class TSSident(
-    val tssid: String,
-)
+data class TSSident(val tssid: String)
 
 inline fun <T, R> Iterable<T>.flatMapNotNull(transform: (T) -> Iterable<R?>?): List<R> = buildList {
     this@flatMapNotNull.forEach { element -> transform(element)?.forEach { it?.let(::add) } }
