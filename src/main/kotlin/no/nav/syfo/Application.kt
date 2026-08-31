@@ -11,7 +11,6 @@ import io.ktor.server.plugins.swagger.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.prometheus.client.hotspot.DefaultExports
-import java.util.concurrent.TimeUnit
 import no.nav.syfo.metrics.monitorHttpRequests
 import no.nav.syfo.mq.MqTlsUtils
 import no.nav.syfo.mq.connectionFactory
@@ -38,13 +37,6 @@ fun main() {
             Netty,
             port = EnvironmentVariables().applicationPort,
             module = Application::module,
-        )
-    Runtime.getRuntime()
-        .addShutdownHook(
-            Thread {
-                logger.info("Shutting down application from shutdown hook")
-                embeddedServer.stop(TimeUnit.SECONDS.toMillis(10), TimeUnit.SECONDS.toMillis(10))
-            }
         )
     embeddedServer.start(true)
 }
@@ -95,8 +87,9 @@ fun Application.module() {
     val tssService = TssService(environmentVariables, jedisPool, connection)
     val texasClient = TexasClient(environmentVariables.texasIntrospectionEndpoint)
 
-    monitor.subscribe(ApplicationStopped) {
+    monitor.subscribe(ApplicationStopPreparing) {
         logger.info("Got ApplicationStopped event from ktor")
+        applicationState.ready = false
         connection?.close()
     }
 

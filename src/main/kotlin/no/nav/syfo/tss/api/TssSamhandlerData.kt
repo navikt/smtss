@@ -52,8 +52,11 @@ fun Route.getTssId(tssService: TssService, texasClient: TexasClient) {
                         call.respond(HttpStatusCode.NotFound)
                     }
                 } catch (exception: Exception) {
+                    logger.error(
+                        "error in getting tssid for requestid $requestid failed",
+                        exception,
+                    )
                     call.respond(HttpStatusCode.InternalServerError)
-                    throw exception
                 }
             }
         }
