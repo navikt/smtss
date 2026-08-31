@@ -9,6 +9,7 @@ val tssSamhandlerdataInputJaxBContext: JAXBContext =
     JAXBContext.newInstance(XMLTssSamhandlerData::class.java)
 val tssSamhandlerdataInputMarshaller: Marshaller =
     tssSamhandlerdataInputJaxBContext.createMarshaller()
+
 fun Marshaller.toString(input: Any): String =
     StringWriter().use {
         marshal(input, it)
