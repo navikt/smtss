@@ -132,6 +132,10 @@ private fun getSamhandlere(
                 val inputMessageText =
                     when (consumedMessage) {
                         is TextMessage -> consumedMessage.text
+                        null ->
+                            throw RuntimeException(
+                                "Timed out waiting for response from tss for requestId: $requestId"
+                            )
                         else -> {
                             securelog.error(
                                 "could not process mq message it is type ${consumedMessage.javaClass.simpleName}, ${jsonMapper.writeValueAsString(consumedMessage)}"
@@ -172,7 +176,7 @@ fun sendTssSporring(
 ) =
     producer.send(
         session.createTextMessage().apply {
-            text = tssSamhandlerdataInputMarshaller.toString(tssSamhandlerData)
+            text = tssSamhandlerdataInputMarshaller().toString(tssSamhandlerData)
             jmsReplyTo = temporaryQueue
         }
     )
@@ -238,5 +242,5 @@ private fun xmlTssSamhandlerData(inputMessageText: String): XMLTssSamhandlerData
 
     val xmlSource: Source =
         SAXSource(spf.newSAXParser().xmlReader, InputSource(StringReader(inputMessageText)))
-    return tssSamhandlerdataUnmarshaller.unmarshal(xmlSource) as XMLTssSamhandlerData
+    return tssSamhandlerdataUnmarshaller().unmarshal(xmlSource) as XMLTssSamhandlerData
 }

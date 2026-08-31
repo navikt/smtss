@@ -6,11 +6,16 @@ import javax.xml.bind.Marshaller
 import javax.xml.bind.Unmarshaller
 import no.nav.helse.tss.samhandler.data.XMLTssSamhandlerData
 
+// JAXBContext is thread-safe and expensive to create, so it is shared. Marshaller and Unmarshaller
+// are NOT thread-safe and must never be shared between concurrent requests, so a fresh instance is
+// created for every call.
 val tssSamhandlerdataInputJaxBContext: JAXBContext =
     JAXBContext.newInstance(XMLTssSamhandlerData::class.java)
-val tssSamhandlerdataInputMarshaller: Marshaller =
+
+fun tssSamhandlerdataInputMarshaller(): Marshaller =
     tssSamhandlerdataInputJaxBContext.createMarshaller()
-val tssSamhandlerdataUnmarshaller: Unmarshaller =
+
+fun tssSamhandlerdataUnmarshaller(): Unmarshaller =
     tssSamhandlerdataInputJaxBContext.createUnmarshaller()
 
 fun Marshaller.toString(input: Any): String =
