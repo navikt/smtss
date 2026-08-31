@@ -1,11 +1,5 @@
 package no.nav.syfo.tss.api
 
-import com.fasterxml.jackson.annotation.JsonInclude
-import com.fasterxml.jackson.databind.DeserializationFeature
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.SerializationFeature
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
@@ -17,20 +11,12 @@ import no.nav.syfo.texas.auth.TexasAuth
 import no.nav.syfo.texas.client.TexasClient
 import no.nav.syfo.tss.service.TSSident
 import no.nav.syfo.tss.service.TssService
+import tools.jackson.databind.json.JsonMapper
+import tools.jackson.module.kotlin.jacksonMapperBuilder
 
-val samhandlerMapper: ObjectMapper =
-    ObjectMapper().apply {
-        registerKotlinModule()
-        registerModule(JavaTimeModule())
-        configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
-        configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-        setDefaultPropertyInclusion(JsonInclude.Include.NON_NULL)
-    }
+val samhandlerMapper: JsonMapper = jacksonMapperBuilder().build()
 
-fun Route.getTssId(
-    tssService: TssService,
-    texasClient: TexasClient,
-) {
+fun Route.getTssId(tssService: TssService, texasClient: TexasClient) {
     route("/api/v1") {
         install(TexasAuth) { client = texasClient }
         get("samhandler/emottak") {
@@ -58,7 +44,7 @@ fun Route.getTssId(
                             samhandlerfnr,
                             samhandlerOrgName,
                             requestid,
-                            orgnummer
+                            orgnummer,
                         )
                     if (tssIdent != null) {
                         call.respond(HttpStatusCode.OK, tssIdent)
@@ -94,7 +80,7 @@ fun Route.getTssId(
                         tssService.findBestTssIdInfotrygd(
                             samhandlerfnr,
                             samhandlerOrgName,
-                            requestid
+                            requestid,
                         )
                     if (tssIdent != null) {
                         call.respond(HttpStatusCode.OK, tssIdent)
@@ -131,7 +117,7 @@ fun Route.getTssId(
                             samhandlerfnr,
                             samhandlerOrgName,
                             requestid,
-                            orgnummer
+                            orgnummer,
                         )
                     if (tssIdent != null) {
                         call.respond(HttpStatusCode.OK, tssIdent)
@@ -157,11 +143,7 @@ fun Route.getTssId(
                 call.respond(HttpStatusCode.BadRequest, "Missing requestId in header")
             } else {
                 try {
-                    val samhandlere =
-                        tssService.findAllSamhandler(
-                            samhandlerfnr,
-                            requestid,
-                        )
+                    val samhandlere = tssService.findAllSamhandler(samhandlerfnr, requestid)
                     if (samhandlere != null) {
                         call.respond(HttpStatusCode.OK, samhandlere)
                     } else {
@@ -195,15 +177,11 @@ fun Route.getTssId(
                         "Trying to find best tssid for arena samhandlerOrg for request: $requestid"
                     )
                     val xmlSamhandlere: List<XMLSamhandler>? =
-                        tssService.getSamhandlerInst(
-                            samhandlerId,
-                            requestid,
-                            samhandlerIdType,
-                        )
+                        tssService.getSamhandlerInst(samhandlerId, requestid, samhandlerIdType)
 
                     call.respond(
                         HttpStatusCode.OK,
-                        samhandlerMapper.writeValueAsString(xmlSamhandlere)
+                        samhandlerMapper.writeValueAsString(xmlSamhandlere),
                     )
                 } catch (exception: Exception) {
                     call.respond(HttpStatusCode.InternalServerError)

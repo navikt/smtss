@@ -10,15 +10,10 @@ import no.nav.syfo.metrics.AUTH_AZP_NAME
 import no.nav.syfo.securelog
 import no.nav.syfo.texas.client.TexasClient
 
-class AuthPluginConfiguration(
-    var client: TexasClient? = null,
-)
+class AuthPluginConfiguration(var client: TexasClient? = null)
 
 val TexasAuth =
-    createRouteScopedPlugin(
-        name = "TexasAuth",
-        createConfiguration = ::AuthPluginConfiguration,
-    ) {
+    createRouteScopedPlugin(name = "TexasAuth", createConfiguration = ::AuthPluginConfiguration) {
         val client =
             pluginConfig.client
                 ?: throw IllegalArgumentException("TexasAuth plugin: client must be set")

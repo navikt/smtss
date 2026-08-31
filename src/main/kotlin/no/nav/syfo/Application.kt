@@ -1,12 +1,7 @@
 package no.nav.syfo
 
-import com.fasterxml.jackson.databind.DeserializationFeature
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.SerializationFeature
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import io.ktor.http.*
-import io.ktor.serialization.jackson.*
+import io.ktor.serialization.jackson3.jackson
 import io.ktor.server.application.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
@@ -29,17 +24,13 @@ import no.nav.syfo.tss.service.TssService
 import no.nav.syfo.util.createJedisPool
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import tools.jackson.databind.json.JsonMapper
+import tools.jackson.module.kotlin.jacksonMapperBuilder
 
 val logger: Logger = LoggerFactory.getLogger("no.nav.syfo.smtss")
 val securelog: Logger = LoggerFactory.getLogger("securelog")
 
-val objectMapper: ObjectMapper =
-    ObjectMapper().apply {
-        registerKotlinModule()
-        registerModule(JavaTimeModule())
-        configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
-        configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-    }
+val jsonMapper: JsonMapper = jacksonMapperBuilder().build()
 
 fun main() {
     val embeddedServer =
@@ -53,7 +44,7 @@ fun main() {
             Thread {
                 logger.info("Shutting down application from shutdown hook")
                 embeddedServer.stop(TimeUnit.SECONDS.toMillis(10), TimeUnit.SECONDS.toMillis(10))
-            },
+            }
         )
     embeddedServer.start(true)
 }
@@ -61,7 +52,7 @@ fun main() {
 fun Application.configureRouting(
     applicationState: ApplicationState,
     tssService: TssService,
-    texasClient: TexasClient
+    texasClient: TexasClient,
 ) {
     routing {
         naisIsAliveRoute(applicationState)
@@ -71,13 +62,7 @@ fun Application.configureRouting(
         swaggerUI(path = "swagger", swaggerFile = "openapi/documentation.yaml")
     }
 
-    install(ContentNegotiation) {
-        jackson {
-            registerKotlinModule()
-            registerModule(JavaTimeModule())
-            configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-        }
-    }
+    install(ContentNegotiation) { jackson {} }
 
     install(StatusPages) {
         exception<Throwable> { call, cause ->
@@ -126,7 +111,4 @@ fun Application.module() {
     DefaultExports.initialize()
 }
 
-data class ApplicationState(
-    var alive: Boolean = true,
-    var ready: Boolean = true,
-)
+data class ApplicationState(var alive: Boolean = true, var ready: Boolean = true)

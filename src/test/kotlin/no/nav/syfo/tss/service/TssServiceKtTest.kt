@@ -1,10 +1,10 @@
 package no.nav.syfo.tss.service
 
-import com.fasterxml.jackson.module.kotlin.readValue
 import no.nav.helse.tss.samhandler.data.XMLSamhandler
-import no.nav.syfo.objectMapper
+import no.nav.syfo.jsonMapper
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import tools.jackson.module.kotlin.readValue
 
 internal class TssServiceKtTest {
     @Test
@@ -12,12 +12,12 @@ internal class TssServiceKtTest {
         val expectedTssId = "80000347193"
         val orgnummer = "123456789"
         val enkeltSamhandler: List<XMLSamhandler>? =
-            objectMapper.readValue(
+            jsonMapper.readValue(
                 TssServiceKtTest::class
                     .java
                     .getResourceAsStream("/tssfatu.json")!!
                     .readBytes()
-                    .toString(Charsets.UTF_8),
+                    .toString(Charsets.UTF_8)
             )
 
         val samhandlerOrgnavn = "test legesenter"
@@ -35,12 +35,12 @@ internal class TssServiceKtTest {
         val expectedTssId = "80000347195"
         val orgnummer = null
         val enkeltSamhandler: List<XMLSamhandler>? =
-            objectMapper.readValue(
+            jsonMapper.readValue(
                 TssServiceKtTest::class
                     .java
                     .getResourceAsStream("/tssLegevaktOgLegekontor.json")!!
                     .readBytes()
-                    .toString(Charsets.UTF_8),
+                    .toString(Charsets.UTF_8)
             )
 
         val samhandlerOrgnavn = "TEST LEGESENTER AS"
@@ -58,12 +58,12 @@ internal class TssServiceKtTest {
         val expectedTssId = "80000347195"
         val orgnummer = "1234"
         val enkeltSamhandler: List<XMLSamhandler>? =
-            objectMapper.readValue(
+            jsonMapper.readValue(
                 TssServiceKtTest::class
                     .java
                     .getResourceAsStream("/tssLegevaktOgLegekontor.json")!!
                     .readBytes()
-                    .toString(Charsets.UTF_8),
+                    .toString(Charsets.UTF_8)
             )
 
         val samhandlerOrgnavn = "TEST LEGESENTER AS"
@@ -81,12 +81,12 @@ internal class TssServiceKtTest {
         val expectedTssId = "80000347193"
         val orgnummer = "123456789"
         val enkeltSamhandler: List<XMLSamhandler>? =
-            objectMapper.readValue(
+            jsonMapper.readValue(
                 TssServiceKtTest::class
                     .java
                     .getResourceAsStream("/tssavd125null.json")!!
                     .readBytes()
-                    .toString(Charsets.UTF_8),
+                    .toString(Charsets.UTF_8)
             )
 
         val samhandlerOrgnavn = "test legesenter"
@@ -104,12 +104,12 @@ internal class TssServiceKtTest {
         val expectedTssId = "80000347193"
         val orgnummer = "123456789"
         val enkeltSamhandler: List<XMLSamhandler>? =
-            objectMapper.readValue(
+            jsonMapper.readValue(
                 TssServiceKtTest::class
                     .java
                     .getResourceAsStream("/tssavd125null.json")!!
                     .readBytes()
-                    .toString(Charsets.UTF_8),
+                    .toString(Charsets.UTF_8)
             )
 
         val samhandlerOrgnavn = "test legesenterete"
@@ -127,12 +127,12 @@ internal class TssServiceKtTest {
         val expectedTssId = "80000347193"
         val orgnummer = "123456789"
         val enkeltSamhandler: List<XMLSamhandler>? =
-            objectMapper.readValue(
+            jsonMapper.readValue(
                 TssServiceKtTest::class
                     .java
                     .getResourceAsStream("/tssavd125avdnavnnull.json")!!
                     .readBytes()
-                    .toString(Charsets.UTF_8),
+                    .toString(Charsets.UTF_8)
             )
 
         val samhandlerOrgnavn = "test legesenter"
@@ -150,12 +150,12 @@ internal class TssServiceKtTest {
         val expectedTssId = "80000347193"
         val orgnummer = "123456789"
         val enkeltSamhandler: List<XMLSamhandler>? =
-            objectMapper.readValue(
+            jsonMapper.readValue(
                 TssServiceKtTest::class
                     .java
                     .getResourceAsStream("/tssavd125typeavdsykepleier.json")!!
                     .readBytes()
-                    .toString(Charsets.UTF_8),
+                    .toString(Charsets.UTF_8)
             )
 
         val samhandlerOrgnavn = "test legesenter"
@@ -170,12 +170,12 @@ internal class TssServiceKtTest {
         val expectedTssId = "123"
         val orgnummer = "99999"
         val enkeltSamhandler: List<XMLSamhandler>? =
-            objectMapper.readValue(
+            jsonMapper.readValue(
                 TssServiceKtTest::class
                     .java
                     .getResourceAsStream("/tssIdavdNavnUliksamhandlerOrgnavn.json")!!
                     .readBytes()
-                    .toString(Charsets.UTF_8),
+                    .toString(Charsets.UTF_8)
             )
 
         val samhandlerOrgnavn = "TestNorge Helsesenter"
@@ -192,12 +192,12 @@ internal class TssServiceKtTest {
     internal fun `samhandlerOrgnavn not match avdNavn with more than 70percent and orgnummer is null`() {
         val orgnummer = null
         val enkeltSamhandler: List<XMLSamhandler>? =
-            objectMapper.readValue(
+            jsonMapper.readValue(
                 TssServiceKtTest::class
                     .java
                     .getResourceAsStream("/tssIdavdNavnUliksamhandlerOrgnavn.json")!!
                     .readBytes()
-                    .toString(Charsets.UTF_8),
+                    .toString(Charsets.UTF_8)
             )
 
         val samhandlerOrgnavn = "TestNorge Helsesenter"
@@ -214,12 +214,12 @@ internal class TssServiceKtTest {
     internal fun `returns correct tssid infotrygd if samhandlerOrgnummer is null`() {
         val expectedTssId = "123"
         val enkeltSamhandler: List<XMLSamhandler>? =
-            objectMapper.readValue(
+            jsonMapper.readValue(
                 TssServiceKtTest::class
                     .java
                     .getResourceAsStream("/tssIdavdNavnUliksamhandlerOrgnavn.json")!!
                     .readBytes()
-                    .toString(Charsets.UTF_8),
+                    .toString(Charsets.UTF_8)
             )
 
         val samhandlerOrgnavn = "TestNorge Helsesenter"
@@ -233,12 +233,12 @@ internal class TssServiceKtTest {
     internal fun `returns correct tssid arena if samhandlerOrgnummer is null`() {
         val expectedTssId = "123"
         val enkeltSamhandler: List<XMLSamhandler>? =
-            objectMapper.readValue(
+            jsonMapper.readValue(
                 TssServiceKtTest::class
                     .java
                     .getResourceAsStream("/tssIdavdNavnUliksamhandlerOrgnavn.json")!!
                     .readBytes()
-                    .toString(Charsets.UTF_8),
+                    .toString(Charsets.UTF_8)
             )
 
         val samhandlerOrgnavn = "TestNorge Helsesenter"

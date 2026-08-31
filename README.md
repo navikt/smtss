@@ -12,9 +12,9 @@ Application that's try to find best tssid match from tss, based on given paramet
 
 
 ### Prerequisites
-* JDK 21
+* JDK 25
 
-Make sure you have the Java JDK 21 installed
+Make sure you have the Java JDK 25 installed
 You can check which version you have installed using this command:
 ``` bash
 java -version

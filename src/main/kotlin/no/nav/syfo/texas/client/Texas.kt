@@ -4,15 +4,11 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.databind.DeserializationFeature
-import com.fasterxml.jackson.databind.SerializationFeature
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import io.ktor.client.HttpClient
 import io.ktor.client.HttpClientConfig
 import io.ktor.client.call.body
-import io.ktor.client.engine.apache.Apache
-import io.ktor.client.engine.apache.ApacheEngineConfig
+import io.ktor.client.engine.apache5.Apache5
+import io.ktor.client.engine.apache5.Apache5EngineConfig
 import io.ktor.client.plugins.HttpRequestRetry
 import io.ktor.client.plugins.HttpResponseValidator
 import io.ktor.client.plugins.HttpTimeout
@@ -23,22 +19,14 @@ import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.network.sockets.SocketTimeoutException
-import io.ktor.serialization.jackson.jackson
+import io.ktor.serialization.jackson3.jackson
 import no.nav.syfo.logger
 
-class TexasClient(
-    private val introspectionEndpointURL: String,
-) {
+class TexasClient(private val introspectionEndpointURL: String) {
 
-    private val config: HttpClientConfig<ApacheEngineConfig>.() -> Unit = {
-        install(ContentNegotiation) {
-            jackson {
-                registerKotlinModule()
-                registerModule(JavaTimeModule())
-                configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
-                configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-            }
-        }
+    private val config: HttpClientConfig<Apache5EngineConfig>.() -> Unit = {
+        install(ContentNegotiation) { jackson {} }
+
         HttpResponseValidator {
             handleResponseExceptionWithRequest { exception, _ ->
                 when (exception) {
@@ -71,7 +59,7 @@ class TexasClient(
         }
     }
 
-    private val httpClient = HttpClient(Apache, config)
+    private val httpClient = HttpClient(Apache5, config)
 
     suspend fun introspection(identityProvider: String, token: String): TexasIntrospectionResponse {
         val texasIntrospection = TexasIntrospectionRequest(identityProvider, token)
@@ -90,7 +78,7 @@ class TexasClient(
 
 data class TexasIntrospectionRequest(
     @JsonProperty("identity_provider") val identityProvider: String,
-    val token: String
+    val token: String,
 )
 
 data class TexasIntrospectionResponse(

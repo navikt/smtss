@@ -3,22 +3,21 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 group = "no.nav.syfo"
 version = "1.0.0"
 
-val javaVersion = JvmTarget.JVM_21
+val javaVersion = JvmTarget.JVM_25
 
 
-val jacksonVersion = "2.20.2"
-val ktorVersion = "3.4.0"
+val jacksonVersion = "3.2.2"
+val ktorVersion = "3.5.2"
 val logbackVersion = "1.5.21"
 val logstashEncoderVersion = "9.0"
 val prometheusVersion = "0.16.0"
-val kotlinVersion = "2.2.21"
-val junitJupiterVersion = "6.0.1"
+val junitJupiterVersion = "6.1.3"
 val syfoXmlCodegen = "2.0.1"
-val ibmMqVersion = "9.4.4.0"
+val ibmMqVersion = "10.0.0.0"
 val jaxbApiVersion = "2.4.0-b180830.0359"
 val commonsTextVersion = "1.14.0"
 val valkeyVersion = "5.5.0"
-val ktfmtVersion = "0.44"
+val ktfmtVersion = "0.56"
 val mockkVersion = "1.14.6"
 val nimbusdsVersion = "10.6"
 val testcontainersVersion = "2.0.2"
@@ -29,8 +28,8 @@ val commonsCompressVersion = "1.28.0"
 
 plugins {
     id("application")
-    kotlin("jvm") version "2.2.21"
-    id("com.diffplug.spotless") version "8.1.0"
+    kotlin("jvm") version "2.4.10"
+    id("com.diffplug.spotless") version "8.10.0"
 }
 
 application {
@@ -49,7 +48,6 @@ repositories {
 
 
 dependencies {
-    implementation("org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion")
 
     implementation("io.prometheus:simpleclient_hotspot:$prometheusVersion")
     implementation("io.prometheus:simpleclient_common:$prometheusVersion")
@@ -62,15 +60,14 @@ dependencies {
     implementation("io.ktor:ktor-server-swagger:$ktorVersion")
 
     implementation("io.ktor:ktor-client-core:$ktorVersion")
-    implementation("io.ktor:ktor-client-apache:$ktorVersion")
+    implementation("io.ktor:ktor-client-apache5:$ktorVersion")
     implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
-    implementation("io.ktor:ktor-serialization-jackson:$ktorVersion")
+    implementation("io.ktor:ktor-serialization-jackson3:$ktorVersion")
 
     implementation("ch.qos.logback:logback-classic:$logbackVersion")
     implementation("net.logstash.logback:logstash-logback-encoder:$logstashEncoderVersion")
 
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion")
-    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion")
+    implementation("tools.jackson.module:jackson-module-kotlin:$jacksonVersion")
 
     implementation("com.ibm.mq:com.ibm.mq.jakarta.client:$ibmMqVersion")
 

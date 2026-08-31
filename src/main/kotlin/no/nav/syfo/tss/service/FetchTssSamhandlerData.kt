@@ -17,9 +17,9 @@ import no.nav.helse.tss.samhandler.data.XMLTServicerutiner
 import no.nav.helse.tss.samhandler.data.XMLTidOFF1
 import no.nav.helse.tss.samhandler.data.XMLTssSamhandlerData
 import no.nav.syfo.EnvironmentVariables
+import no.nav.syfo.jsonMapper
 import no.nav.syfo.logger
 import no.nav.syfo.mq.producerForQueue
-import no.nav.syfo.objectMapper
 import no.nav.syfo.securelog
 import no.nav.syfo.util.toString
 import no.nav.syfo.util.tssSamhandlerdataInputMarshaller
@@ -33,7 +33,7 @@ fun fetchTssSamhandlerInst(
     environmentVariables: EnvironmentVariables,
     samhandlerID: String,
     requestId: String,
-    samhandlerIDType: String
+    samhandlerIDType: String,
 ): List<XMLSamhandler>? {
     val tssSamhandlerDatainput =
         XMLTssSamhandlerData().apply {
@@ -55,14 +55,9 @@ fun fetchTssSamhandlerInst(
         }
 
     val samhandler =
-        getSamhandlere(
-            connection,
-            environmentVariables,
-            tssSamhandlerDatainput,
-            requestId,
-        )
+        getSamhandlere(connection, environmentVariables, tssSamhandlerDatainput, requestId)
     securelog.info(
-        "got request to tss for requestId:$requestId: ${objectMapper.writeValueAsString(tssSamhandlerDatainput)}"
+        "got request to tss for requestId:$requestId: ${jsonMapper.writeValueAsString(tssSamhandlerDatainput)}"
     )
 
     return samhandler
@@ -73,7 +68,7 @@ fun fetchTssSamhandlerData(
     environmentVariables: EnvironmentVariables,
     jedisPool: JedisPool,
     requestId: String,
-    connection: Connection
+    connection: Connection,
 ): List<XMLSamhandler>? {
 
     val fromValkey = getTSSRespons(jedisPool, samhandlerfnr)
@@ -101,16 +96,11 @@ fun fetchTssSamhandlerData(
         }
 
     securelog.info(
-        "Request to tss for requestId:$requestId requsesttss: ${objectMapper.writeValueAsString(tssSamhandlerDatainput)}"
+        "Request to tss for requestId:$requestId requsesttss: ${jsonMapper.writeValueAsString(tssSamhandlerDatainput)}"
     )
 
     val samhandlers =
-        getSamhandlere(
-            connection,
-            environmentVariables,
-            tssSamhandlerDatainput,
-            requestId,
-        )
+        getSamhandlere(connection, environmentVariables, tssSamhandlerDatainput, requestId)
     if (!samhandlers.isNullOrEmpty()) {
         saveTSSRespons(jedisPool, samhandlerfnr, samhandlers)
     }
@@ -143,10 +133,12 @@ private fun getSamhandlere(
                     when (consumedMessage) {
                         is TextMessage -> consumedMessage.text
                         else -> {
-                            securelog.error("could not process mq message it is type ${consumedMessage.javaClass.simpleName}, ${objectMapper.writeValueAsString(consumedMessage)}")
+                            securelog.error(
+                                "could not process mq message it is type ${consumedMessage.javaClass.simpleName}, ${jsonMapper.writeValueAsString(consumedMessage)}"
+                            )
                             throw RuntimeException(
                                 "Incoming message needs to be a byte message or text message, JMS type:" +
-                                    consumedMessage.jmsType,
+                                    consumedMessage.jmsType
                             )
                         }
                     }
@@ -157,14 +149,14 @@ private fun getSamhandlere(
                     )
                     .also {
                         logger.info(
-                            "Fetched enkeltSamhandlerFromTSSRespons from tss for requestId: $requestId",
+                            "Fetched enkeltSamhandlerFromTSSRespons from tss for requestId: $requestId"
                         )
                     }
             }
         } catch (exception: Exception) {
             securelog.error(exception)
             logger.error(
-                "An error occured while getting data from tss requestId: $requestId error message:, ${exception.message}",
+                "An error occured while getting data from tss requestId: $requestId error message:, ${exception.message}"
             )
             throw exception
         } finally {
@@ -182,16 +174,16 @@ fun sendTssSporring(
         session.createTextMessage().apply {
             text = tssSamhandlerdataInputMarshaller.toString(tssSamhandlerData)
             jmsReplyTo = temporaryQueue
-        },
+        }
     )
 
 fun findEnkeltSamhandlerFromTSSRespons(
     tssSamhandlerInfoResponse: XMLTssSamhandlerData,
-    requestId: String
+    requestId: String,
 ): List<XMLSamhandler>? {
     securelog.info(
         "Response from tss for requestId:$requestId : ${
-            objectMapper.writeValueAsString(
+            jsonMapper.writeValueAsString(
                 tssSamhandlerInfoResponse
             )
         }"
@@ -245,9 +237,6 @@ private fun xmlTssSamhandlerData(inputMessageText: String): XMLTssSamhandlerData
     spf.isNamespaceAware = true
 
     val xmlSource: Source =
-        SAXSource(
-            spf.newSAXParser().xmlReader,
-            InputSource(StringReader(inputMessageText)),
-        )
+        SAXSource(spf.newSAXParser().xmlReader, InputSource(StringReader(inputMessageText)))
     return tssSamhandlerdataUnmarshaller.unmarshal(xmlSource) as XMLTssSamhandlerData
 }
