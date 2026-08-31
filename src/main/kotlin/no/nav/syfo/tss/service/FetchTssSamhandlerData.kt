@@ -23,7 +23,7 @@ import no.nav.syfo.mq.producerForQueue
 import no.nav.syfo.securelog
 import no.nav.syfo.util.toString
 import no.nav.syfo.util.tssSamhandlerdataInputMarshaller
-import no.nav.syfo.util.tssSamhandlerdataUnmarshaller
+import no.nav.syfo.util.tssSamhandlerdataInputJaxBContext
 import no.nav.syfo.valkey.getTSSRespons
 import no.nav.syfo.valkey.saveTSSRespons
 import org.xml.sax.InputSource
@@ -238,5 +238,5 @@ private fun xmlTssSamhandlerData(inputMessageText: String): XMLTssSamhandlerData
 
     val xmlSource: Source =
         SAXSource(spf.newSAXParser().xmlReader, InputSource(StringReader(inputMessageText)))
-    return tssSamhandlerdataUnmarshaller.unmarshal(xmlSource) as XMLTssSamhandlerData
+    return tssSamhandlerdataInputJaxBContext.createUnmarshaller().unmarshal(xmlSource) as XMLTssSamhandlerData
 }
