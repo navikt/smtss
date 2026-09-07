@@ -8,19 +8,19 @@ val javaVersion = JvmTarget.JVM_25
 
 val jacksonVersion = "3.2.2"
 val ktorVersion = "3.5.2"
-val logbackVersion = "1.5.21"
+val logbackVersion = "1.6.3"
 val logstashEncoderVersion = "9.0"
 val prometheusVersion = "0.16.0"
 val junitJupiterVersion = "6.1.3"
 val syfoXmlCodegen = "2.0.1"
 val ibmMqVersion = "10.0.0.0"
 val jaxbApiVersion = "2.4.0-b180830.0359"
-val commonsTextVersion = "1.14.0"
+val commonsTextVersion = "1.15.0"
 val valkeyVersion = "5.5.0"
 val ktfmtVersion = "0.56"
-val mockkVersion = "1.14.6"
-val nimbusdsVersion = "10.6"
-val testcontainersVersion = "2.0.2"
+val mockkVersion = "1.14.11"
+val nimbusdsVersion = "10.9.1"
+val testcontainersVersion = "2.0.5"
 
 
 ///Due to vulnerabilities
@@ -29,7 +29,7 @@ val commonsCompressVersion = "1.28.0"
 plugins {
     id("application")
     kotlin("jvm") version "2.4.10"
-    id("com.diffplug.spotless") version "8.10.0"
+    id("com.diffplug.spotless") version "8.10.1"
 }
 
 application {
