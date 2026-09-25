@@ -22,6 +22,8 @@ val mockkVersion = "1.14.6"
 val nimbusdsVersion = "10.6"
 val testcontainersVersion = "2.0.5"
 
+// Included due vulnerabilities in this transitive dependency
+val bcprovJdk18onVersion = "1.86"
 
 plugins {
     id("application")
@@ -67,6 +69,11 @@ dependencies {
     implementation("tools.jackson.module:jackson-module-kotlin:$jacksonVersion")
 
     implementation("com.ibm.mq:com.ibm.mq.jakarta.client:$ibmMqVersion")
+    constraints {
+        implementation("org.bouncycastle:bcprov-jdk18on:$bcprovJdk18onVersion") {
+            because("Due to this transitive dependency vulnerability inside of com.ibm.mq:com.ibm.mq.jakarta.client")
+        }
+    }
 
     implementation("no.nav.helse.xml:tss-samhandler-data:$syfoXmlCodegen")
 
