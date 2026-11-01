@@ -2,6 +2,7 @@ FROM gcr.io/distroless/java25-debian13@sha256:aea9b7c0ab3605df2a08bb71e865c9ddb5
 WORKDIR /app
 COPY build/install/*/lib /lib
 ENV JAVA_OPTS="-Dlogback.configurationFile=logback.xml"
+ENV JAVA_TOOL_OPTIONS="--enable-native-access=ALL-UNNAMED
 ENV TZ="Europe/Oslo"
 EXPOSE 8080
 USER nonroot
